@@ -1,0 +1,243 @@
+
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="Subset sum optimization with partial sums">Subset sum optimization with partial sums</h1>
+<h2 id="A tutorial on the sum-bounded subset sum problem (SSP)">A tutorial on the sum-bounded subset sum problem (SSP)</h2>
+<details class="abstract" open="open">
+<summary>Abstract</summary>
+<p>This article is heavily based on the resources found online regarding the described partitioning technique mainly used in the IMO/IOI competitions.</p>
+</details>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Subset_sum_problem#Pseudo-polynomial_time_dynamic_programming_solutions">Subset sum problem (SSP) with Knapsack DP</a></li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>Let's start by presenting some variations of the SSP.</p>
+<details class="info" open="open">
+<summary>Problem 1</summary>
+<p>Given a sequence of integers $A_1,\dots A_N$, where $0\leq A_i\leq C$, find all possible subset sums, i.e determine the set $S=\left\{\sum_{i\in I}A_i\ :\ I\subseteq \{1,\dots, N\}\right\}$.</p>
+</details>
+<details class="info" open="open">
+<summary>Problem 2</summary>
+<p>Given a sequence of integers $A_1,\dots A_N$, where $0\leq A_i\leq C$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
+</details>
+<details class="info" open="open">
+<summary>Problem 3</summary>
+<p>Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums.</p>
+</details>
+<details class="info" open="open">
+<summary>Problem 4</summary>
+<p>Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
+</details>
+<p>Problems <strong>1, 2</strong> are well known and we will only briefly mention them. Both can be solved in $O(N\sum_{i=1}^N A_i) = O(N^2 C)$.
+As for <strong>3, 4</strong>, they can be solved in $O(M\sqrt{M})$ with the optimizations we will be presenting, while <strong>3</strong> can be further optimized using C++'s bitsets to $O(\frac{M\sqrt{M}}{w})$ where $w$ is the word size of our system. </p>
+<p>In Problems <strong>3,4</strong> we could have also said that $A_{1}\dots A_{N}$ have sum at most $M$, our method would still apply.</p>
+<h3 id="General solution to the bounded SSP">General solution to the bounded SSP</h3>
+<p>As mentioned, we are not going to go into great detail here. 
+We will solve <strong>Problem 2</strong> with dynamic programming, <strong>Problem 1</strong> easily follows.</p>
+<p>Let $dp[i][S]$ be the minimum number of elements used to make the sum $S$ if the sequence $A$ only had the elements $A_1,\dots, A_i$.
+At first we can set </p>
+<p>$$dp[i][S] = \left\{\begin{array}{ll}0, &amp; (i, S) = (0, 0) \\ \infty, &amp; (i,S) \neq (0, 0)\end{array}\right. $$
+then the transitions $(i, \cdot) \to (i+1, \cdot)$ are obvious. </p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">// dp[i][S] are initialized to INF (MAX_INT perhaps) and SUM is the sum of all A[i]'s
+
+dp[0][0] = 1;
+for (int i = 1; i &lt= n; i++) {
+    for (int S = 0; S &lt= SUM; S++) {
+        dp[i][S] = dp[i-1][S];
+        if (S - A[i] &gt= 0) 
+            dp[i][S] = min(dp[i][S], dp[i-1][S - A[i]] + 1);
+    }
+}
+</code></pre></div>
+
+<p>We can reduce the dimensions by one if we notice that for computing $dp[i][\cdot]$ we only need $dp[i-1][\cdot]$.</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">// dp[S] are initialized to INF (MAX_INT perhaps) and SUM is the sum of all A[i]'s
+
+dp[0] = 1;
+for (int i = 1; i &lt= n; i++) {
+    for (int S = SUM; S &gt= 0; S--) {
+        if (dp[S] != INF)   
+            dp[S + A[i]] = min(dp[S + A[i]], dp[S] + 1);
+    }
+}
+</code></pre></div>
+
+<p>Thus the problems have been solved in $O(N\sum_{i=1}^N A_i) = O(N^2 C)$. </p>
+<h3 id="Solution to the sum-bounded SSP">Solution to the sum-bounded SSP</h3>
+<p>We will tackle problems <strong>3, 4</strong> simultaneously (since the solution is identical considering the above solution) and will later explain the different solution for <strong>Problem 3</strong>.</p>
+<h4 id="Bound on the distinct elements">Bound on the distinct elements</h4>
+<p>We need to realize the importance of the constraint $\sum_{i=1}^N A_i \leq M$ (equality usually holds in a lot of problems). </p>
+<p><strong>Observation:</strong> There are $O(\sqrt M)$ distinct elements in $A$.</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>Indeed, suppose there are $l+1$ distinct elements, let them be $a_1, \dots a_{l+1}$. Then 
+$$M\geq a_1 + \cdots + a_{l+1} \geq 0 + 1 + \cdots + (l - 1) + l = \frac{l(l+1)}{2}$$
+Which implies
+$$l^2 \leq 2M - l \leq 2M \implies l \leq \sqrt{2M} \implies l+1 = O(\sqrt M)\ .\quad \blacksquare$$</p>
+</details>
+<h4 id="$\mathcal{F}$-compression of $A$">$\mathcal{F}$-compression of $A$</h4>
+<p>The previous observation allows us to compress $A$ into a set 
+$$\mathcal{F} = \left\{(a_i, m_i)\ |\ \text{ integer } a_i \text{ appears } m_i \text{ times in }A\right\}\ ,$$
+and from the previous observation $|F| = O(\sqrt{M})$.<br />
+We will call this the $\mathcal{F}$-compression of $A$. This compression is really important, if we can somehow do the dp transition fast for a specific $a_i$ (i.e, a specific element of $\mathcal{F}$) then we will have solved the problem fast.</p>
+<h4 id="Partial sum partition">Partial sum partition</h4>
+<p>Consider the previous compression. What if, for example, we have $3$ $a_i$'s? 
+The sums that can be made from choosing some of them are the same as the sums that can be made from choosing some of $\{a_i, 2a_i\}$.
+If we have $7$ $a_i$'s the sums the same as the sums that can be made from $\{a_i, 2a_i, 4a_i\}$. So there is clearly a pattern with powers of $2$.
+But if we have $6$ $a_i$'s the sums the same as the sums that can be made from $\{a_i, 2a_i, 2a_i\}$. 
+With a bit of thought we arrive at the following partitioning algorithm (where $n$ is the number of $a_i$'s and the output is the coefficients like in our previous partitionings):</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltint&gt partition(n) {
+    vector&ltint&gt P = {};
+    int x = 1, s;
+    while (x &gt 0) {
+        s = min(x, n);
+        P.push_back(s);
+        n -= s;
+        x *= 2;
+    }
+    return P;
+}
+</code></pre></div>
+
+<p>The idea is based around grouping $a_i$'s in ascending powers of two, and then add whatever remains as well.
+This algorithm does exactly what we want (if it's not clear what exactly is that, stay patient and it will be slowly revealed). Let's prove it. <br></p>
+<p><strong>Proposition:</strong> If $S_n = \text{partition}(n)$ then every integer $0 \leq m\leq n$ can be formed as a sum of some elements of $S_n$.</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>Let $r$ be the last number that is added in $S_n$  and let $2^k$ be the highest power of $2$ in $S_n\setminus \{r\}$.</p>
+<p>Obviously $1, 2,\dots, 2^k \in S_n\setminus\{r\}$. 
+As a result, every integer $0\leq m\leq 2^{k+1} - 1 = \sum_{j=1}^k 2^k$ can be achieved from $S_n\setminus \{r\}$ (an thus from $S_n$ as well).</p>
+<p>Now let $2^{k+1} - 1 &lt; m \leq n$. Then $m - r \leq 2^{k+1} - 1$, since by the algorithm and by definition or $r$, $1 + 2 + \dots + 2^k + r = n \implies 2^{k+1}-1 = n - r \geq m - r$.
+Since $m-r \leq 2^{k+1} - 1$, $m-r$ can be made from $S_n\setminus\{r\}$ and if we then include $r$ in the sum we get $m$ from $S_n$. $\quad\blacksquare$</p>
+</details>
+<p>This, combined with the following observation, will allow us to speed up the general DP solution presented in the start.</p>
+<p><strong>Observation:</strong> $|\text{partition}(n)| = O(\log n)$. Specifically $|\text{partition}(n)| = \lfloor \log_2 n \rfloor + 1$.</p>
+<h4 id="Solution with the partial sum partition">Solution with the partial sum partition</h4>
+<p>Let $dp[i][S]$ be the minimum number of elements used to make the sum $S$ if we only consider the elements of $A$ that are equal to one of $a_1, a_2, \dots, a_i$ in the $\mathcal{F}$-compression of $A$.
+That is, we group the elements on $A$ according to $\mathcal{F}$ (to groups of the form $(a_{i}, m_{i})$) and we process the groups from left to right. Now we can do the transitions $(i,\cdot) \to (i+1,\cdot)$ a lot faster.</p>
+<p>Suppose we want to do the transition $(i,\cdot)\to(i+1,\cdot)$, we have $m_i$ of $a_i$'s in $A$. We partition those $m_i$ $a_i$'s to groups of $s_1$ $a_1$'s, $s_2$ $a_2$'s, $\dots$, $s_l$ $a_l$'s, where $s = \text{partition}(m_i)$ and $l = |s|$.</p>
+<p>Now choosing some $a_i$'s from $A$ is the same as choosing some of the $s_j$'s, which by a previous observation are $l = \lfloor \log_2 m_i \rfloor + 1$ (a lot less than $m_i$). We can iterate through them easily as follows in the algorithm.</p>
+<p>(For simplicity and memory efficiency, we will reduce the dimension of the DP by only carrying out the transitions like we did in the first section but the logic stays the same)</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltpair&ltint, int&gt&gt F = F_compress(A);
+
+vector&ltint&gt dp(M, INF), next, S; 
+dp[0] = 1;
+for (auto [a, m]: F) { // process groups of F one by one
+    S = partition(m);
+    for (int s: S) { 
+        next = dp;
+        for (int i = 0; i + a * s &lt= M; i++)
+            next[i + a * s] = min(next[i + a * s], dp[i] + s);
+        dp = next;
+    }
+}
+</code></pre></div>
+
+<p>The time complexity is 
+$$O\left( \sum_{(a,m)\in\mathcal{F}}^{}|\text{partition}(m)| \cdot M \right) = O\left( M\sum_{i=1}^{|\mathcal{F|}}\left\lfloor (\log_{2}m_{i} \right\rfloor+1) \right) $$
+so it looks like $O(M\sqrt{M}\log M)$ but it is also $O(M\sqrt{M})$.</p>
+<p><strong>Observation:</strong> The number of $i$'s such that $m_i\geq 1$ is $O(\sqrt{M})$ as we have shown but in fact the number of $i$'s such that $m_i\geq 2^t$ is $O(\sqrt{M/2^t})$.</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>Let there be $l+1$ $i$'s such that $m_i\geq 2^t$ and let them be $a_{i_1},\dots a_{i_{l+1}}$. Then 
+$$M \geq \sum_{j=1}^{l+1} a_{i_j} m_i \geq  \sum_{j=1}^{l+1} a_{i_j} 2^t \geq 2^t\sum_{j=1}^{l+1} a_{i_j} \geq 2^t (0 + 1+\dots l + (l+1)) = 2^t \frac{l(l+1)}{2}$$
+this implies
+$$l^2 \leq \frac{2M}{2^t} - l \leq \frac{2M}{2^t}\implies l + 1 = O\left(\sqrt{\frac{M}{2^t}}\right)\ .\quad \blacksquare$$</p>
+</details>
+<p>Therefore (without considering slight off-by-one errors)
+$$\begin{align} 
+\sum_i (\lfloor \log_2 m_i\rfloor + 1) 
+&amp;= \sum_i ((\text{position of highest }1\text{-bit in }m_i) + 1) \\\\ 
+&amp;= \sum_{t=0}^\infty (t+1)\cdot(\text{number of } m_i\text{'s with the position of highest } 1\text{-bit } = t) \\\\
+&amp;= \sum_{t=0}^\infty (\text{number of } m_i\text{'s with the position of highest } 1\text{-bit } \geq t) \\\\
+&amp;= \sum_{t=0}^\infty (\text{number of }m_i\text{'s with }m_i\geq 2^t) \\\\
+&amp;= \sum_{t=0}^\infty O\left(\sqrt{\frac{M}{2^t}}\right) \\\\
+&amp;=  O\left(\sum_{t=0}^\infty\sqrt{\frac{M}{2^t}}\right)
+\end{align}$$</p>
+<p>Therefore the final running time is $O(M\sqrt{M})$ by computing  </p>
+<p>$$\begin{align} 
+\sum_{i=1}^{|\mathcal{F}|}|\text{partition}(m_i)| = \sum_{i=1}^{|\mathcal{F}|}(\lfloor \log_2 m_i \rfloor + 1) = O\left(\sum_{t=0}^\infty \sqrt{\frac{M}{2^t}}\right) = O\left(\sqrt{M}\sum_{t=0}^\infty \frac{1}{2^{t/2}}\right) = O(\sqrt{M})
+\end{align}$$
+because
+$$\sum_{t=0}^\infty \frac{1}{2^{t/2}} = \sum_{k=0}^\infty \frac{1}{2^{2k/2}} + \sum_{k=0}^\infty \frac{1}{2^{(2k+1)/2}} = \sum_{k=0}^\infty \frac{1}{2^{k}} + \frac{1}{2^{1/2}}\sum_{k=0}^\infty \frac{1}{2^{k}} = 2 + \sqrt{2}\ .$$</p>
+<h4 id="Optimizations with bitsets">Optimizations with bitsets</h4>
+<p>If instead of finding the minimum number of items needed to make a specific sum $S$ we instead only care if we can make that sum then we can turn $dp$ into a bitset array of $M+1$ elements.
+Doing this the transitions would be </p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">bitset&ltM+1&gt dp, next;
+dp[0] = 1;
+for (auto [a, m]: F) {
+    S = partition(m);
+    for (int s: S) {
+        next = dp;
+        for (int i = 0; i + a * s &lt= M; i++)
+            next[i + a * s] |= dp[i];
+        dp = next;
+    }
+}
+</code></pre></div>
+
+<p>Therefore if we look inside the inner-most loop we just OR all of $next[ * + a\cdot s]$ with $dp[*]$. Therefore we can avoid looping all together and simultaneously do the ORs with shifts as shown</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">bitset&ltM+1&gt dp;
+dp[0] = 1;
+for (auto [a, m]: F) {
+    S = partition(m);
+    for (int s: S) {
+        dp |= (dp &lt&lt (a * s));
+    }
+}
+</code></pre></div>
+
+<p>The final code is bitset-optimized and achieves a running time of $O(\frac{M\sqrt{M}}{w})$ where $w$ is the number of bits in a word line in our system.</p>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
