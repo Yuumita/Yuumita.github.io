@@ -96,11 +96,11 @@ p {
 mjx-container[jax="CHTML"][display="true"] {
     display: block;
     text-align: center;
-    margin: 1em 0;
+    margin: 0 0;
 
     overflow: auto;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 1.65rem;
+    padding-bottom: 1.65rem;
 }
 
 #wrapper {

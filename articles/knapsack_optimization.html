@@ -123,14 +123,14 @@ $$l^2 \leq 2M - l \leq 2M \implies l \leq \sqrt{2M} \implies l+1 = O(\sqrt M)\ .
 <h4 id="$\mathcal{F}$-compression of $A$">$\mathcal{F}$-compression of $A$</h4>
 <p>The previous observation allows us to compress $A$ into a set 
 $$\mathcal{F} = \left\{(a_i, m_i)\ |\ \text{ integer } a_i \text{ appears } m_i \text{ times in }A\right\}\ ,$$
-and from the previous observation $|F| = O(\sqrt{M})$.<br />
-We will call this the $\mathcal{F}$-compression of $A$. This compression is really important, if we can somehow do the dp transition fast for a specific $a_i$ (i.e, a specific element of $\mathcal{F}$) then we will have solved the problem fast.</p>
+and from the previous observation $|F| = O(\sqrt{M})$.</p>
+<p>We will call this the $\mathcal{F}$-compression of $A$. This compression is really important, if we can somehow do the dp transition fast for a specific $a_i$ (i.e, a specific element of $\mathcal{F}$) then we will have solved the problem fast.</p>
 <h4 id="Partial sum partition">Partial sum partition</h4>
 <p>Consider the previous compression. What if, for example, we have $3$ $a_i$'s? 
 The sums that can be made from choosing some of them are the same as the sums that can be made from choosing some of $\{a_i, 2a_i\}$.
 If we have $7$ $a_i$'s the sums the same as the sums that can be made from $\{a_i, 2a_i, 4a_i\}$. So there is clearly a pattern with powers of $2$.
-But if we have $6$ $a_i$'s the sums the same as the sums that can be made from $\{a_i, 2a_i, 2a_i\}$. 
-With a bit of thought we arrive at the following partitioning algorithm (where $n$ is the number of $a_i$'s and the output is the coefficients like in our previous partitionings):</p>
+But if we have $6$ $a_i$'s the sums the same as the sums that can be made from $\{a_i, 2a_i, 2a_i\}$. </p>
+<p>With a bit of thought we arrive at the following partitioning algorithm (where $n$ is the number of $a_i$'s and the output is the coefficients like in our previous partitions):</p>
 <div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltint&gt partition(n) {
     vector&ltint&gt P = {};
     int x = 1, s;
@@ -161,7 +161,7 @@ Since $m-r \leq 2^{k+1} - 1$, $m-r$ can be made from $S_n\setminus\{r\}$ and if 
 <p>Let $dp[i][S]$ be the minimum number of elements used to make the sum $S$ if we only consider the elements of $A$ that are equal to one of $a_1, a_2, \dots, a_i$ in the $\mathcal{F}$-compression of $A$.
 That is, we group the elements on $A$ according to $\mathcal{F}$ (to groups of the form $(a_{i}, m_{i})$) and we process the groups from left to right. Now we can do the transitions $(i,\cdot) \to (i+1,\cdot)$ a lot faster.</p>
 <p>Suppose we want to do the transition $(i,\cdot)\to(i+1,\cdot)$, we have $m_i$ of $a_i$'s in $A$. We partition those $m_i$ $a_i$'s to groups of $s_1$ $a_1$'s, $s_2$ $a_2$'s, $\dots$, $s_l$ $a_l$'s, where $s = \text{partition}(m_i)$ and $l = |s|$.</p>
-<p>Now choosing some $a_i$'s from $A$ is the same as choosing some of the $s_j$'s, which by a previous observation are $l = \lfloor \log_2 m_i \rfloor + 1$ (a lot less than $m_i$). We can iterate through them easily as follows in the algorithm.</p>
+<p>Now choosing some $a_i$'s from $A$ is the same as choosing some of the $s_j$'s, which by a previous observation are $l = \lfloor \log_2 m_i \rfloor + 1$ (a lot less than $m_i$). So if $S$ is the set all of possible sums made before considering the $s_{j}$ $a_{i}$'s then $S+a_{i}\cdot s_{j} = \{ \sigma + a_{i}\cdot s_{j}\ | \ \sigma \in S \}$ is the set all of possible sums if the $s_{j}$ $a_{i}$'s are included, and so we update $S$ to include all of $S + a_{i}\cdot s_{j}$.</p>
 <p>(For simplicity and memory efficiency, we will reduce the dimension of the DP by only carrying out the transitions like we did in the first section but the logic stays the same)</p>
 <div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltpair&ltint, int&gt&gt F = F_compress(A);
 
@@ -221,7 +221,23 @@ for (auto [a, m]: F) {
 }
 </code></pre></div>
 
-<p>Therefore if we look inside the inner-most loop we just OR all of $next[ * + a\cdot s]$ with $dp[*]$. Therefore we can avoid looping all together and simultaneously do the ORs with shifts as shown</p>
+<p>Therefore if we look inside the inner-most loop we just OR all of $next[ * + a\cdot s]$ with $dp[*]$. In other words we do the following assignment simultaneously 
+$$
+dp[i + a\cdot s] := dp[i + a \cdot s]\lor dp[i],\quad i\in\{ 0, 1, \dots, M - a \cdot s \}
+$$
+which, if we suppose that the values $dp[i]$ for $j &lt; 0$ or $j &gt; M$ are always $0$ can be written as 
+$$
+dp[i] := dp[i] \lor dp[i - a \cdot s],\quad i\in\{ 0, 1, \dots, M\}
+$$
+and if $dp'$ is $dp$ shifted $a\cdot s$ such that $dp'[j] = dp[j - a\cdot s]$ then the transition becomes
+$$
+dp[i] := dp[i] \lor dp'[i], \quad i\in \{ 0, 1, \dots , M \}
+$$
+or just
+$$
+dp := dp \lor dp'\ .
+$$
+And so if we represent $dp$ with a bitset we can compute $dp'$ easily with a left shift, i.e $dp' = dp \ll a\cdot s$. Therefore we can simply use bisets to get the following.</p>
 <div class="box"><pre class="prettyprint"><code class="language-cpp">bitset&ltM+1&gt dp;
 dp[0] = 1;
 for (auto [a, m]: F) {
@@ -232,7 +248,7 @@ for (auto [a, m]: F) {
 }
 </code></pre></div>
 
-<p>The final code is bitset-optimized and achieves a running time of $O(\frac{M\sqrt{M}}{w})$ where $w$ is the number of bits in a word line in our system.</p>
+<p>The bitset operations are done word-wise and so the final code is bitset-optimized and achieves a running time of $O(\frac{M\sqrt{M}}{w})$ where $w$ is the number of bits in a word line in our system.</p>
     <script>
     setTimeout(() => {
         var script = document.createElement('script');

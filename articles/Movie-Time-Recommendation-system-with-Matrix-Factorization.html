@@ -1,0 +1,405 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="Movie Time!">Movie Time!</h1>
+<h2 id="(a recommendation system with Matrix Factorization)">(a recommendation system with Matrix Factorization)</h2>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Basic Linear Algebra</li>
+<li>Basic Matrix Calculus </li>
+<li>Gradient Descent </li>
+</ul>
+<h3 id="Special Notation">Special Notation</h3>
+<ul>
+<li>Sometimes we will index matrices with brackets, e.g $\mathbf{A}_{ij} = \mathbf{A}[i,j] = \mathbf{A}[i][j]$.</li>
+<li>Keep in mind that we abuse the index notation frequently, that is, we are not too strict about the indexing of the dimension of vectors/matrices, e.g we may use $(\mathbf{u})_i$, $\mathbf{u}[1,i]$ and $\mathbf{u}[i]$ interchangeably for a row vector $\mathbf{u}\in\mathbb{R}^{1\times n}$.</li>
+<li>The Jacobian is defined as $$
+\frac{ \partial L }{ \partial U }[k,l] = \frac{ \partial L }{ \partial (\mathbf{u}_{k})_{l} } = \frac{ \partial L }{ \partial \mathbf{u}_{k} } [1,l] = \left(\nabla_{\mathbf{u}_{k}}^\text{T} L \right)[l]
+$$ and $$
+\frac{ \partial L }{ \partial V }[k,l] = \frac{ \partial L }{ \partial (\mathbf{v}_{k})_{l} } = \frac{ \partial L }{ \partial \mathbf{v}_{k} } [1,l] = \left(\nabla_{\mathbf{v}_{k}}^\text{T} L \right)[l]
+$$while $\nabla ^\text{T}$ is the row-gradient (as opposed to the standard column-vector gradient $\nabla$).</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>Let's say we have $M$ movies (items), named $1$ through $M$, and $N$ users (queries), named $1$ through $N$. Each user $i$ gives feedback on some movies $J_i \subseteq \{ 1, \dots M \}$, we will suppose that the feedback to movie $j\in J_{i}$ is a rating $r_{ij}\in \mathbb{R}$, the higher the rating the more the user <em>liked</em> the movie.</p>
+<p>We will describe a simple machine learning algorithm that predicts how much a user $i$ will like a movie $j$ (by predicting the unknown rating $r_{ij}$), essentially building a system able to recommend films to users.</p>
+<h3 id="Preferences">Preferences</h3>
+<p>So, why does a user $i$ <em>like</em> movie $j$? In a very abstract level, we can suppose that $j$ has some features (e.g is a comedy, drama, action etc.) and user $i$ likes the corresponding features (e.g likes comedies, dramas, actions etc.). </p>
+<p>Thus, if $\mathbf{u}_{i}$ is a <em>description</em> of features $i$ likes and $\mathbf{v}_{j}$ is a <em>description</em> of features $j$ has then it is reasonable to believe that rating $r_{ij}$ is roughly a function with respect to $\mathbf{u}_i, \mathbf{v}_j$, in other words 
+$$
+r_{ij} \approx f(\mathbf{u}_{i}, \mathbf{v}_{j}),\quad \text{ for a function } f\ .
+$$
+The simplest such function is  the dot product $\left&lt; \cdot, \cdot \right&gt;$. It is also really reasonable, say $j$ is a film with <em>comedy score</em> $10^6$ and <em>action score</em> $10$, then the <em>score</em> describing how much $i$ likes comedies should perhaps be $10^5$ more important than the one describing how much $i$ likes action movies. This abstractions seems good enough.</p>
+<p>To wrap things up, we can think of the features the user likes and the features the movie has as real-valued vectors of dimension $D$ (the number of features) and then
+$$
+r_{ij} \approx f(\mathbf{u}_{i}, \mathbf{v}_{j}) = \left&lt; \mathbf{u}_{i}, \mathbf{v}_{j} \right&gt;
+= \mathbf{u}_{i}^\text{T} \mathbf{v}_{j}\ .
+$$</p>
+<h3 id="The model">The model</h3>
+<p>For the sake of following standard notation, we will suppose these features are row vectors (i.e with dimension $1\times D$) and then if we put together all $\mathbf{u}_i$'s in $U\in\mathbb{R}^{N\times D}$, all $\mathbf{v}_j$'s in $V\in\mathbb{R}^{M\times D}$ and all $r_{ij}$ in $R\in\mathbb{R}^{N\times M}$ such that $U_{kl} = \left( \mathbf{u}_{k} \right)_{l}$, $V_{kl} = \left( \mathbf{v}_{k} \right)_{l}$, $R_{kl} = r_{kl}$ then 
+$$
+\begin{align}
+R_{ij} \approx \left&lt; \mathbf{u}_{i}, \mathbf{v}_{j} \right&gt; 
+&amp;= \sum_{\ell=1}^{D} \left( \mathbf{u}_{i} \right)_{\ell}\left( \mathbf{v}_{j} \right)_{\ell} \\
+&amp;= \sum_{\ell=1}^{D} U_{i\ell}V_{j\ell} \\
+&amp;= \sum_{\ell=1}^{D} U_{i\ell}V_{\ell j}^\text{T} \\
+&amp;= \left(UV^\text{T}\right) _{ij} \\ \implies &amp;R\approx UV^\text{T} \ .
+\end{align}
+$$
+Now obviously some values in $R$ are empty (we don't have a rating), so we suppose the above approximation works for the non-empty elements of $R$. Usually, $U\in \mathbb{R}^{N\times D}$ is called the <strong>user embedding matrix</strong> and $V\in\mathbb{R}^{M\times D}$ the <strong>item embedding matrix</strong>, each describing the user's/item's features in the corresponding row.</p>
+<p>So what we will want to do is minimize the difference between $R$ and $UV^\text{T}$, where $R$ are the given ratings (with some empty values, we will look at how we can treat those later) and $U,V$ are the matrices we will decide upon (which will, ideally, follow the intuition we presented above). Minimizing the difference means minimizing $C(R, UV^\text{T})$ for some cost function $C$. One valid choice could be
+$$
+\min_{U, V} \sum_{(i,j): \exists r_{ij}}^{}\left(R_{ij} - \left&lt; U_{i}, V_{j} \right&gt; \right)^{2} 
+\iff
+\min_{U, V} \sum_{(i,j): \exists r_{ij}}^{}\left(R_{ij} - \left(UV^\text{T}\right)_{ij}\right)^{2} 
+$$
+or 
+$$
+\min_{U, V} \left\lVert R-UV^\text{T}  \right\rVert ^{2}_{\tilde{F}}
+$$
+where $\tilde{F}$ is the <a href="https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm">Frobenius</a> norm but such that it ignores the empty values. We can also suppose that there is a neutral rating of $0$ and then all empty ratings are $0$, so that we could just look at the function
+$$
+\min_{U, V} \left\lVert R-UV^\text{T}  \right\rVert ^{2}_{F}
+$$
+where $F$ is the standard <a href="https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm">Frobenius</a> norm, but we will avoid such modeling.</p>
+<p>Another variation would be to add the following weights (to both existent and non-existent ratings)
+$$
+\min_{U, V} \left(
+\sum_{(i,j): \exists r_{ij}} w_{ij}\left(R_{ij} - \left&lt; U_{i}, V_{j} \right&gt; \right)^{2} 
++\sum_{(i,j): \not\exists r_{ij}} w_{0}\left&lt; U_{i}, V_{j} \right&gt; ^{2} \right),\quad w_{ij}\in\mathbb{R}, w_{0}\in\mathbb{R}\ . 
+$$
+Obviously there are a lot of things we can do here, but we will follow this loss function since it is the generalization of the ones mentioned above. Let's call the function $L(U, V)$ and for simplicity let $\mathcal{R} = \{ (i,j)\ |\ \exists r_{ij} \}$ (the set of indices of all valid ratings), then
+$$
+L(U, V) =
+\sum_{(i,j)\in \mathcal{R}} w_{ij}\left(r_{ij} - \mathbf{u}_{i}\mathbf{v}_{j}^\text{T} \right)^{2} 
++ w_{0}\sum_{(i,j) \not\in \mathcal{R}} 
+\left( \mathbf{u}_{i} \mathbf{v}_{j}^\text{T}  \right) ^{2} 
+,\quad w_{ij}\in\mathbb{R}, w_{0}\in\mathbb{R}\ . 
+$$
+and we want to solve the following
+$$
+\min_{U\in\mathbb{R}^{N\times D}, V\in \mathbb{R}^{M\times D}} L(U, V)\ .
+$$</p>
+<p>Obviously $w_{ij}$ and $w_{0}$ are not part of the parameters we change. They should be tuned beforehand. </p>
+<p>After finding the $U,V$ which minimize $L$, we can just look at $\tilde{R} = UV^\text{T}$ and then the best prediction for guessing the rating of movie $j$ from $i$ is $\tilde{R}_{ij}$.</p>
+<h3 id="Gradients of $L$">Gradients of $L$</h3>
+<p>Let's compute the gradients related to $L$. Starting with $\mathbf{u}_{i}$ we have</p>
+<p>$$
+\begin{align}
+\frac{ \partial  }{ \partial \mathbf{u}_{k} } 
+\left(\sum_{(i,j)\in \mathcal{R}} w_{ij}\left(r_{ij} - \mathbf{u}_{i}\mathbf{v}_{j}^\text{T} \right)^{2} 
++ w_{0}\sum_{(i,j)\not\in \mathcal{R}} \left( \mathbf{u}_{i}\mathbf{v}_{j}^\text{T}  \right) ^{2} \right)
+&amp;=
+\frac{ \partial  }{ \partial \mathbf{u}_{k} } 
+\left(\sum_{j:(k,j)\in \mathcal{R}} w_{kj}\left(r_{kj} - \mathbf{u}_{k}\mathbf{v}_{j}^\text{T} \right)^{2} 
++ w_{0}\sum_{j:(k,j)\not\in \mathcal{R}} \left( \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  \right) ^{2} \right) \\ \\
+&amp;=
+-2\sum_{j:(k,j)\in \mathcal{R}} w_{kj}\left(r_{kj} - \mathbf{u}_{k}\mathbf{v}_{j}^\text{T} \right)\mathbf{v}_{j} 
++ 2w_{0}\sum_{j:(k,j)\not\in \mathcal{R}} \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  \mathbf{v}_{j} \\
+\end{align}
+$$
+and
+$$
+\begin{align}
+\frac{ \partial  }{ \partial \mathbf{v}_{k} } 
+\left(\sum_{(i,j)\in \mathcal{R}} w_{ij}\left(r_{ij} - \mathbf{u}_{i}\mathbf{v}_{j}^\text{T} \right)^{2} 
++ w_{0}\sum_{(i,j)\not\in \mathcal{R}} \left( \mathbf{u}_{i}\mathbf{v}_{j}^\text{T}  \right) ^{2} \right)
+&amp;=
+\frac{ \partial  }{ \partial \mathbf{v}_{k} } 
+\left(\sum_{i:(i,k)\in \mathcal{R}} w_{ik}\left(r_{ik} - \mathbf{u}_{i}\mathbf{v}_{k}^\text{T} \right)^{2} 
++ w_{0}\sum_{i:(i,k)\not\in \mathcal{R}} \left( \mathbf{u}_{i}\mathbf{v}_{k}^\text{T}  \right) ^{2} \right) \\ \\
+&amp;=
+-2\sum_{i:(i,k)\in \mathcal{R}} w_{ik}\left(r_{ik} - \mathbf{u}_{i}\mathbf{v}_{k}^\text{T} \right) \mathbf{u}_{i}
++ 2w_{0}\sum_{i:(i,k)\not\in \mathcal{R}} \mathbf{u}_{i}\mathbf{v}_{k}^\text{T} \mathbf{u}_{i} \\ \\
+\end{align}
+$$
+using the chain rule and 
+$$
+\frac{ \partial \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  }{ \partial \mathbf{u}_{k} }  = \mathbf{v}_{j}\quad\quad \frac{ \partial \mathbf{u}_{i}\mathbf{v}^\text{T}_{k} }{ \partial \mathbf{v}_{k} } = \mathbf{u}_{i}\ .
+$$</p>
+<details class="- note">
+<summary>Proof of the above formulas</summary>
+<p>$$
+\begin{align}
+\frac{ \partial \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  }{ \partial \mathbf{u}_{k} }[1, l]
+= \frac{ \partial \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  }{ \partial \mathbf{u}_{kl} } 
+&amp;= \frac{ \partial }{ \partial \mathbf{u}_{kl} }\sum_{\ell=1}^{D} \mathbf{u}_{k\ell} \cdot \mathbf{v}_{j\ell}^\text{T}
+= \mathbf{v}_{j}^\text{T}[l] \\ \\ 
+\implies \frac{ \partial \mathbf{u}_{k}\mathbf{v}_{j}^\text{T}  }{ \partial \mathbf{u}_{k} } &amp;= \mathbf{v}_{j}
+\quad\text{ and }\quad
+\frac{ \partial \mathbf{u}_{i}\mathbf{v}^\text{T}_{k} }{ \partial \mathbf{v}_{k} }
+= \frac{ \partial \mathbf{v}_{k}\mathbf{u}^\text{T}_{i} }{ \partial \mathbf{v}_{k} } = \mathbf{u}_{i}\ .\quad \blacksquare 
+\end{align}
+$$</p>
+</details>
+<p>Now
+$$
+\frac{ \partial  L}{ \partial \mathbf{u}_{k} } =
+\sum_{j:(k, j)\in \mathcal{R}}^{} (-2w_{kj}r_{kj}\mathbf{v}_{j}) + \sum_{j:(k,j)\in \mathcal{R}}^{} 2w_{kj}\mathbf{u}_{k}\mathbf{v}_{j}^\text{T} \mathbf{v}_{j}
++\sum_{j:(k,j)\not\in\mathcal{R}}^{} 2w_{0} \mathbf{u}_{k}\mathbf{v}_{j}^\text{T} \mathbf{v}_{j}
+$$
+and</p>
+<p>$$
+\frac{ \partial  L}{ \partial \mathbf{v}_{k} } =
+\sum_{i:(i, k)\in \mathcal{R}}^{} (-2w_{ik}r_{ik}\mathbf{u}_{i}) + \sum_{i:(i,k)\in \mathcal{R}}^{} 
+2w_{ik}\mathbf{v}_{k}\mathbf{u}_{i}^\text{T} \mathbf{u}_{i}
++\sum_{i:(i,k)\not\in\mathcal{R}}^{} 2w_{0} \mathbf{v}_{k}\mathbf{u}_{i}^\text{T} \mathbf{u}_{i}
+$$
+So we can compute $\frac{ \partial  L}{ \partial \mathbf{u}_{k} }$ in $O(MD)$ and $\frac{ \partial L }{ \partial \mathbf{v}_{k} }$ in $O(ND)$ so we can compute the Jacobians $\frac{ \partial L }{ \partial U },\frac{ \partial L }{ \partial V }$ each in $O(MND)$, for a total time complexity $O\left(NMD\right)$. This is too slow, we want to avoid the $O(NM)$ factor.</p>
+<h4 id="Optimizing the computation">Optimizing the computation</h4>
+<p>Notice that $|\mathcal{R}| \ll NM$ (since on average a user does not rate that many movies) so we want to avoid iterating through $(i,j)\not\in\mathcal{R}$. We can easily do
+$$
+\sum_{j:(k,j)\not\in\mathcal{R}}^{} \mathbf{v}_{j}^\text{T} \mathbf{v}_{j} = 
+\sum_{j}^{} \mathbf{v}_{j}^\text{T} \mathbf{v}_{j} -\sum_{j:(k,j)\in\mathcal{R}}^{} \mathbf{v}_{j}^\text{T} \mathbf{v}_{j} =
+\mathbf{S}^\mathbf{v} -\sum_{j:(k,j)\in\mathcal{R}}^{} \mathbf{v}_{j}^\text{T} \mathbf{v}_{j}
+$$
+and
+$$
+\sum_{i:(i,k)\not\in\mathcal{R}}^{} \mathbf{u}_{i}^\text{T} \mathbf{u}_{i} = 
+\sum_{i}^{} \mathbf{u}_{i}^\text{T} \mathbf{u}_{i} -\sum_{i:(i,k)\in\mathcal{R}}^{} \mathbf{u}_{i}^\text{T} \mathbf{u}_{i} =
+\mathbf{S}^\mathbf{u} -\sum_{i:(i,k)\in\mathcal{R}}^{} \mathbf{u}_{j}^\text{T} \mathbf{u}_{j}
+$$
+with $\mathbf{S}^\mathbf{v} = \sum_{j}^{}\mathbf{v}_{j}^\text{T}\mathbf{v}_{j}$ and $\mathbf{S}^\mathbf{u} = \sum_{i}^{}\mathbf{u}_{i}^\text{T}\mathbf{u}_{i}$. Now
+$$
+\frac{ \partial  L}{ \partial \mathbf{u}_{k} } =
+\sum_{j:(k, j)\in \mathcal{R}}^{} (-2w_{kj}r_{kj}\mathbf{v}_{j}) + \sum_{j:(k,j)\in \mathcal{R}}^{} 
+2w_{kj}\mathbf{u}_{k}\mathbf{v}_{j}^\text{T} \mathbf{v}_{j}
++2w_{0} \mathbf{u}_{k}\left( \mathbf{S}^\mathbf{v} - \sum_{j:(k,j)\in\mathcal{R}}^{} \mathbf{v}_{j}^\text{T}\mathbf{v}_{j}\right) 
+$$
+and</p>
+<p>$$
+\frac{ \partial  L}{ \partial \mathbf{v}_{k} } =
+\sum_{i:(i, k)\in \mathcal{R}}^{} (-2w_{ik}r_{ik}\mathbf{u}_{i}) + \sum_{i:(i,k)\in \mathcal{R}}^{} 
+2w_{ik}\mathbf{v}_{k}\mathbf{u}_{i}^\text{T} \mathbf{u}_{i}
++2w_{0}\mathbf{v}_{k} \left( \mathbf{S}^\mathbf{u} - \sum_{i:(i,k)\in\mathcal{R}}^{} \mathbf{u}_{i}^\text{T}\mathbf{u}_{i}  \right)
+$$
+Where the computation of $\mathbf{S}^\mathbf{v},\mathbf{S}^\mathbf{u}$ takes $O\left((N+M)D^2\right)$, $\frac{ \partial L }{ \partial \mathbf{u}_{k} }$ takes $O(|\mathcal{R}_{k,\cdot}|D +D^2 )$, $\frac{ \partial L }{ \partial \mathbf{v}_{k} }$ takes $O\left( |\mathcal{R}_{\cdot, k}|D+D^2 \right)$ for a total of $O(|\mathcal{R}|D + (N+M)D^2)$.
+Similarly we can get the following formulas for computing $L(U, V)$ fast:
+$$
+\begin{align}
+L(U, V)
+&amp;= \sum_{(i,j)\in\mathcal{R}}^{} \left[ w_{ij}(r_{ij}-\mathbf{u}_{i}\mathbf{v}_{j}^\text{T} )^{2} - w_{0}(\mathbf{u}_{i}\mathbf{v}_{j}^\text{T} )^{2} \right] + w_{0}\sum_{i=1}^{N}\mathbf{u}_{i}\mathbf{S}^{\mathbf{v}}\mathbf{u}_{i}^\text{T} \\
+&amp;= \sum_{(i,j)\in\mathcal{R}}^{} \left[ w_{ij}(r_{ij}-\mathbf{u}_{i}\mathbf{v}_{j}^\text{T} )^{2} - w_{0}(\mathbf{u}_{i}\mathbf{v}_{j}^\text{T} )^{2} \right] + w_{0}\sum_{j=1}^{M}\mathbf{v}_{j}\mathbf{S}^{\mathbf{u}}\mathbf{v}_{j}^\text{T} 
+\end{align}
+$$
+Note that for the iterations of $i:(i,k)\in \mathcal{R}$ and $j:(k,j)\in\mathcal{R}$ we will compute the collection of sets $\mathcal{R}_{row}, \mathcal{R}_{col}$  where 
+$$
+\mathcal{R}_{row}[i] = \{ j\ :\ (i,j)\in\mathcal{R} \}
+\quad \text{ and }\quad
+\mathcal{R}_{col}[j] = \{ i\ :\ (i,j)\in\mathcal{R} \}\ .
+$$
+The computation for those sets can be done once with time complexity $O(|\mathcal{R}|)$, however since $\mathcal{R}$ needs to also be somehow found (since we are given just $R$) we can suppose that all precomputations take time of $O(NM)$.</p>
+<p>The weights $w_{ij}$ should ideally follow some sort of rule with respect to user $i$ and movie $j$ but for simplicity we will assume that $w_{ij}=1$. Now using the <a href="https://numpy.org">NumPy</a> library we have the functions</p>
+<div class="box"><pre class="prettyprint"><code class="language-python">def compute_jacobians(U, V, r, calR):
+    N, D = U.shape
+    M, Dtmp = V.shape
+
+    # Jacobians
+    jU, jV = np.zeros((N, D)), np.zeros((M, D))
+
+    Sv = np.zeros((D, D))
+    Su = np.zeros((D, D))
+
+    for j in range(M): Sv += V[[j]].T @ V[[j]]
+    for i in range(N): Su += U[[i]].T @ U[[i]]
+
+
+    # validRatings is a set of all valid ratings
+    # calRrows[i] is the set of all j such that (i, j) is valid
+    # calRcols[j] is the set of all i such that (i, j) is valid
+    validRatings, calRrows, calRcols = calR
+
+    # jU
+    for k in range(N):
+        for j in calRrows[k]:
+            jU[k] += -2 * r[k][j] * V[j]
+            jU[k] += 2 * (U[k] @ V[j].T) * V[j]
+            jU[k] -= (2 * w0) * (U[k] @ V[j].T) * V[j]
+        jU[[k]] += (2 * w0) * (U[[k]] @ Sv)
+
+        # Regularization (explained in "Evaluating the Model" section)
+        jU[[k]] += alpha * 2 * U[[k]]
+
+    # jV
+    for k in range(M):
+        for i in calRcols[k]:
+            jV[k] += -2 * r[i][k] * U[i]
+            jV[k] += 2 * (V[k] @ U[i].T) * U[i]
+            jV[k] -= (2 * w0) * (V[k] @ U[i].T) * U[i]
+        jV[[k]] += (2 * w0) * (V[[k]] @ Su)
+
+        # Regularization (explained in "Evaluating the Model" section)
+        jV[[k]] += alpha * 2 * V[[k]]
+
+    return (jU, jV)
+</code></pre></div>
+<p>and for computing $L(U,V)$ we have</p>
+<div class="box"><pre class="prettyprint"><code class="language-python">def L(U, V, r, validRatings):
+    N, M, D = len(U), len(V), len(U[0])
+
+    Sv = np.zeros((D, D))
+    Su = np.zeros((D, D))
+
+    for j in range(M): Sv += V[[j]].T @ V[[j]]
+    for i in range(N): Su += U[[i]].T @ U[[i]]
+
+    ret = 0
+
+    for p in validRatings:
+        i, j = p
+        ret += (r[i][j] - U[i] @ V[j].T) ** 2
+        ret -= w0 * (U[i] @ V[j].T) ** 2
+
+    for i in range(N):
+        ret += w0 * (U[[i]] @ Sv @ U[[i]].T)
+        ret += U[i] @ U[i].T
+
+    for j in range(M):
+        ret += V[j] @ V[j].T
+
+    return ret
+</code></pre></div>
+
+<h3 id="Gradient Descend">Gradient Descend</h3>
+<p>Now, knowing the gradients, we can just pick a learning rate $\eta$ (<code>eta</code>) and update the <em>embedding matrices</em> $U, V$ as
+$$
+U \leftarrow U - \eta \frac{\partial L}{\partial U} \quad\quad
+V \leftarrow V - \eta \frac{\partial L}{\partial V}
+$$
+Sometimes we overstep, i.e we go too far of the direction $-\nabla L$ and we end up increasing $L$. In that case we will <em>revert</em> the step and lower $\eta$ (here we will just do $\eta \leftarrow \frac{\eta}{2}$). So now our training function is just </p>
+<div class="box"><pre class="prettyprint"><code class="language-python">def train(U, V, R, isValidRating, eta=1):
+    # validRatings is the set of all valid (i, j) 
+    # calRrows[k] is the set of all j such (k, j) is valid
+    # calRcols[k] is the set of all i such (i, j) is valid
+    validRatings, calRrows, calRcols = getValidRatingsSets(U, V, isValidRating)
+
+    Loss = L_function(U, V, R, validRatings)
+    while a condition (e.g i &lt number_of_steps, has_not_converged() etc.):
+
+        jU, jV = compute_jacobians(U, V, R, (validRatings, calRrows, calRcols))
+        nU = U - eta * jU
+        nV = V - eta * jV
+
+        nLoss = L_function(nU, nV, R, validRatings)
+
+        if nLoss &gt Loss:
+            eta /= 2
+            continue
+
+        U, V, Loss = nU, nV, nLoss
+
+    return (U, V) 
+</code></pre></div>
+
+<h4 id="Updating a rating">Updating a rating</h4>
+<p>A new rating $r_{ij}$ should make us believe that it would only change information regarding the features of user $i$ and movie $j$. With that assumption we can just <em>correct</em> $\mathbf{u}_{i}$ and $\mathbf{v}_{j}$. For efficient computations,  $\mathbf{S}^\mathbf{u},\mathbf{S}^\mathbf{v}$ need to be updated. And so we just do a gradient descend with steps
+$$
+U_{i}\leftarrow U_{i} - \eta \frac{ \partial L }{ \partial \mathbf{u}_{i} } 
+\quad \text{ and } \quad
+V_{j}\leftarrow V_{j} - \eta \frac{ \partial L }{ \partial \mathbf{v}_{j} }\ .
+$$</p>
+<h3 id="Evaluating the Model">Evaluating the Model</h3>
+<p>At first, we are going to be using a dataset with $(N, M, |\mathcal{R}|) = (668, 9324, 79019)$.</p>
+<p>After some training we will get some $U, V$ that describe the features good enough so that $R_{ij}\approx \tilde{R}_{ij} = (UV^\text{T})_{ij},\ (i,j)\in \mathcal{R}$ and so we assume, by the way we defined and found $U, V$ that the approximation also works for $(i,j)\not\in\mathcal{R}$. Therefore we can predict how much a user $i$ will like movie $j$.</p>
+<p>What we will do to evaluate our model is find a dataset with ratings and then randomly delete around $20\%$ of the ratings. Then, after training with the new dataset we can test to see how much the predictions work considering the deleted $20\%$. Obviously, some people might have unpredictable likings and so we shouldn't trust discrete cases, but if the dataset is big enough $20\%$ should be enough to describe the standard and predictable likings of people.</p>
+<p>Let's get to some numbers. After training the model the <em>Loss</em> for the new data is $L^*$ with the predictions given by $\tilde{R}=UV^\text{T}$. We should compare it with other simple prediction methods, guessing $5/10$ for all ratings (with loss $L_{5}$) and guessing $7/10$ for all ratings (with loss $L_{7}$). With $300$ steps of Gradient Descent and variable $\eta$ we get
+$$ L^* =  24038.08\quad L_{5} = 44069.75\quad L_{7} = 22344.75 $$
+What's going on? How can our guess be made worse while we have really lowered the loss of our data? The answer is <a href="https://en.wikipedia.org/wiki/Overfitting">overfitting</a>.
+Indeed, doing more tests we can easily confirm this.</p>
+<div class="box"><pre class="prettyprint"><code class="language-js">Smart tests MSE:      1.09629820429791
+Random tests MSE:     2.162189677166127
+
+Model tests MSE:       0.9456494356283671
+(After 150 gradient steps)
+(D, w0) = (20, 0)
+
+Model tests MSE:       1.0242183662654758
+(After 300 gradient steps)
+(D, w0) = (20, 0)
+</code></pre></div>
+<p>Here MSE obviously referring to <a href="https://en.wikipedia.org/wiki/Mean_squared_error">Mean squared error</a>. Specifically, <em>Smart tests MSE</em> is the MSE when we guess a rating of $7/10$ for everything (ok it's not that <em>smart</em> but you get the point), <em>Random tests MSE</em> is the MSE where we guess $5/10$ for everything and <em>Model tests MSE</em> is the MSE of our model.</p>
+<h4 id="Regularization">Regularization</h4>
+<p>To avoid overfitting we can add a regularization term to the loss function (since this article is getting long we will avoid explaining why we do this)
+$$
+R(U,V) = \alpha\left(\left\lVert U \right\rVert_{{2},1}^{2} + \left\lVert V \right\rVert_{{2,1}}^{2}\right)
+= \alpha\left(\sum_{i,l}^{}U_{il}^{2} + \sum_{j,l}^{}V_{jl}^{2}\right) 
+= \alpha\sum_{i}^{} \mathbf{u}_{i}\mathbf{u}_{i}^\text{T}  + \alpha\sum_{j}^{} \mathbf{v}_{j}\mathbf{v}_{j}^\text{T} 
+$$
+for some $a\in\mathbb{R}$. We will just have to add to the gradient the terms
+$$
+\frac{ \partial R(U,V) }{ \partial \mathbf{u}_{k} } =2\alpha\mathbf{u}_{k}
+\quad \text{ and }\quad
+\frac{ \partial R(U,V) }{ \partial \mathbf{v}_{k} } =2\alpha\mathbf{v}_{k}\ .
+$$</p>
+<h4 id="Training points to parameters ratio">Training points to parameters ratio</h4>
+<p>Even with regularization we still don't get good results. In fact if we change $D=1$ we get better results than when $D=10$. What?
+Well in our case of data (where $(N, M) = (668, 9324)$ and $|\mathcal{R}| = 79019$) we see that $|U| + |V| = ND + MD &gt; |\mathcal{R}|$, so the parameters are more than the data points. This obviously results in overfitting (model adjusting too good to the training data without encapsulating the logic behind the data).</p>
+<p>A common practice is to have $\times 10$ more training data points than parameters to avoid overfitting. This would mean that need to choose $D$ so that
+$$
+(N+M)D &lt; \frac{\mathcal{|R|}}{10} \iff D &lt; \frac{|\mathcal{R}|}{10(N+M)} = \frac{79019}{10(668 + 9324)}&lt; 0.8
+$$
+So the above results ($D=1$) are the best we can get. Let's try a different dataset. This time we have <code>1 million ratings from 6000 users on 4000 movies</code> so $(N, M, \mathcal{|R|}) = (6\cdot 10^3, 4\cdot 10^3, 10^6)$ so perhaps $D = 10$ is a good option. This time the computations speed is a lot slower, however after some training we get</p>
+<div class="box"><pre class="prettyprint"><code class="language-js">Smart tests MSE:         1.2535523410247384
+Random tests MSE:        2.4212564406182993
+Model tests MSE:         0.777808924862751
+(D, w0, alpha) = (10, 1e-6, 1e-6)
+</code></pre></div>
+<p>which may be further improved with more training.</p>
+<h3 id="Epilogue">Epilogue</h3>
+<p>Well... that's it. It might seem a little underwhelming (just looking at number) but a MSE score of less that $0.78$ is really good. It might not be the best there is (and in fact matrix factorization is one of the simplest method and thus does not bring the best results) but considering that we can continue training the model and also try to find better values for $D, w_{0}, \alpha$ I think this is a pretty satisfactory ending.</p>
+<p>For more implementation details (and better code) the reader can check <a href="https://github.com/Yuumita/MatrixFactorization-recommender-system/">my github repo</a>. However I believe by reading this article you have gained everything there is, the code won't reveal any more insights (probably). As for me, I think I am going to watch Star Wars, apparently I will love it. </p>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
