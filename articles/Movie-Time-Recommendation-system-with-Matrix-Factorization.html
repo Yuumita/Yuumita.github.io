@@ -57,11 +57,10 @@
 <ul>
 <li>Sometimes we will index matrices with brackets, e.g $\mathbf{A}_{ij} = \mathbf{A}[i,j] = \mathbf{A}[i][j]$.</li>
 <li>Keep in mind that we abuse the index notation frequently, that is, we are not too strict about the indexing of the dimension of vectors/matrices, e.g we may use $(\mathbf{u})_i$, $\mathbf{u}[1,i]$ and $\mathbf{u}[i]$ interchangeably for a row vector $\mathbf{u}\in\mathbb{R}^{1\times n}$.</li>
-<li>The Jacobian is defined as $$
+<li>If $U=[\mathbf{u}_{1} \;\; \mathbf{u}_{2}\;\;\dots\;\; \mathbf{u}_{d}]$ and $L = \mathbf{f}(U)$ then the Jacobian will be defined as $$
 \frac{ \partial L }{ \partial U }[k,l] = \frac{ \partial L }{ \partial (\mathbf{u}_{k})_{l} } = \frac{ \partial L }{ \partial \mathbf{u}_{k} } [1,l] = \left(\nabla_{\mathbf{u}_{k}}^\text{T} L \right)[l]
-$$ and $$
-\frac{ \partial L }{ \partial V }[k,l] = \frac{ \partial L }{ \partial (\mathbf{v}_{k})_{l} } = \frac{ \partial L }{ \partial \mathbf{v}_{k} } [1,l] = \left(\nabla_{\mathbf{v}_{k}}^\text{T} L \right)[l]
-$$while $\nabla ^\text{T}$ is the row-gradient (as opposed to the standard column-vector gradient $\nabla$).</li>
+$$
+with $\nabla ^\text{T}$ being the row-gradient (as opposed to the standard column-vector gradient $\nabla$). However we won't really be strict with the dimensions and indices.</li>
 </ul>
 <h3 id="Introduction">Introduction</h3>
 <p>Let's say we have $M$ movies (items), named $1$ through $M$, and $N$ users (queries), named $1$ through $N$. Each user $i$ gives feedback on some movies $J_i \subseteq \{ 1, \dots M \}$, we will suppose that the feedback to movie $j\in J_{i}$ is a rating $r_{ij}\in \mathbb{R}$, the higher the rating the more the user <em>liked</em> the movie.</p>
