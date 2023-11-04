@@ -1,0 +1,334 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="The art of Sieving">The art of Sieving</h1>
+<h2 id="A tutorial on sieves">A tutorial on sieves</h2>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Number theory</li>
+<li>Basic combinatorics</li>
+<li>Basic probability</li>
+<li>Basic set theory</li>
+<li>Basic understanding of partially ordered sets</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>Sometimes it's easy to count things, I believe even toddlers can count. What's hard is to not over or under count. 
+Thankfully mistakes can be fixed, and calculations recalibrated, that's the core idea of Sieving. 
+We can do this by carefully deleting elements from the set we count, by overcounting and then removing duplicates, counting the contribution indirectly and the list goes on.</p>
+<p>In this article we will present the most important sieves. In that way it can also act as an introduction to Sieve theory.</p>
+<h3 id="Notation">Notation</h3>
+<ul>
+<li>$[n] = \{1,\dots, n\}$, for $n\in\mathbb{N}$</li>
+<li>$\textbf{1}[P]$ is $1$ if $P$ is true, else it is $0$</li>
+</ul>
+<h3 id="Sieve of Eratosthenes">Sieve of Eratosthenes</h3>
+<p>Eratosthenes, a Greek polymath, wanted to count the primes up to $n$. 
+He found the first prime, $2$, and then thought of deleting every multiple of $2$ since every multiple wouldn't be a prime. 
+The next smallest number was $3$, a prime, he then deleted every multiple of $3$. 
+The next smallest number not deleted was $5$, also a prime, he then realized that if there was a number before $5$ and after $3$ it couldn't contain a prime factor greater than $3$, and since he had deleted all numbers with prime factors not greater than $3$ he was sure $5$ was prime.</p>
+<p>The above observation led to the straightforward algorithm for finding primes up to $n$. </p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">int n;
+int is_prime[n+1];
+void prime_sieve(){
+
+    for(int i = 0; i &lt= n; i++) is_prime[i] = true;
+    is_prime[0] = is_prime[1] = false;
+
+    for (int i = 2; i &lt= n; i++) {
+        if (is_prime[i] && (long long)i * i &lt= n) {
+            for (int j = i * i; j &lt= n; j += i)
+                is_prime[j] = false;
+        }
+    }
+
+}
+</code></pre></div>
+
+<p>Notice that we start deleting all multiples of a prime $p$ from $p^2$, this is because a non-prime number of the form $pk$ (with $k &lt; p$) has a prime factor not greater than $k &lt; p$. 
+It's obvious that the running time is $O(n\log n)$, however the bound can be imported to $O(n\log \log n)$, but we won't prove it since it goes out of the scope of the article. 
+Perhaps the reader can try to do so. It is not hard, supposing knowledge of some well known facts.</p>
+<h4 id="Factorizing numbers in $O(\log n)$">Factorizing numbers in $O(\log n)$</h4>
+<p>With a bit more thought, Sieve of Eratosthenes not only shows us which elements get deleted, and therefore are not prime, but it also shows by which primes they get deleted. 
+In other words, when having deleted all of multiplied of $2$ and we go to $3$, $6$ won't get deleted by $3$ since it was already deleted by $2$. 
+This implies the following algorithm for computing the SPF (smallest prime factor) of all numbers up to $n$ in $O(n\log\log n)$. It's useful to pretend that the SPF of $1$ is $1$.</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">int n;
+int spf[n + 1]; 
+void prime_sieve() {
+
+    for(int i = 1; i &lt= n; i++) spf[i] = i; 
+    for(int i = 2; i &lt= n; i += 2) spf[i] = 2;
+
+    for(int i = 3; i &lt= n; i += 2) if(spf[i] == i) {
+        for(long long j = (long long)i*i; j &lt= n; j += i){
+            if(spf[j] == j)
+                spf[j] = i;
+        }
+    }
+
+}
+</code></pre></div>
+
+<p>This precomputation is extremely useful because it allows us to factorize a number $x\in[1, n]$ in $O(\log n)$ by continiously dividing the number with the SPF, if the SPF is $1$ (i.e it doesn't have any primes) the factorization is done.</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltint&gt get_factorazation(int x) {
+    vector&ltint&gt ret;
+    while(x &gt 1) {
+        ret.push_back(spf[x]);
+        x /= spf[x];
+    }
+    return ret;
+}
+</code></pre></div>
+
+<h4 id="Linear Sieve">Linear Sieve</h4>
+<p>Let's try to optimize the previous sieve. In the Sieve of Eratosthenes we try to mark/delete a number $k$ once for every prime factor of $k$. What if we find a way to do it only once?</p>
+<p>Let $spf[i]$ be the smallest prime factor of $i$. We will try to gradually compute $spf$ by iterating through numbers $x=2,3\dots n$. When are at $x$ we will compute $spf[x]$ and all $spf[y]$ for $y = p \cdot x$ for some prime $p \leq spf[x]$. Say we are at $x$ there are two cases to computing $spf[x]$</p>
+<ul>
+<li>$x$ is prime, in such a case we set $spf[x] = x$. This will happen when $spf[x]=0$ (unmarked) when we first iterate through $x$.</li>
+<li>$x$ is composite, in such a case $spf[x] &lt; x$ and $x = spf[x] \cdot d$ for some $d$ with $spf[d] \geq spf[x]$ and we will have already computed $spf[x]$ when we were at the number $spf[x]$.</li>
+</ul>
+<p>Now, after having computed $spf[x]$ we need to iterate through all primes $p \leq spf[x]$ and compute $spf$ of $y=p\cdot x$ as $spf[y] = spf[p\cdot x] = p$.</p>
+<p>This is correct because the decomposition of $y$ as $y=p\cdot x$ for the prime $p$ with $p \leq spf[x]$ is unique, since it is basically the decomposition $y = spf[y]\cdot \frac{y}{spf[y]}$ (and obviously $spf\left[ \frac{y}{spf[y]} \right] \geq spf[y]$ by definition of $spf$.</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">vector&ltint&gt spf(n+1, 0);
+vector&ltint&gt primes;
+
+void linear_sieve() {
+    for(int i = 2; i &lt= n; i++) {
+        if(spf[i] == 0) { // unmarked so i is a prime
+            spf[i] = i;
+            primes.push_back(i);    
+        }
+
+        for(int j = 0; i * primes[j] &lt= N && primes[j] &lt= spf[i]; j++) {
+            spf[i * primes[j]] = primes[j];
+        }
+    }
+}
+</code></pre></div>
+
+<p>Therefore we have a prime sieve in $[1, n]$ that runs in $O(n)$. Let's now dive to more math-heavy sieves.</p>
+<h3 id="The Sieve Formula">The Sieve Formula</h3>
+<p>The sieve formula, or what's generally called PIE (Principle of Inclusion Exclusion) has many forms. 
+There are a lot of sources to many of these forms, but we are going to present a less used variation. A probabilistic one. 
+We will later see how it is similar to the standard form.</p>
+<h4 id="Probabilistic Sieve Formula">Probabilistic Sieve Formula</h4>
+<p>Let $A_1,\dots A_n$ be arbitrary events of a probability space $(\Omega, P)$. For each $I\subseteq [n]$ (here $[n] = \{1,\dots, n\}$) let
+$$ A_I = \bigcap_{i\in I} A_i;\ \ A_{\emptyset} = \Omega\ .$$
+Then 
+$$\tag{1}P\left(\bigcup_{i=1}^n A_i\right) = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} P(A_J) 
+= \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} P\left(\bigcap_{j\in J} A_j\right)\ .$$ </p>
+<p>It can be proved by induction, but that's boring. What we will want to do is count the contribution of each atom to each of the two sides. 
+Recall from measure theory that an atom is a set of positive measure which contains no set of smaller positive measure.
+Unfortunately, not all probability spaces can be decomposed to such atoms in a way that the sum of their measures equals $1$.</p>
+<p>Instead let's focus on pseudo-atoms, or more specifically the atoms of the Boolean algebra generated by $A_1,\dots, A_n$. 
+For a set $I\subseteq [n]$ let's define the event
+$$ B_I = \left(\bigcap_{i\in I}A_i\right) \cap \left(\bigcap_{i\not\in I} \overline{A_i}\right)$$
+as the event in which the events $I$ happen, and the events $[n]\setminus I$ don't. <br>
+Now the probability of any combination of events $A_i$ can be decomposed to the sum of some $B_I$. </p>
+<p>Let's fix $I$ and say it has $k$ elements ($|I|=k$). Then $P(B_I)$ is counted in the left hand side of $(1)$ if and only if $k&gt;0$, else it is not counted. <br>
+As for the right side, it is counted with a coefficient $(-1)^{|J|-1}$ for the sets $\emptyset \neq J\subseteq I$. 
+For $|J| = j$ there are $\binom{|I|}{|J|} = \binom{k}{j}$ such sets. 
+Therefore the final coefficient of $P(B_I)$ in the right hand side is
+$$ \sum_{j=1}^k \binom{k}{j}(-1)^{j-1} = 1-\sum_{j=0}^k \binom{k}{j}(-1)^{j} = 1 - (1 - 1)^k = \textbf{1}[k \neq 0]\ .$$
+Therefore again $P(B_I)$ is counted exactly once if and only if $k&gt;0$, else it is not counted. <br>
+Therefore we have proven $(1)$.</p>
+<h4 id="Set Theoretic Sieve Formula">Set Theoretic Sieve Formula</h4>
+<p>Let $A_1,\dots, A_n\subseteq S$ where $S$ is a finite set, and let 
+$$ A_I = \bigcap_{i\in I} A_i;\ \ A_{\emptyset} = S\ .$$
+Then
+$$\tag{2}\left|\bigcup_{i=1}^n A_i\right| = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} |A_J| = \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} \left|\bigcap_{j\in J} A_j\right|\ .$$ </p>
+<p>This is the more standard form of the Sieve formula. We can easily make the transition from $(1)$ to $(2)$. 
+Indeed suppose we choose $x\in S$ uniformly and represent $A_i$ as the event for which $x\in A_i$, then
+$$P(A_i) = \frac{|A_i|}{|S|}\ .$$
+From $(1)$ we get
+$$\frac{\left|\bigcup_{i=1}^n A_i\right|}{|S|} = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} \frac{|A_J|}{|S|} = \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} \frac{\left|\bigcap_{j\in J} A_j\right|}{|S|}$$ 
+from which $(2)$ easily follows by multiplying with $|S|$. From this we can see that $(1)$ is $(2)$ but normalized, i.e we shrink the set $S$ to $\Omega$ while keeping the realative measures.</p>
+<p>Sometimes the Sieve formula is written as follows (but we omit the proof)
+$$\tag{3}\left|S \setminus \bigcup_{i=1}^n A_i\right| = \sum_{J\subseteq [n]}(-1)^{|J|}|A_J|\ .$$</p>
+<h3 id="Mobius Inversion Formula">Mobius Inversion Formula</h3>
+<p>Let $(V,\leq)$ be a countable poset (partially oredered set) and let $f$ be any function defined in $V$ and set
+$$g(x) = \sum_{z\leq x}f(z)\ .$$ 
+Then there exists a function $\mu$ defined in $V\times V$ such that
+$$f(x) = \sum_{z\leq x}g(z)\mu(z, x)\ .$$
+This function is the Mobius function defined on that poset. We have to take things a step back to achieve the result.
+A curious reader might want to see why a function satisfying
+$$\sum_{y\leq z\leq x}\mu(z, x) = \textbf{1}[y = x],\quad y \leq x\quad (4)$$
+suffices.</p>
+<h4 id="Incidence Algebra">Incidence Algebra</h4>
+<p>For two functions $f$, $g$ defined on $V\times V$ (the finite invervals of $V$) we are going to define their convolution as 
+$$(f*g)(x, y) = \sum_{x\leq z\leq y}f(x, z)g(z, y)$$
+This definition has some similarities with matrix multiplication in the incidence algebra 
+$$\mathbb{A}(V) = \{a\in \mathbb{F}^{V\times V}\ |\ x&gt;y \implies a(x,y) = 0\}$$
+for which the multiplication of elements is just the convolution defined above, but for clarity we are still going to call it convolution.</p>
+<p>Now let us define some functions in $\mathbb{A}(V)$. Namely $\zeta$ and $\delta$, which are defined as follows 
+$$\zeta(x, y) = \textbf{1}[x \leq y] \quad \quad \delta(x, y) = \textbf{1}[x = y]\ .$$
+Those definitions are important because now $(4)$ can be written as 
+$$(\zeta*\mu)(y, x) = \delta(y, x)\quad (4.1)$$
+i.e $\mu$ should be the convolution inverse of $\zeta$.</p>
+<p>Obviously then $\mu(x, x) = 1$ and, since $\mu\in\mathbb{A}(V)$, $\mu(y, x) = 0$ for $y &gt; x$.
+Now what about $\mu(x, y),\  x &lt; y$ ? From $(4.1)$ we get
+$$\sum_{x \leq z \leq y}\mu(z, y) = 0 \iff \mu(x, y) = - \sum_{x &lt; z\leq y}\mu(z, y)$$
+and this allows us to compute $\mu$. 
+Specifically to compute $\mu(x, y)$ with $x\leq y$ we fix $y\in V$ and set $\mu(y, y) := 1$ and then we sequentially compute going down from the order using the formula
+$$\mu(x, y) = - \sum_{x &lt; z\leq y}\mu(z, y)\ .$$
+More often we define $\mu$ by (for $x &lt; z$)
+$$\sum_{x \leq y \leq z}\mu(x, y) = 0 \iff \mu(x, z) = -\sum_{x\leq y &lt; z}\mu(x, y)$$
+but by the fact that $f * g = g * f$ (the convolution is communicative) we get that $\mu\zeta = \zeta\mu$ which leads to our result.</p>
+<h4 id="Proof of the Mobius Inversion Formula">Proof of the Mobius Inversion Formula</h4>
+<p>The proof of the formula is now trivial. Suppose that for the functions $f$, $g$ (defined on $V$, do not confuse them with elements of $\mathbb{A}(V)$) we have 
+$$g(x) = \sum_{z\leq x}f(z)\ .$$
+Now
+$$\begin{align}
+    \sum_{z\leq x}g(z)\mu(z, x) 
+    &amp;= \sum_{z\leq x}\left(\sum_{y\leq z}f(y)\right)\mu(z,x) \\
+    &amp;= \sum_{y\leq z\leq x}f(y)\mu(z,x) \\
+    &amp;= \sum_{y\leq x}f(y) \sum_{y\leq z\leq x}\mu(z,x) \\
+    &amp;= \sum_{y\leq x}f(y) \delta (y, x) \\
+    &amp;= f(x)\ .\quad \blacksquare \\
+\end{align}$$</p>
+<h3 id="The Mobius function in number theory">The Mobius function in number theory</h3>
+<p>The general Mobius function for arbitrary posets might be useful, especially for studying the properties of the function, but generally one would see the function in a number theory context.</p>
+<h4 id="Definition">Definition</h4>
+<p>The Mobius function is most commonly used in the poset $(\mathbb{Z^+}, \ |\ )$ (division on the positive integers). 
+Then, it is mostly useful to restrict the function on only one dimension, i.e set $\mu(n) := \mu(1, n)$ (the $2$-dimensional function is like we defined previously).
+Now $\mu$ should satisfy 
+$$\sum_{d\ |\ n}\mu(d) = \mathbf{1}[n = 1]\ .$$
+A more common definition is 
+$$\mu(n) =\left\{\begin{array}{ll}0, &amp;\text{if $n$ has one or more repeated prime factors} \\ (-1)^k &amp;\text{if $n$ is a square-free positve integer with $k$ distinct prime factors}\end{array}\right. $$
+The equivalence can be proved in a lot of ways, but we won't care about it. Besides, the first definition allows us to compute $\mu$ for the numbers $[N]$ in $O(N\log \log N)$ with $\mu(1):=1$ and 
+$$\mu(n) := -\sum_{d\ |\ n\atop d\neq n}\mu(d),\quad n &gt; 1$$
+with some careful computation order that is given below.</p>
+<div class="box"><pre class="prettyprint"><code class="language-cpp">    int N;
+    int mu[N + 1]; // mu is initialized to 0
+    void compute_mu() {
+        mu[1] = 1;
+        for(int d = 1; d &lt= N; d++) {
+            for(int n = d + d; n &lt= N; n += d) {
+                mu[n] -= mu[d];
+            }
+        }
+    }
+</code></pre></div>
+
+<p>In case you didn't notice, this is again the Sieve of Eratosthenes (what a cool guy).  However keep in mind that it can also be computed with a linear sieve (refer to the solution in the last problem of the article).</p>
+<h4 id="Applications of the number theoretic Mobius function">Applications of the number theoretic Mobius function</h4>
+<p>Obviously the number theoretic Mobius function helps us with the inversion 
+$$g(n) = \sum_{d\ |\ n}f(d) \iff f(n) = \sum_{d\ |\ n}g(d)\mu\left(\frac{n}{d}\right)$$
+which is usually written as 
+$$g = 1 * f\iff f = \mu * g$$
+where 
+$$(f*g)(n) = (g * f)(n) = \sum_{d\ |\ n}g(n)f\left(\frac{n}{d}\right)\ .$$</p>
+<p>In case the read is confused about the $\mu(n/d)$ it might help to try to prove the formula themselves. 
+As for the intuition, let's look at the general formula for posets
+$$g(x) = \sum_{z\leq x}f(z)\iff f(x) = \sum_{z\leq x}g(z)\mu(z, x)$$
+in the poset $(\mathbb{Z}^+,\ |\ )$ that would be 
+$$g(x) = \sum_{z\ |\ x}f(z)\iff f(x) = \sum_{z\ |\ x}g(z)\mu(z, x)\ = \sum_{z\ |\ x}g(z)\mu\left(\frac{x}{z}\right)\ .$$
+Where we observed, since $\mu(1, k) =\mu(k)$, that $\mu(d, kd) = \mu(k)$. 
+That's because, as we saw previously the value of $\mu(x, z)$ depends only on the structure of the interval $\{y\ |\ x \leq y \leq z\}$ (the poset interval, not the standard one),
+and on $(\mathbb{Z}^+, \ |\ )$ $[d, kd]$ is isomorphic to $[1, k]$.</p>
+<p>However the inverison is usually hidden. The general strategy is to try and show $\mu$ from wherever we can. Let's consider the following problem</p>
+<p><strong>Problem 1:</strong> Count the number of co-prime pairs in $[1, N]$.</p>
+<details class="- note">
+<summary>Solution</summary>
+<p>$$\begin{align} 
+\sum_{i=1}^n \sum_{j=1}^n \textbf{1}[\gcd(i, j) = 1]
+&amp;= \sum_{i=1}^n \sum_{j=1}^n \sum_{d\ |\gcd(i, j)}\mu(d) \\
+&amp;= \sum_{i=1}^n \sum_{j=1}^n \sum_{d}\textbf{1}[d\ |\ \gcd(i,j)]\mu(d) \\
+&amp;= \sum_{d}\mu(d) \sum_{i=1}^n \sum_{j=1}^n \textbf{1}[d\ |\ \gcd(i,j)] \\
+&amp;= \sum_{d}\mu(d) \sum_{i=1}^n \sum_{j=1}^n \textbf{1}[d\ |\ i\ ,\ d\ |\ j] \\
+&amp;= \sum_{d}\mu(d) \sum_{i'=1}^{\lfloor n/d\rfloor} \sum_{j'=1}^{\lfloor n/d\rfloor} \textbf{1}[d\ |\ i'd\ ,\ d\ |\ j'd] \\
+&amp;= \sum_{d}\mu(d) \sum_{i'=1}^{\lfloor n/d\rfloor} \sum_{j'=1}^{\lfloor n/d\rfloor} 1\\
+&amp;= \sum_{d=1}^n\mu(d) \left\lfloor \frac{n}{d} \right\rfloor^2\\
+\end{align} $$
+The last formula enables us to solve the problem in $O(n)$. </p>
+</details>
+<p>The reader might want to try the following</p>
+<p><strong>Problem 2:</strong> Count the sum of $\gcd(i, j)$ for every pair of integers $(i, j)$ in the range $[1, n]$ in $O(n\log n)$.</p>
+<details class="- hint">
+<summary>Hint</summary>
+<p>$$\gcd(i,j) = \sum_{d=1}^{\max\{ i,j \}}\mathbf{1}[\gcd(i,j)=d]\cdot d$$</p>
+</details>
+<p><strong>Problem 3:</strong> Count the sum of $\text{lcm}(i, j)$ for every pair of integers $(i, j)$ in the range $[1, n]$ in $O(n\log n)$.</p>
+<details class="- hint">
+<summary>Hint</summary>
+<p>$$\text{lcm}(i,j) = \frac{i\cdot j}{\gcd(i,j)} $$</p>
+</details>
+<p><strong>Problem 4:</strong> Try to optimize the solutions to $O(n)$.</p>
+<details class="- hint">
+<summary>Hint</summary>
+<p>Both answers can be expressed as 
+$$
+\sum_{k=1}^{n}f(k)g(k)
+$$
+where $g(\cdot)$ is a <a href="https://en.wikipedia.org/wiki/Multiplicative_function">multiplicative function</a> with an easily deducible closed form, $g(i)$ for $i\in[1,n]$ can be computed fast.</p>
+<details class="- hint">
+<summary>Hint 2</summary>
+<p>Do a linear sieve to compute $g(\cdot)$ in $O(n)$.
+I suggest you look at the properties of multiplicative functions and the algorithm of linear sieve again before continuing.</p>
+</details>
+<details class="- info">
+<summary>Solution</summary>
+<p>We precompute $g(\cdot)$ in $O(n)$ and then we just compute the answer from the formula $\sum_{i=1}^{n}f(i)g(i)$ easily in $O(n)$. Let's do a linear sieve on in $[1,n]$ and we will compute $g(\cdot)$. 
+When we are at $x$ in the sieve iterations (after doing the computations of the sieve) then 
+ - if $spf[x] = x$ then $x$ is prime so we can compute $g(x)$ directly.
+ - if $spf[x]\neq x$ then $x$ is composite, now let $p=spf[x], d=\frac{x}{p}$ and $x=p\cdot d$ is the decomposition discussed in the linear sieve
+ - if $p\ \nmid d$ then $\gcd(p,d) =1 \implies g(x) = g(p\cdot d) = g(p)g(d)$ 
+ - if $p\ |\ d$ then $d=p^r\cdot d'$ for some $r$ with $\gcd(p, d')=1$ so $g(p\cdot d) = g(p^{r+1}\cdot d') = g(p^{r+1})g(d')$</p>
+</details>
+</details>
+<p>The number theoretic Mobius function has many more <a href="https://en.wikipedia.org/wiki/Möbius_function#Applications">applications</a>, but if we continue we might never stop.</p>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>

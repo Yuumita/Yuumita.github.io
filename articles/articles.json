@@ -1,16 +1,21 @@
 [
     {
-      "title": "Subset sum in $O(\\frac{n\\sqrt{n}}{w})$ with partial sum partitions",
-      "date": "2023 Sep 15",
-      "url": "/articles/knapsack_optimization.html",
-      "tags": ["algorithms"]
-    },
-
+      "title": "The art of Sieving",
+      "date": "2023 Oct 04",
+      "url": "/articles/sieves.html",
+      "tags": ["algorithms", "mathematics"]
+    }, 
     {
       "title": "Movie Time! (a recommendation system with Matrix Factorization)",
       "date": "2023 Oct 03",
       "url": "/articles/Movie-Time-Recommendation-system-with-Matrix-Factorization.html",
       "tags": ["machine learning", "projects"]
+    }, 
+    {
+      "title": "Subset sum in $O(\\frac{n\\sqrt{n}}{w})$ with partial sum partitions",
+      "date": "2023 Sep 15",
+      "url": "/articles/knapsack_optimization.html",
+      "tags": ["algorithms"]
     }
   ]
   
