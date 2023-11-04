@@ -158,8 +158,8 @@ We will later see how it is similar to the standard form.</p>
 <p>Let $A_1,\dots A_n$ be arbitrary events of a probability space $(\Omega, P)$. For each $I\subseteq [n]$ (here $[n] = \{1,\dots, n\}$) let
 $$ A_I = \bigcap_{i\in I} A_i;\ \ A_{\emptyset} = \Omega\ .$$
 Then 
-$$\tag{1}P\left(\bigcup_{i=1}^n A_i\right) = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} P(A_J) 
-= \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} P\left(\bigcap_{j\in J} A_j\right)\ .$$ </p>
+$$P\left(\bigcup_{i=1}^n A_i\right) = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} P(A_J) 
+= \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} P\left(\bigcap_{j\in J} A_j\right)\ .\quad (1)$$ </p>
 <p>It can be proved by induction, but that's boring. What we will want to do is count the contribution of each atom to each of the two sides. 
 Recall from measure theory that an atom is a set of positive measure which contains no set of smaller positive measure.
 Unfortunately, not all probability spaces can be decomposed to such atoms in a way that the sum of their measures equals $1$.</p>
@@ -179,7 +179,7 @@ Therefore we have proven $(1)$.</p>
 <p>Let $A_1,\dots, A_n\subseteq S$ where $S$ is a finite set, and let 
 $$ A_I = \bigcap_{i\in I} A_i;\ \ A_{\emptyset} = S\ .$$
 Then
-$$\tag{2}\left|\bigcup_{i=1}^n A_i\right| = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} |A_J| = \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} \left|\bigcap_{j\in J} A_j\right|\ .$$ </p>
+$$\left|\bigcup_{i=1}^n A_i\right| = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} |A_J| = \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} \left|\bigcap_{j\in J} A_j\right|\ .\quad (2)$$ </p>
 <p>This is the more standard form of the Sieve formula. We can easily make the transition from $(1)$ to $(2)$. 
 Indeed suppose we choose $x\in S$ uniformly and represent $A_i$ as the event for which $x\in A_i$, then
 $$P(A_i) = \frac{|A_i|}{|S|}\ .$$
@@ -187,7 +187,7 @@ From $(1)$ we get
 $$\frac{\left|\bigcup_{i=1}^n A_i\right|}{|S|} = \sum_{j = 1}^n (-1)^{j-1} \sum_{I\subseteq [n]\atop |I|=j} \frac{|A_J|}{|S|} = \sum_{\emptyset \neq J\subseteq [n]}(-1)^{|J|-1} \frac{\left|\bigcap_{j\in J} A_j\right|}{|S|}$$ 
 from which $(2)$ easily follows by multiplying with $|S|$. From this we can see that $(1)$ is $(2)$ but normalized, i.e we shrink the set $S$ to $\Omega$ while keeping the realative measures.</p>
 <p>Sometimes the Sieve formula is written as follows (but we omit the proof)
-$$\tag{3}\left|S \setminus \bigcup_{i=1}^n A_i\right| = \sum_{J\subseteq [n]}(-1)^{|J|}|A_J|\ .$$</p>
+$$\left|S \setminus \bigcup_{i=1}^n A_i\right| = \sum_{J\subseteq [n]}(-1)^{|J|}|A_J|\ .\quad (3)$$</p>
 <h3 id="Mobius Inversion Formula">Mobius Inversion Formula</h3>
 <p>Let $(V,\leq)$ be a countable poset (partially oredered set) and let $f$ be any function defined in $V$ and set
 $$g(x) = \sum_{z\leq x}f(z)\ .$$ 
