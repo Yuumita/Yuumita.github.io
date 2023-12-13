@@ -85,7 +85,7 @@ def convert_markdown_to_html(input_file):
 
     def obsidian_to_python_admonition(match):
         adType, adTitle, adSuffix, adContent = match.group(1)[1:], match.group(3), match.group(2), match.group(4)
-        adContent = "\n".join([line.strip().replace(">", "\t", 1) for line in adContent.split("\n")])
+        adContent = "\n".join([line.replace(">", "\t", 1) for line in adContent.split("\n")])
         adContent = admonitions_convert(adContent)
 
         return f'???{adSuffix} {adType} "{adTitle}" \n {adContent} \n'

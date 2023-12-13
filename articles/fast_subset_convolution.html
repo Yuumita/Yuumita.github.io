@@ -49,7 +49,7 @@
 <h2 id="SOS DP, Fast Subset Convolution and Generating functions on subsets">SOS DP, Fast Subset Convolution and Generating functions on subsets</h2>
 <details class="abstract" open="open">
 <summary>Abstract</summary>
-<p>Being really curious about fast subset convolution<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I came across a, perhaps not so well known, technique which integrates generating functions with sets mostly known in Chinese IOI training camps. Through different blogs like like <a href="https://codeforces.com/blog/entry/92128">this one</a> I realized the genius behind the technique and, to be honest, I was disappointed with the lack of coverage on the topic.</p>
+<p>Being really curious about fast subset convolution<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I came across a, perhaps not so well known, technique which integrates generating functions with sets mostly known in Chinese IOI training camps. Through different blogs like like <a href="https://codeforces.com/blog/entry/92128">this one</a> I realized the genius behind the technique and, to be honest, I was disappointed with the lack of coverage on the topic. </p>
 </details>
 <h3 id="Prerequisites">Prerequisites</h3>
 <ul>
@@ -134,7 +134,7 @@ The union product $\cup$ is sometimes called the OR-convolution. Similarly we ca
 <p>From <strong>Theorem 1</strong> it suffices to show that $(f\cup g)\zeta = (f\zeta)\cdot (g\zeta)$. Indeed
     $$
         \begin{align}
-            ((f\zeta)\cdot (g\zeta))(S)
+            ((f\zeta)\cdot (g\zeta))(S) 
             &amp;= (f\zeta)(S) \cdot (g\zeta)(S) \\
             &amp;= \left(\sum_{X\subseteq S}f(X)\right) \left(\sum_{X\subseteq S}g(Y)\right) \\
             &amp;= \sum_{X\subseteq S}\sum_{Y\subseteq S}f(X)g(Y) \\
@@ -232,23 +232,27 @@ where $\mathcal{C}(S)$ are the coverings of $S$. Obviously we can define $\log$ 
    $$
    f_{p}(S)=\sum_{T\subset S}^{} f(T)f_{p}(S\setminus T)+f(S),
    $$
-  so if we let $g(T)=f_{p}(T)$ for $T\subset S$ and $g(S)=1$ we have
+  so if we let $g(T)=f_{p}(T)$ for $T\subset S$ and $g(S)=1$ we have 
  $$
     f_{p}(S)= (f*g)(S).
     $$
-   This gives the following algorithm for computing all of $f_{p}:2^N\to \mathscr{R}_{*}$ in $\mathcal{O}(n^2 2^n)$ ring operations:
-- Set $\mathcal{S}:=\{\}$ and $f_{p}(\emptyset):=1$.
-- For $i=1 \dots n$ do
-    - Set $\mathcal{S}:=\mathcal{S}\cup \{ i \}$.
-    - Set $g(S):=f_{p}(S)$ for $S\subset \mathcal{S}$ and $g(\mathcal{S}):=1$.
-    - Compute $f*g$ and set $f_p := f*g$ on $\mathcal{S}$.</p>
+   This gives the following algorithm for computing all of $f_{p}:2^N\to \mathscr{R}_{*}$ in $\mathcal{O}(n^2 2^n)$ ring operations:</p>
+<ul>
+<li>Set $\mathcal{S}:=\{\}$ and $f_{p}(\emptyset):=1$.</li>
+<li>For $i=1 \dots n$ do <ul>
+<li>Set $\mathcal{S}:=\mathcal{S}\cup \{ i \}$.</li>
+<li>Set $g(S):=f_{p}(S)$ for $S\subset \mathcal{S}$ and $g(\mathcal{S}):=1$.</li>
+<li>Compute $f*g$ and set $f_p := f*g$ on $\mathcal{S}$.</li>
+</ul>
+</li>
+</ul>
 </details>
 <p>Computing the logarithm is a bit trickier but it can be done by reversing the operation done in computing $\exp$ after realizing how to compute $g$ given $f,h$ in $f*g=h$ (this can be done in a similar manner as we did for the computation of $\exp$ in the above proof).</p>
 <details class="example" open="open">
 <summary><a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">Lights Out on Connected Graph</a></summary>
 <p>The statement can be viewed in the <a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">link</a> (hopefully it is still up in the point of time you are reading this). We will just provide the $O(n^2 2^n)$ solution <a href="https://codeforces.com/profile/Elegia">Elegia</a> presented. It is supposedly this solution which who taught the Japanese the true power of  the set power series technique.</p>
 <p>Let $G[S]$ be the subgraph obtained by $G$ by removing all edges that do not have any endpoint in $S$. $E(G)$ and $V(G)$ will be the edges and vertices of $G$ respectively. For simplicity let $e(G) = |E(G)|$</p>
-<p>Starting of, we name the vertices $V=\{ 1,2,\dots,n \}$ and let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly.</p>
+<p>Starting of, we name the vertices $V=\{ 1,2,\dots,n \}$ and let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly. </p>
 <p>Let $f(S)$ be number of colorings of subgraphs of $G[S]$ with vertices $V(G[S])$. That is, we choose a subset of the edges $E'\subseteq E(G[S])$ and we will color each vertex of $S$ one of two colors such $G[S]$ is bipartite. Note that for each such bipartite graph there are $2$ such colorings. Let's see what happens when we look at the different partitions of $S$ when trying to compute $g(S)$,
 $$
 \exp\left(\sum_{S\subseteq V}^{}2g(S)x^S\right)= \sum_{S \subseteq V}^{}f(S)x^S  \iff  \sum_{S\subseteq V}^{}g(S)x^S= \frac{1}{2}\ln \left( \sum_{S \subseteq V}^{}f(S)x^S \right),
@@ -289,10 +293,10 @@ $$
 Therefore we now just need to compute $\phi(\hat{f}_{0}),\phi'(\hat{f}_{0})$ which can be more easily seen as $\phi([x_{n}^0]\hat{f}), \phi'([x_{n}^0]\hat{f})$. The next induction step will be $\phi([x_{n-1}^0x_{n}^0]\hat{f}), \phi'([x_{n-1}^0x_{n}^0]\hat{f}),\phi''([x_{n-1}^0x_{n}^0]\hat{f})$ and in general the $\ell$-th induction step is $\phi([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \phi'([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \dots, \phi^{(\ell)}([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f})$. If $T_{n}(\ell)$ is the time needed to compute the composition for a set power series in $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$ if we are at the $\ell$-th induction step with the obvious way from the previous formula, we then have $T_{n}(\ell)=T(\ell-1)+(n-\ell)O(\ell ^2 2^{n-\ell})$ so 
 $$
 \begin{align}
-T_{n}(n)= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) &amp;= O\left( \sum_{\ell=0}^{n} (n-\ell)\ell^2 2^\ell \right)  \\
-&amp;=O\left( n^2\sum_{\ell=0}^{n} (n-\ell)2^\ell \right)  \\
-&amp;=O\left( n^22^n\sum_{\ell=0}^{n}\ell2^{-\ell} \right)  \\
-&amp;=O(n^2 2^n).
+T_{n}(n)&amp;= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) = O\left( \sum_{\ell=0}^{n} (n-\ell)\ell^2 2^\ell \right)  \\
+&amp;=O\left( n^2\sum_{\ell=0}^{n} (n-\ell)2^\ell \right)<br />
+=O\left( n^22^n\sum_{\ell=0}^{n}\ell2^{-\ell} \right) 
+=O(n^2 2^n).
 \end{align}
 $$
 I remember someone joked about how segment trees can basically do everything and could be perhaps used to solve world hunger in $O(n\log n)$. Here, however, the joke loses its hyperbole characteristic.</p>

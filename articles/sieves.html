@@ -312,11 +312,13 @@ I suggest you look at the properties of multiplicative functions and the algorit
 <details class="- info">
 <summary>Solution</summary>
 <p>We precompute $g(\cdot)$ in $O(n)$ and then we just compute the answer from the formula $\sum_{i=1}^{n}f(i)g(i)$ easily in $O(n)$. Let's do a linear sieve on in $[1,n]$ and we will compute $g(\cdot)$. 
-When we are at $x$ in the sieve iterations (after doing the computations of the sieve) then 
- - if $spf[x] = x$ then $x$ is prime so we can compute $g(x)$ directly.
- - if $spf[x]\neq x$ then $x$ is composite, now let $p=spf[x], d=\frac{x}{p}$ and $x=p\cdot d$ is the decomposition discussed in the linear sieve
- - if $p\ \nmid d$ then $\gcd(p,d) =1 \implies g(x) = g(p\cdot d) = g(p)g(d)$ 
- - if $p\ |\ d$ then $d=p^r\cdot d'$ for some $r$ with $\gcd(p, d')=1$ so $g(p\cdot d) = g(p^{r+1}\cdot d') = g(p^{r+1})g(d')$</p>
+When we are at $x$ in the sieve iterations (after doing the computations of the sieve) then </p>
+<ul>
+<li>if $spf[x] = x$ then $x$ is prime so we can compute $g(x)$ directly.</li>
+<li>if $spf[x]\neq x$ then $x$ is composite, now let $p=spf[x], d=\frac{x}{p}$ and $x=p\cdot d$ is the decomposition discussed in the linear sieve</li>
+<li>if $p\ \nmid d$ then $\gcd(p,d) =1 \implies g(x) = g(p\cdot d) = g(p)g(d)$ </li>
+<li>if $p\ |\ d$ then $d=p^r\cdot d'$ for some $r$ with $\gcd(p, d')=1$ so $g(p\cdot d) = g(p^{r+1}\cdot d') = g(p^{r+1})g(d')$</li>
+</ul>
 </details>
 </details>
 <p>The number theoretic Mobius function has many more <a href="https://en.wikipedia.org/wiki/Möbius_function#Applications">applications</a>, but if we continue we might never stop.</p>
