@@ -248,7 +248,7 @@ where $\mathcal{C}(S)$ are the coverings of $S$. Obviously we can define $\log$ 
 <summary><a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">Lights Out on Connected Graph</a></summary>
 <p>The statement can be viewed in the <a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">link</a> (hopefully it is still up in the point of time you are reading this). We will just provide the $O(n^2 2^n)$ solution <a href="https://codeforces.com/profile/Elegia">Elegia</a> presented. It is supposedly this solution which who taught the Japanese the true power of  the set power series technique.</p>
 <p>Let $G[S]$ be the subgraph obtained by $G$ by removing all edges that do not have any endpoint in $S$. $E(G)$ and $V(G)$ will be the edges and vertices of $G$ respectively. For simplicity let $e(G) = |E(G)|$</p>
-<p>Starting of, let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly.</p>
+<p>Starting of, we name the vertices $V=\{ 1,2,\dots,n \}$ and let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly.</p>
 <p>Let $f(S)$ be number of colorings of subgraphs of $G[S]$ with vertices $V(G[S])$. That is, we choose a subset of the edges $E'\subseteq E(G[S])$ and we will color each vertex of $S$ one of two colors such $G[S]$ is bipartite. Note that for each such bipartite graph there are $2$ such colorings. Let's see what happens when we look at the different partitions of $S$ when trying to compute $g(S)$,
 $$
 \exp\left(\sum_{S\subseteq V}^{}2g(S)x^S\right)= \sum_{S \subseteq V}^{}f(S)x^S  \iff  \sum_{S\subseteq V}^{}g(S)x^S= \frac{1}{2}\ln \left( \sum_{S \subseteq V}^{}f(S)x^S \right),
@@ -270,12 +270,12 @@ $$
 &amp;= \left( \sum_{T\subseteq S}^{} 2^{-e(T)} x^T \right) ^2.
 \end{align}
 $$
-Therefore with one multiplication over $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;$ we get $2^{-e(S)}f(S)$ and so $f(S)$ for each $S\subseteq V$. Therefore the problem is solved in $O(|V|^22^{|V|})$.</p>
+Therefore with one multiplication over $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;$ we get $2^{-e(S)}f(S)$ and so $f(S)$ for each $S\subseteq V$. Therefore the problem is solved in $O(n^22^{n})$.</p>
 </details>
 <h4 id="Point-wise Newton Iteration">Point-wise Newton Iteration</h4>
 <p>An important fact about set power series is that all of operations we can apply to them can be computed in $O(n^2 2^n)$ ring operations. Namely, for any power series $\phi\in R[[x]]$ (perhaps a polynomial) we can compute $\phi(\hat{f})$ for a set power series $\hat{f}\in R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$.</p>
 <p><a href="https://codeforces.com/profile/Elegia">Elegia</a>, a god of algebra, specifically named the technique for computing $\phi(\hat{f})$, described in <a href="https://codeforces.com/blog/entry/92183">this</a> blog, as Point-wise Newton Iteration. We will briefly explain the core idea of the algorithm.</p>
-<p>We will reduce the complexity of the problem with induction. Let $\hat{f}_{0}=[x_{n}^0]\hat{f},\hat{f}_{1}=[x_{n}^1]\hat{f}$ and now $\hat{f}=\hat{f}_{0}+x_{n}\hat{f}_{1}$, or more explicitly $\hat{f}(x_{1},\dots,x_{n})=\hat{f}_{0}(x_{1},\dots,x_{n-1})+x_{n}\hat{f}_{1}(x_{1},\dots,x_{n-1})$. Now let $\phi(x)=\sum_{i=0}^{\infty}a_{i}x^i\in R[[x]]$, the composition $\phi \circ \hat{f}$ yields
+<p>We will reduce the complexity of the problem with induction using $x_{i}^2=0$ in our quotient ring. Let $\hat{f}_{0}=[x_{n}^0]\hat{f},\hat{f}_{1}=[x_{n}^1]\hat{f}$ and now $\hat{f}=\hat{f}_{0}+x_{n}\hat{f}_{1}$, or more explicitly $\hat{f}(x_{1},\dots,x_{n})=\hat{f}_{0}(x_{1},\dots,x_{n-1})+x_{n}\hat{f}_{1}(x_{1},\dots,x_{n-1})$. Now let $\phi(x)=\sum_{i=0}^{\infty}a_{i}x^i\in R[[x]]$, the composition $\phi \circ \hat{f}$ yields
 $$
 \begin{align}
 \phi(\hat{f}(x))=\sum_{i=0}^{\infty} a_{i}\hat{f}(x)^i
@@ -296,8 +296,8 @@ T_{n}(n)= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) &amp;= O\left(
 \end{align}
 $$
 I remember someone joked about how segment trees can basically do everything and could be perhaps used to solve world hunger in $O(n\log n)$. Here, however, the joke loses its hyperbole characteristic.</p>
-<p><strong>Conjecture:</strong> Is there a problem that can't be solved in $O(n^2 2^n)$ with set power series?</p>
-<p>Well Point-wise Newton Iteration showed that for the problems where set power series naturally emerge the answer is no. And I think that this is a very strong argument. And it might even be the case that operations in the set power series world have much more use than we realize.</p>
+<p><strong>Question:</strong> Is there a problem that can't be solved in $O(n^2 2^n)$ with set power series?</p>
+<p>Well Point-wise Newton Iteration showed that for the problems where set power series naturally emerge the answer is most likely no.</p>
 <div class="footnote">
 <hr />
 <ol>
