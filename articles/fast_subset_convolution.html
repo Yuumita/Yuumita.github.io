@@ -45,11 +45,11 @@
 </div>
 <script src="/js/sections.js"></script>
 <div class="article-content" id="article-content">
-<h1 id="Set Power Series">Set Power Series</h1>
+<h1 id="Set Power Series: Black Magic in Algorithms">Set Power Series: Black Magic in Algorithms</h1>
 <h2 id="SOS DP, Fast Subset Convolution and Generating functions on subsets">SOS DP, Fast Subset Convolution and Generating functions on subsets</h2>
 <details class="abstract" open="open">
 <summary>Abstract</summary>
-<p>Being really curious about fast subset convolution<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I came across a, perhaps not so well known, technique which integrates generating functions with sets mostly known in Chinese IOI training camps. Through different blogs like like <a href="https://codeforces.com/blog/entry/92128">this one</a> I realized the genius behind the technique and, to be honest, I was disappointed with the lack of coverage on the topic. </p>
+<p>Being really curious about fast subset convolution<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I came across a, perhaps not so well known, technique which integrates generating functions with sets mostly known in Chinese IOI training camps. Through different blogs like like <a href="https://codeforces.com/blog/entry/92128">this one</a> I realized the genius behind the technique and, to be honest, I was disappointed with the lack of coverage on the topic.</p>
 </details>
 <h3 id="Prerequisites">Prerequisites</h3>
 <ul>
@@ -96,7 +96,7 @@ The following theorem is particularly useful.</p>
 <details class="- proof">
 <summary>Proof</summary>
 <p>We will only prove $f\zeta\mu = f$ since $f\mu\zeta = f$ is proved similarly. Let's just apply the definitions
-$$
+    $$
         \begin{align}
             f\zeta\mu(S)&amp;= \sum_{T\subseteq S} (-1)^{|S\setminus T|}f\zeta(T) \\\
                         &amp;= \sum_{T\subseteq S} (-1)^{|S\setminus T|}\sum_{X\subseteq T}f(X) \\\
@@ -127,25 +127,24 @@ $$</p>
 <p>$$ (f*g)(S) = \sum_{T\subseteq S}f(T)g(S\setminus T),\quad \forall S\subseteq N\ . $$</p>
 <p>In order to compute it we can relax the convolution to the union product $f\cup g: 2^N\to\mathbb{Z}$ for $S\subseteq N$ by
 $$ (f\cup g)(S) = \sum_{X, Y\subseteq N \atop X\cup Y = S}f(X)g(Y)\ . $$
-The union product $\cup$ is sometimes called the OR-convolution. Similarly we can define the XOR-convolution (summing over $f(X)g(Y)$ for all $X\triangle Y=S$). The standard convolution could be thought of something like "disjoint"-convolution. The following theorem is in the heart of the result of the four Scandinavians and will be useful later.
-<strong>Theorem 2</strong> $f\cup g = ((f\zeta)\cdot (g\zeta))\mu$.</p>
+The union product $\cup$ is sometimes called the OR-convolution. Similarly we can define the XOR-convolution (summing over $f(X)g(Y)$ for all $X\triangle Y=S$). The standard convolution could be thought of something like "disjoint"-convolution. The following theorem is in the heart of the result of the four Scandinavians and will be useful later.</p>
+<p><strong>Theorem 2</strong> $f\cup g = ((f\zeta)\cdot (g\zeta))\mu$.</p>
 <details class="- proof">
 <summary>Proof</summary>
-<pre><code>From **Theorem 1** it suffices to show that $(f\\cup g)\\zeta = (f\\zeta)\\cdot (g\\zeta)$. Indeed
-$$
-    \\begin{align}
-        ((f\\zeta)\\cdot (g\\zeta))(S) 
-        &amp;= (f\\zeta)(S) \\cdot (g\\zeta)(S) \\\\
-        &amp;= \\left(\\sum\_{X\\subseteq S}f(X)\\right) \\left(\\sum\_{X\\subseteq S}g(Y)\\right) \\\\
-        &amp;= \\sum\_{X\\subseteq S}\\sum\_{Y\\subseteq S}f(X)g(Y) \\\\
-        &amp;= \\sum\_{X, Y\\subseteq S}f(X)g(Y) \\\\
-        &amp;= \\sum\_{X, Y\\subseteq N\\atop X\\cup Y \\subseteq S}f(X)g(Y) \\\\
-        &amp;= \\sum\_{T\\subseteq S}\\sum\_{X, Y\\subseteq N\\atop X\\cup Y = T}f(X)g(Y) \\\\
-    &amp;= \\sum\_{T\\subseteq S} (f\\cup g)(T) \\\\
-   &amp;= ((f\\cup g)\\zeta)(S) \\quad \\blacksquare
-    \\end{align}
-$$
-</code></pre>
+<p>From <strong>Theorem 1</strong> it suffices to show that $(f\cup g)\zeta = (f\zeta)\cdot (g\zeta)$. Indeed
+    $$
+        \begin{align}
+            ((f\zeta)\cdot (g\zeta))(S)
+            &amp;= (f\zeta)(S) \cdot (g\zeta)(S) \\
+            &amp;= \left(\sum_{X\subseteq S}f(X)\right) \left(\sum_{X\subseteq S}g(Y)\right) \\
+            &amp;= \sum_{X\subseteq S}\sum_{Y\subseteq S}f(X)g(Y) \\
+            &amp;= \sum_{X, Y\subseteq S}f(X)g(Y) \\
+            &amp;= \sum_{X, Y\subseteq N\atop X\cup Y \subseteq S}f(X)g(Y) \\
+            &amp;= \sum_{T\subseteq S}\sum_{X, Y\subseteq N\atop X\cup Y = T}f(X)g(Y) \\
+            &amp;= \sum_{T\subseteq S} (f\cup g)(T) \\
+            &amp;= ((f\cup g)\zeta)(S) \quad \blacksquare
+        \end{align}
+    $$</p>
 </details>
 <p>The above theorem implies that we can compute the union product of two functions in $O(n 2^n)$ by computing their zeta transform, multiplying them element-wise and taking the mobius-transform of the result.</p>
 <h4 id="A shift to polynomial rings">A shift to polynomial rings</h4>
@@ -233,13 +232,13 @@ where $\mathcal{C}(S)$ are the coverings of $S$. Obviously we can define $\log$ 
    $$
    f_{p}(S)=\sum_{T\subset S}^{} f(T)f_{p}(S\setminus T)+f(S),
    $$
-  so if we let $g(T)=f_{p}(T)$ for $T\subset S$ and $g(S)=1$ we have 
+  so if we let $g(T)=f_{p}(T)$ for $T\subset S$ and $g(S)=1$ we have
  $$
     f_{p}(S)= (f*g)(S).
     $$
    This gives the following algorithm for computing all of $f_{p}:2^N\to \mathscr{R}_{*}$ in $\mathcal{O}(n^2 2^n)$ ring operations:
 - Set $\mathcal{S}:=\{\}$ and $f_{p}(\emptyset):=1$.
-- For $i=1 \dots n$ do 
+- For $i=1 \dots n$ do
     - Set $\mathcal{S}:=\mathcal{S}\cup \{ i \}$.
     - Set $g(S):=f_{p}(S)$ for $S\subset \mathcal{S}$ and $g(\mathcal{S}):=1$.
     - Compute $f*g$ and set $f_p := f*g$ on $\mathcal{S}$.</p>
@@ -249,7 +248,7 @@ where $\mathcal{C}(S)$ are the coverings of $S$. Obviously we can define $\log$ 
 <summary><a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">Lights Out on Connected Graph</a></summary>
 <p>The statement can be viewed in the <a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">link</a> (hopefully it is still up in the point of time you are reading this). We will just provide the $O(n^2 2^n)$ solution <a href="https://codeforces.com/profile/Elegia">Elegia</a> presented. It is supposedly this solution which who taught the Japanese the true power of  the set power series technique.</p>
 <p>Let $G[S]$ be the subgraph obtained by $G$ by removing all edges that do not have any endpoint in $S$. $E(G)$ and $V(G)$ will be the edges and vertices of $G$ respectively. For simplicity let $e(G) = |E(G)|$</p>
-<p>Starting of, let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly. </p>
+<p>Starting of, let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly.</p>
 <p>Let $f(S)$ be number of colorings of subgraphs of $G[S]$ with vertices $V(G[S])$. That is, we choose a subset of the edges $E'\subseteq E(G[S])$ and we will color each vertex of $S$ one of two colors such $G[S]$ is bipartite. Note that for each such bipartite graph there are $2$ such colorings. Let's see what happens when we look at the different partitions of $S$ when trying to compute $g(S)$,
 $$
 \exp\left(\sum_{S\subseteq V}^{}2g(S)x^S\right)= \sum_{S \subseteq V}^{}f(S)x^S  \iff  \sum_{S\subseteq V}^{}g(S)x^S= \frac{1}{2}\ln \left( \sum_{S \subseteq V}^{}f(S)x^S \right),
