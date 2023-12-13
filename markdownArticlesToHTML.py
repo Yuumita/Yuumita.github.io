@@ -88,12 +88,12 @@ def convert_markdown_to_html(input_file):
         adContent = "\n".join([line.replace(">", "\t", 1) for line in adContent.split("\n")])
         adContent = admonitions_convert(adContent)
 
-        return f'???{adSuffix} {adType} "{adTitle}"\n{adContent}\n'
+        return f'???{adSuffix} {adType} "{adTitle}" \n {adContent} \n'
 
     
     # Convert obsidian admonitions to python admonitions
     def admonitions_convert(content):
-        pattern = r'>\s*\[(.*?)\](.)\s*(.*?)\n((?:\t?>.*\n)*)'
+        pattern = r'>\s*\[(.*?)\](.)\s*(.*?)\n((?:\s?>.*\n)*)'
         content = re.sub(pattern, obsidian_to_python_admonition, content)
         return content
 
@@ -115,10 +115,13 @@ def convert_markdown_to_html(input_file):
 
     content = input_file.read()
 
-    # Replace code sections with appropriate html
-    pattern = r'``` (\w+)\n((.|\n)*?)```'
-    content = re.sub(pattern, code_block_replacement, content)
 
+    # Change the admonition syntax so it matches the expected syntax in the markdown.markdown() function
+    content = admonitions_convert(content)
+
+    # Replace code sections with appropriate html
+    pattern = r'```\s?(\w+)\n((.|\n)*?)```'
+    content = re.sub(pattern, code_block_replacement, content)
 
     # Replace in-line Latex segments
     pattern = r'\$(.|\n)*?\$'
@@ -128,8 +131,6 @@ def convert_markdown_to_html(input_file):
     # \$\$(.|\n)*?\$\$
     pattern = r'\$\$(.|\n)*?\$\$'
     content = re.sub(pattern, latex_replace, content)
-
-    content = admonitions_convert(content)
 
     # Convert markdown to html
     html_content = HEADING + markdown.markdown(content, extensions=['pymdownx.details', 'footnotes']) + ENDING

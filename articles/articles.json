@@ -1,5 +1,11 @@
 [
     {
+      "title": "Set Power Series: Black Magic in Algorithms",
+      "date": "2023 Dec 13",
+      "url": "/articles/fast_subset_convolution.html",
+      "tags": ["algorithms", "mathematics"]
+    }, 
+    {
       "title": "The art of Sieving",
       "date": "2023 Nov 04",
       "url": "/articles/sieves.html",

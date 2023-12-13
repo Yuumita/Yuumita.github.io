@@ -60,18 +60,12 @@
 <details class="info" open="open">
 <summary>Problem 1</summary>
 <p>Given a sequence of integers $A_1,\dots A_N$, where $0\leq A_i\leq C$, find all possible subset sums, i.e determine the set $S=\left\{\sum_{i\in I}A_i\ :\ I\subseteq \{1,\dots, N\}\right\}$.</p>
-</details>
-<details class="info" open="open">
-<summary>Problem 2</summary>
-<p>Given a sequence of integers $A_1,\dots A_N$, where $0\leq A_i\leq C$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
-</details>
-<details class="info" open="open">
-<summary>Problem 3</summary>
-<p>Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums.</p>
-</details>
-<details class="info" open="open">
-<summary>Problem 4</summary>
-<p>Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
+<p>[!info]+ Problem 2
+Given a sequence of integers $A_1,\dots A_N$, where $0\leq A_i\leq C$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
+<p>[!info]+ Problem 3
+Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums.</p>
+<p>[!info]+ Problem 4
+Given a sequence of non-negative integers $A_1,\dots A_N$ summing up to $M$, find all possible subset sums, for each possible sum calculate the minimum number of elements required to achieve that sum.</p>
 </details>
 <p>Problems <strong>1, 2</strong> are well known and we will only briefly mention them. Both can be solved in $O(N\sum_{i=1}^N A_i) = O(N^2 C)$.
 As for <strong>3, 4</strong>, they can be solved in $O(M\sqrt{M})$ with the optimizations we will be presenting, while <strong>3</strong> can be further optimized using C++'s bitsets to $O(\frac{M\sqrt{M}}{w})$ where $w$ is the word size of our system. </p>

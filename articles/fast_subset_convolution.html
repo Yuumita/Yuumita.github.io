@@ -1,0 +1,321 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="Set Power Series">Set Power Series</h1>
+<h2 id="SOS DP, Fast Subset Convolution and Generating functions on subsets">SOS DP, Fast Subset Convolution and Generating functions on subsets</h2>
+<details class="abstract" open="open">
+<summary>Abstract</summary>
+<p>Being really curious about fast subset convolution<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, I came across a, perhaps not so well known, technique which integrates generating functions with sets mostly known in Chinese IOI training camps. Through different blogs like like <a href="https://codeforces.com/blog/entry/92128">this one</a> I realized the genius behind the technique and, to be honest, I was disappointed with the lack of coverage on the topic. </p>
+</details>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Rings, polynomials and ideals</li>
+<li>Generating functions</li>
+<li>Basic set theory and combinatorics</li>
+<li>Mobius inversion on partially ordered sets (optional)</li>
+</ul>
+<h3 id="Special Notation">Special Notation</h3>
+<ul>
+<li>$[n] = \{ 1,2 \dots, n \}$, for $n\in \mathbb{N}$.</li>
+<li>$\mathbf{1}[P] = 1$, if $P$ is true, else $\mathbf{1}[P]=0$.</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>This article is perhaps a lot more abstract and theoretical than my other articles. I'm writing it more out of curiosity and respect, since I somehow became obsessed with the technique. You were warned. But before introducing the main technique let's briefly discuss the result of the four Scandinavians<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> in their paper <a href="http://people.csail.mit.edu/rrw/presentations/subset-conv.pdf">Fourier Meets Mobius</a>. </p>
+<h3 id="Fast Subset Convolution">Fast Subset Convolution</h3>
+<h4 id="Zeta transform (SOS DP)">Zeta transform (SOS DP)</h4>
+<p>Let's say we have a set $N=[n]$ of finite elements and a function $f:2^N\to \mathbb{Z}$ (where $2^N$ is the powerset of $N$). All the following results will work for functions to any arbitrary ring, but for simplicity we will use $\mathbb{Z}$. SOS dp, or Yate's dp, is a method of finding the function $f\zeta:2^N\to \mathbb{Z}$ defined by
+$$f\zeta(S) = \sum_{T\subseteq S}f(T)\ .$$
+This is called the zeta transform of $f$. It can be computed with simple dynamic programming. For computing $f\zeta(S)$ for some $S\subseteq N$, we will count the contribution $f(T)$ of all the sets $T\subseteq S$ that <strong>may</strong> differ from $S$ only in the elements $[j]$.
+Gradually doing this for $j=1,\dots, n$, eventually for $j=n$ the we will get our answer.</p>
+<p>To do this, we define the function $f\zeta_j$ as the function counting the aforementioned contribution. Namely
+$$
+f\zeta_{j}(S)=\sum_{T_{j}\subseteq S_{j}}^{} f\left(T_{j} \cup R_{j}\right),\quad \text{where } S_{j} = S \cap [j] \text{ and } R_{j} =S \cap \{ j+1,\dots,n \}
+$$</p>
+<p>Firstly $f\zeta_0(S) = f(S)$, $\forall S\subseteq N$ and for $j&gt;1$ </p>
+<p>$$
+    f\zeta_j(S)=\left\{
+        \begin{array}{ll}
+        f\zeta_{j-1}(S) + f\zeta_{j-1}(S\setminus \{j\}), &amp; j\in S \\
+        f\zeta_{j-1}(S), &amp; j\not\in S \\
+        \end{array}
+        \right .
+$$</p>
+<p>The justification is simple. The contribution of the elements that <strong>may</strong> differ in $[j]$ can be split into two disjoint contributions, the contribution of sets that <strong>may</strong> differ in $[j-1]$ and differ in $j$ and the contribution of sets that <strong>may</strong> differ in $[j]$ and don't differ $j$. </p>
+<p>Now, noting that $f\zeta_n = f\zeta$, we are finished. This proves that we can compute the zeta transform of a function in $O(n2^n)$ steps, instead of the straighforward $O(3^n)$ steps.</p>
+<h4 id="Mobius inversion">Mobius inversion</h4>
+<p>We would like a way to revert the above formula. That is, given $f\zeta$, we would like to find $f$.</p>
+<p>Someone familiar with the Mobius inversion on posets might understand the following definition. A reader not familiar with Mobius inversion can skim through the next results and just look at how we design the algorithm for the inversion, which will be essentially the following transform.</p>
+<p>Given a $g:2^N\to\mathbb{Z}$, we will call $g\mu$ the mobius transform of $g$ and it will be defined as
+$$g\mu(S) = \sum_{T\subseteq S} (-1)^{|S\setminus T|} g(T)\ .$$
+The following theorem is particularly useful.</p>
+<p><strong>Theorem 1</strong> $f\zeta\mu = f\mu\zeta = f$.</p>
+<details class="- proof">
+<summary>Proof</summary>
+<p>We will only prove $f\zeta\mu = f$ since $f\mu\zeta = f$ is proved similarly. Let's just apply the definitions
+$$
+        \begin{align}
+            f\zeta\mu(S)&amp;= \sum_{T\subseteq S} (-1)^{|S\setminus T|}f\zeta(T) \\\
+                        &amp;= \sum_{T\subseteq S} (-1)^{|S\setminus T|}\sum_{X\subseteq T}f(X) \\\
+                        &amp;= \sum_{T\subseteq S} (-1)^{|S\setminus T|}f(X) \\\
+                        &amp;= \sum_{X\subseteq T\subseteq S} (-1)^{|S\setminus T|}f(X) \\\
+                        &amp;= \sum_{X\subseteq S} f(X)\sum_{X\subseteq T \subseteq S}(-1)^{|S|-|T|} \\\
+                        &amp;= \sum_{X\subseteq S} f(X)\sum_{T' \subseteq S\setminus X}(-1)^{|S\setminus X|-|T'|} \\\
+                        &amp;= \sum_{X\subseteq S} f(X)\sum_{t=0}^{|S\setminus X|}\binom{|S\setminus X|}{t}(-1)^{|S\setminus X|-t} \\\
+                        &amp;= \sum_{X\subseteq S} f(X)(1 - 1) ^{|S\setminus X|} \\\
+                        &amp;= \sum_{X\subseteq S} f(X)\textbf{1}[S = X] \\\
+                        &amp;= f(S) \quad\blacksquare
+        \end{align}
+    $$</p>
+</details>
+<p>To compute the Mobius transform we can do something similar as with the zeta transform.  For convenience we will transform $f\zeta$ to $f$ since the mobius transform of $g=f\zeta$ is $g\mu = f\zeta \mu=f$. So we now suppose that we know the function $f\zeta$ and wish to compute $f$.</p>
+<p>Let $f\zeta_j(S)$ be the sum of $f(T)$ for $T\subseteq S$ that may differ from $S$ only in $[j]$ (the same definition as in previously). First of all we initialize $f\zeta_n(S) = f\zeta(S)$. And now for $j &lt; n$</p>
+<p>$$
+    f\zeta_j(S)=\left\{
+        \begin{array}{ll}
+        f\zeta_{j+1}(S) - f\zeta_{j+1}(S\setminus \{j+1\}), &amp; j+1\in S \\
+        f\zeta_{j+1}(S), &amp; j+1\not\in S \\
+        \end{array}
+        \right .
+$$</p>
+<p>In other words, for $f\zeta_j(S)$, the contribution of sets that <strong>may</strong> differ from $S$ only in $[j]$ can be viewed as the contribution of sets that <strong>may</strong> differ in $[j+1]$ minus the contribution of such sets that differ in $j+1$.</p>
+<h3 id="Subset convolution and union product">Subset convolution and union product</h3>
+<p>Let $f,g:2^N\to\mathbb{Z}$ be some given functions. We define the subset convolution $f*g$ as </p>
+<p>$$ (f*g)(S) = \sum_{T\subseteq S}f(T)g(S\setminus T),\quad \forall S\subseteq N\ . $$</p>
+<p>In order to compute it we can relax the convolution to the union product $f\cup g: 2^N\to\mathbb{Z}$ for $S\subseteq N$ by
+$$ (f\cup g)(S) = \sum_{X, Y\subseteq N \atop X\cup Y = S}f(X)g(Y)\ . $$
+The union product $\cup$ is sometimes called the OR-convolution. Similarly we can define the XOR-convolution (summing over $f(X)g(Y)$ for all $X\triangle Y=S$). The standard convolution could be thought of something like "disjoint"-convolution. The following theorem is in the heart of the result of the four Scandinavians and will be useful later.
+<strong>Theorem 2</strong> $f\cup g = ((f\zeta)\cdot (g\zeta))\mu$.</p>
+<details class="- proof">
+<summary>Proof</summary>
+<pre><code>From **Theorem 1** it suffices to show that $(f\\cup g)\\zeta = (f\\zeta)\\cdot (g\\zeta)$. Indeed
+$$
+    \\begin{align}
+        ((f\\zeta)\\cdot (g\\zeta))(S) 
+        &amp;= (f\\zeta)(S) \\cdot (g\\zeta)(S) \\\\
+        &amp;= \\left(\\sum\_{X\\subseteq S}f(X)\\right) \\left(\\sum\_{X\\subseteq S}g(Y)\\right) \\\\
+        &amp;= \\sum\_{X\\subseteq S}\\sum\_{Y\\subseteq S}f(X)g(Y) \\\\
+        &amp;= \\sum\_{X, Y\\subseteq S}f(X)g(Y) \\\\
+        &amp;= \\sum\_{X, Y\\subseteq N\\atop X\\cup Y \\subseteq S}f(X)g(Y) \\\\
+        &amp;= \\sum\_{T\\subseteq S}\\sum\_{X, Y\\subseteq N\\atop X\\cup Y = T}f(X)g(Y) \\\\
+    &amp;= \\sum\_{T\\subseteq S} (f\\cup g)(T) \\\\
+   &amp;= ((f\\cup g)\\zeta)(S) \\quad \\blacksquare
+    \\end{align}
+$$
+</code></pre>
+</details>
+<p>The above theorem implies that we can compute the union product of two functions in $O(n 2^n)$ by computing their zeta transform, multiplying them element-wise and taking the mobius-transform of the result.</p>
+<h4 id="A shift to polynomial rings">A shift to polynomial rings</h4>
+<p>Up to now every function assigned to a subset of $N$ a value in $\mathbb{Z}$. However everything we have done can be applied to any other ring (e.g $\mathbb{Q}$, $\mathbb{R}$, $\mathbb{C}$, $\mathbb{Z}/n\mathbb{Z}$). From now on, we will consider an arbitrary ring, namely $R$.</p>
+<p>We are particularly interested in the ring $R[x]$ of polynomials with indeterminate $x$ and coefficients in $R$ (another arbitrary ring, e.g $\mathbb{Z}$). For some function $f: 2^N\to R$ we can move it to the polynomial ring by defining the function $f_x: 2^N\to R[x]$ such that
+$$f_x(S) = f(S) x^{|S|}, \quad \forall S\subseteq N.$$
+Now the coefficients of $x^k$ describe the contribution of all sets $S \subseteq N$ with $|S| = k$. This is some sort of <em>ranking</em> in the sets, and polynomials are a great way to do that <em>ranking</em> naturally. In <sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> it was done explicitly, i.e. without considering polynomials. Taking the computations through this <em>ranking</em>, doing the standard polynomial convolution, and then taking the computations back to sets brings us the result. It is Fast Fourier Transform all over again.</p>
+<p>Let's consider $f, g: 2^N\to R$. Let's start seeing what was mentioned in the previous paragraph by analyzing how the union product act on $f_x,g_x$.
+$$
+    \begin{align}
+        (f_x \cup g_x)(S) 
+        &amp;= \sum_{A, B\subseteq N\atop A\cup B = S}f_x(A)g_x(B) \\\
+        &amp;= \sum_{A, B\subseteq N\atop A\cup B = S}f(A)g(B)x^{|A|+|B|} \\\
+        &amp;= \sum_{k=|S|}^\infty \sum_{{A, B\subseteq N\atop A\cup B = S}\atop |A| + |B| = k}f(A)g(B)x^k \\\
+        &amp;= \sum_{{A, B\subseteq N\atop A\cup B = S}\atop |A| + |B| = |S|}f(A)g(B)x^{|S|} + \sum_{k=|S|+1}^\infty \sum_{{A, B\subseteq N\atop A\cup B = S}\atop |A| + |B| = k}f(A)g(B)x^k \\\
+        &amp;= \sum_{{A, B\subseteq S\atop A\cup B = S}\atop A\cap B = \emptyset}f(A)g(B)x^{|S|} + x^{|S|+1} P(x) \\\
+        &amp;= \sum_{T\subseteq S}f(T)g(S\setminus T)x^{|S|} + x^{|S|+1} P(x),\quad \text{for some } P(x)\in R[x]
+    \end{align}
+$$</p>
+<p>Basically the coefficient of $x^k$ counts the contribution of sets $A,B\subseteq N$ such that $A\cup B = S$ and they overlap in $k - |S|$ elements. This implies that if we look at the $|S|$-th coefficient of $(f_x \cup g_x)(S)$ we get our result
+$$ [x^{|S|}] (f_x\cup g_x)(S) = \sum_{T\subseteq S}f(T) g(S\setminus T) = (f * g)(S). $$</p>
+<p>This proves the following theorem.</p>
+<p><strong>Theorem 3</strong> $[x^{|S|}] (f_x\cup g_x)(S) = (f * g)(S)$.</p>
+<h4 id="Fast Subset Convolution - Summarized">Fast Subset Convolution - Summarized</h4>
+<p>Let $f,g:2^N\to R$ be some functions ($R$ can be any ring, e.g $\mathbb{Z}$). 
+Our algorithms goes as follows
+- We compute $f_x$ and $g_x$, this step takes $O(n2^n)$ if every polynomial takes up and array of $O(n)$ elements.
+- We compute $f_x\zeta$ and $g_x\zeta$, this takes $O(n2^n)$ additions in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total.
+- We compute $f_x\zeta\cdot g_x\zeta$, this takes $O(2^n)$ multiplications in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total or $O(n2^n\log n)$ with FFT.
+- We compute $(f_x\zeta\cdot g_x\zeta)\mu = (f_x\cup g_x)$ in $O(n2^n)$ additions in $R[x]$, which is $O(n^2 2^n)$ in total.
+- We compute $(f*g)(S)$ for every $S\subseteq N$ by taking the $|S|$-th coefficient of $(f_x\cup g_x)$, which is $O(2^n)$ in total.
+The total time complexity is $O(n^2 2^n)$ and the space complexity is $O(n 2^n)$.</p>
+<h3 id="Set Power Series">Set Power Series</h3>
+<p>What if, instead of compressing $f:2^N\to R$ into $f_{x}$ as we did before we avoid the compression by allowing the exponent of $x$ to be a set. That is, we define $\hat{f}\in R[x_{1},\dots,x_{n}]$ as
+$$
+\hat{f}(x)=\sum_{S\subseteq N}^{} f(S)x^S,\quad \text{ where }\  x^S = \prod_{i\in S}^{}x_{i}. 
+$$
+Here we use $\hat{f}(x)$ as shorthand for $\hat{f}(x_{1},\dots,x_{n})$. When we write $[x^S]\hat{f}(x)$ to extract the coefficient of $\hat{f}$ we will mean the coefficient of $x_{1}^{i_{1}}x_{2}^{i_{2}}\dots x_{n}^{i_{n}}$ where $i_{j}=\mathbf{1}[i\in S]$. Can you guess what the multiplication of $\hat{f},\hat{g}$ yields? Yes, it's convolution. But now, since it isn't <em>ranked</em> like before it will not be the standard polynomial convolution. Let's see,
+$$
+(\hat{f}\cdot \hat{g})(x)=\left(\sum_{S\subseteq N}^{} f(S)x^S\right)\left(\sum_{S\subseteq N}^{} g(S)x^S\right) = \sum_{S,T \subseteq N}^{} f(S)g(T)x^S x^T.
+$$
+We should be careful here, the term $x^Sx^T$ when $S\cap T\neq \emptyset$ is not equal to $x^{S\cup T}$ but instead $x^Sx^T=x^{S\sqcup T}$ where $x^{S\sqcup T}$ is the disjoint union such that we can perhaps have $x_{i}^2$ present in the product when $i\in S\cap T$. Therefore $\hat{f}\cdot \hat{g}$ is a polynomial with coefficients 
+$$
+[x^M](\hat{f}\cdot \hat{g})(x)=\sum_{S,T\subseteq N\atop S\sqcup T = M}^{}f(S)g(T).
+$$
+We now meet a complication. The convolution $f*g$ of the functions $f,g:2^{N}\to R$ is yet another function $h:2^N\to R$ and so it is natural to expect the product $\hat{f}\cdot \hat{g}$ to behave accordingly, that is, be equal to $\hat{h}$ for function $h:2^N\to R$. A natural solution would be to define $x^Sx^T$ in such a way so that $S\sqcup T$ is equal to $S\cup T$ and this is the case when the problematic squared coefficients $x_{i}^2$ are equal to $x_{i}$. That is, if we don't allow duplicated and we allow $x^Sx^T$ to be equal to $x^{S\cup T}$ always.</p>
+<h4 id="Quotient rings">Quotient rings</h4>
+<p>Since we don't know for which elements of $R$ the term $x_{i}^2$  is equal to $x_{i}$ we will instead assume that they are equivalent, that is, $x_{i}^{2}\equiv x_{i}$. This obviously happens in the quotient ring $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2-x_{1},\dots,x_{n}^{2}-x_{n} \right&gt;$ so looking at set generating functions as elements of that quotient ring for $S\subseteq N$ we obtain 
+$$
+[x^S](\hat{f}\cdot \hat{g})(x)\equiv\sum_{X,Y\subseteq \mathcal{U}\atop X\cup Y=S}^{} f(X)g(Y) \pmod{\left&lt; x_{1}^2-x_{1},\dots,x_{n}^{2}-x_{n} \right&gt;} .
+$$
+This is exactly the union product $\cup$. I believe it is now obvious that for the standard convolution $*$ (where we take the sum over $X,Y$ such that $X\cap Y =\emptyset$) we want to instead look at the ring $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;$ and now we get 
+$$
+[x^S](\hat{f}\cdot \hat{g})(x)\equiv (f*g)(S) \pmod{\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;}.
+$$
+A curious reader might be tempted to consider $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2-1,\dots,x_{n}^{2}-1 \right&gt;$ which will give the XOR-convolution $\triangle$:
+$$
+[x^S](\hat{f}\cdot \hat{g})(x)\equiv\sum_{X,Y\subseteq \mathcal{U}\atop X\triangle Y=S}^{} f(X)g(Y) =(f\triangle g)(S)\pmod{\left&lt; x_{1}^2-1,\dots,x_{n}^{2}-1 \right&gt;}.
+$$
+We will name each of the quotient rings $R[x_{1},\dots,x_{n}]$ modulo $\left&lt; x_{1}^2-x_{1},\dots,x_{n}^{2}-x_{n} \right&gt;,\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;,\left&lt; x_{1}^2-1,\dots,x_{n}^{2}-1 \right&gt;$ as $\mathscr{R}_{\cup},\mathscr{R}_{*},\mathscr{R_{\triangle}}$ respectively. Through the previous discussions we have the following theorem.</p>
+<p><strong>Theorem 4</strong> We can compute the multiplication $\hat{f}\cdot \hat{g}$ given $\hat{f},\hat{g}\in \mathscr{R}$ in $\mathcal{O}(n^22^n)$ ring operations when $\mathscr{R}=\mathscr{R}_{*}$ and in $\mathcal{O}(n2^n)$ when $\mathscr{R}=\mathscr{R}_{\cup}$ or $\mathscr{R}=\mathscr{R}_{\triangle}$.</p>
+<h4 id="Exponentiation">Exponentiation</h4>
+<p>We will use exponentiation, a very useful operation, to show the power of set power series. Let's define the exponential function as usual.
+$$
+\begin{align*}
+\exp\hat{f}(x)=\sum_{k=0}^{\infty} \frac{\hat{f}(x)^k}{k!} 
+&amp;= \sum_{k=0}^{\infty} \frac{1}{k!}\left( \sum_{S\subseteq N}^{} \hat{f}(S)x^S  \right)^k  \\
+&amp;=\sum_{k=0}^{\infty} \frac{1}{k!} \sum_{S_{1}\subseteq N}^{} \dots \sum_{S_{k}\subseteq N}^{} \left(\prod_{i=1}^{k} f(S_{i}) \right)  x^{\bigsqcup_{i=1}^{k} S_{i}}.
+\end{align*}
+$$</p>
+<p>Now and for the rest of the article we will assume $R$ is a communicative ring. Specifically when $\hat{f}\in \mathscr{R}_{*}$
+$$
+\exp \hat{f}(x) = \sum_{S \subseteq N}^{} \left(\sum_{P \in\mathcal{P}(S)}^{} \prod_{S_{i}\in P}^{} f(S_{i})\right) x^S,
+$$
+where $\mathcal{P}(S)$ are the unordered partitions of $S$. When $\hat{f}\in\mathscr{R}_{\cup}$ 
+$$
+\exp \hat{f}(x) = \sum_{S \subseteq \mathcal{U}}^{} \left(\sum_{C \in\mathcal{C}(S)}^{} \prod_{C_{i}\in C}^{} f(C_{i})\right) x^S,
+$$
+where $\mathcal{C}(S)$ are the coverings of $S$. Obviously we can define $\log$ as the inverse of $\exp$. We see that looking at different quotient rings is like looking at a whole different set of tools! </p>
+<p>This definition of $\exp$ can be applied many general problems relating to partitions and coverings and we can also find an efficient algorithm to compute it (this won't be a surprise after the next section).</p>
+<p><strong>Theorem 5</strong> Given $\hat{f}\in\mathscr{R}_{*}$ we can compute $\exp \hat{f}$ in $\mathcal{O}(n^22^n)$ ring operations.</p>
+<details class="- proof">
+<summary>Proof</summary>
+<p>Let $f_{p}(S)=[x^S]\exp \hat{f} =\sum_{P \in\mathcal{P}(S)}^{}\prod_{S_{i}\in P}^{}f(S_{i})$, then
+   $$
+   f_{p}(S)=\sum_{T\subset S}^{} f(T)f_{p}(S\setminus T)+f(S),
+   $$
+  so if we let $g(T)=f_{p}(T)$ for $T\subset S$ and $g(S)=1$ we have 
+ $$
+    f_{p}(S)= (f*g)(S).
+    $$
+   This gives the following algorithm for computing all of $f_{p}:2^N\to \mathscr{R}_{*}$ in $\mathcal{O}(n^2 2^n)$ ring operations:
+- Set $\mathcal{S}:=\{\}$ and $f_{p}(\emptyset):=1$.
+- For $i=1 \dots n$ do 
+    - Set $\mathcal{S}:=\mathcal{S}\cup \{ i \}$.
+    - Set $g(S):=f_{p}(S)$ for $S\subset \mathcal{S}$ and $g(\mathcal{S}):=1$.
+    - Compute $f*g$ and set $f_p := f*g$ on $\mathcal{S}$.</p>
+</details>
+<p>Computing the logarithm is a bit trickier but it can be done by reversing the operation done in computing $\exp$ after realizing how to compute $g$ given $f,h$ in $f*g=h$ (this can be done in a similar manner as we did for the computation of $\exp$ in the above proof).</p>
+<details class="example" open="open">
+<summary><a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">Lights Out on Connected Graph</a></summary>
+<p>The statement can be viewed in the <a href="https://atcoder.jp/contests/arc105/tasks/arc105_f">link</a> (hopefully it is still up in the point of time you are reading this). We will just provide the $O(n^2 2^n)$ solution <a href="https://codeforces.com/profile/Elegia">Elegia</a> presented. It is supposedly this solution which who taught the Japanese the true power of  the set power series technique.</p>
+<p>Let $G[S]$ be the subgraph obtained by $G$ by removing all edges that do not have any endpoint in $S$. $E(G)$ and $V(G)$ will be the edges and vertices of $G$ respectively. For simplicity let $e(G) = |E(G)|$</p>
+<p>Starting of, let $g(S)$ be the number of ways to remove some edges of $G[S]$ so that the resulting graph is connected and bipartite. Since $G$ is good (see the problem statement and editorial) if and only if $G$ is connected and bipartite, our answer is just $g(V)$. In order to compute $g$, we will get rid of the <em>connected</em> constraint and compute it indirectly. </p>
+<p>Let $f(S)$ be number of colorings of subgraphs of $G[S]$ with vertices $V(G[S])$. That is, we choose a subset of the edges $E'\subseteq E(G[S])$ and we will color each vertex of $S$ one of two colors such $G[S]$ is bipartite. Note that for each such bipartite graph there are $2$ such colorings. Let's see what happens when we look at the different partitions of $S$ when trying to compute $g(S)$,
+$$
+\exp\left(\sum_{S\subseteq V}^{}2g(S)x^S\right)= \sum_{S \subseteq V}^{}f(S)x^S  \iff  \sum_{S\subseteq V}^{}g(S)x^S= \frac{1}{2}\ln \left( \sum_{S \subseteq V}^{}f(S)x^S \right),
+$$
+therefore $g(V)=[x^V]\frac{1}{2}\ln \left( \sum_{S \subseteq V}^{}f(S)x^S \right)$. Understanding how the $\exp$ function is crucial to be able to make the above observation. Now we just need to find a way to compute $f(S)$ fast enough.</p>
+<p>We can compute $f(S)$ by iterating over all the $T\subseteq S$ that will be colored in the first color. For simplicity let $e(X)=|E(G[X])|$ be the number of edges of $G[X]$. All the edges between $T$ and $S\setminus T$ can either be included or not in $E'$, but all the others are invalid. We will count the former as $e(S)-e(T)-e(S\setminus T)$ so now
+$$
+\begin{align}
+f(S)&amp;=\sum_{T\subseteq S}^{} 2^{e(S)-e(T)-e(S\setminus T)}  \\
+&amp;= 2^{e(S)}\sum_{T\subseteq S}^{} 2^{-e(T)-e(S\setminus T)}  \\
+&amp;= 2^{e(S)} \sum_{T\subseteq S}^{} 2^{-e(T)}2^{-e(S\setminus T)} .
+\end{align}
+$$
+Notice that final sum of products is actually a subset convolution and therefore, lets work on $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;$ and now
+$$
+\begin{align}
+\sum_{S\subseteq V}^{} 2^{-e(S)}f(S)x^S &amp;= \sum_{S\subseteq V}^{} \sum_{T\subseteq S}^{} 2^{-e(T)}2^{-e(S\setminus T)}x^S \\
+&amp;= \sum_{S\subseteq V}^{} \sum_{T\subseteq V}^{} 2^{-e(T)}2^{-e(S\setminus T)}x^S \\
+&amp;= \left( \sum_{T\subseteq S}^{} 2^{-e(T)} x^T \right) ^2.
+\end{align}
+$$
+Therefore with one multiplication over $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^{2}\right&gt;$ we get $2^{-e(S)}f(S)$ and so $f(S)$ for each $S\subseteq V$. Therefore the problem is solved in $O(|V|^22^{|V|})$.</p>
+</details>
+<h4 id="Point-wise Newton Iteration">Point-wise Newton Iteration</h4>
+<p>An important fact about set power series is that all of operations we can apply to them can be computed in $O(n^2 2^n)$ ring operations. Namely, for any power series $\phi\in R[[x]]$ (perhaps a polynomial) we can compute $\phi(\hat{f})$ for a set power series $\hat{f}\in R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$.</p>
+<p><a href="https://codeforces.com/profile/Elegia">Elegia</a>, a god of algebra, specifically named the technique for computing $\phi(\hat{f})$, described in <a href="https://codeforces.com/blog/entry/92183">this</a> blog, as Point-wise Newton Iteration. We will briefly explain the core idea of the algorithm.</p>
+<p>We will reduce the complexity of the problem with induction. Let $\hat{f}_{0}=[x_{n}^0]\hat{f},\hat{f}_{1}=[x_{n}^1]\hat{f}$ and now $\hat{f}=\hat{f}_{0}+x_{n}\hat{f}_{1}$, or more explicitly $\hat{f}(x_{1},\dots,x_{n})=\hat{f}_{0}(x_{1},\dots,x_{n-1})+x_{n}\hat{f}_{1}(x_{1},\dots,x_{n-1})$. Now let $\phi(x)=\sum_{i=0}^{\infty}a_{i}x^i\in R[[x]]$, the composition $\phi \circ \hat{f}$ yields
+$$
+\begin{align}
+\phi(\hat{f}(x))=\sum_{i=0}^{\infty} a_{i}\hat{f}(x)^i
+&amp;= \sum_{i=0}^{\infty} a_{i}\left(\hat{f}_{0}+x_{n}\hat{f}_{1} \right)^i  \\
+&amp;= \sum_{i=0}^{\infty} a_{i}\sum_{j=0}^{i} \binom{i}{j} \hat{f}_{0}^{i-j} x_{n}^j\hat{f}_{1}^j \\
+&amp;= \sum_{i=0}^{\infty} a_{i}\left( \hat{f}_{0}^i +x_{n}i\hat{f}_{0}^{i-1}\hat{f}_{1}\right)  \\
+&amp;= \sum_{i=0}^{\infty} a_{i}\hat{f}_{0}^i  + x_{n}\hat{f}_{1}\sum_{i=0}^{\infty} a_{i+1}(i+1)\hat{f}_{0}^{i}  \\
+&amp;= \phi \left( \hat{f}_{0} \right) +x_{n}\hat{f}_{1 }\phi' \left( \hat{f}_{0} \right).
+\end{align}
+$$
+Therefore we now just need to compute $\phi(\hat{f}_{0}),\phi'(\hat{f}_{0})$ which can be more easily seen as $\phi([x_{n}^0]\hat{f}), \phi'([x_{n}^0]\hat{f})$. The next induction step will be $\phi([x_{n-1}^0x_{n}^0]\hat{f}), \phi'([x_{n-1}^0x_{n}^0]\hat{f}),\phi''([x_{n-1}^0x_{n}^0]\hat{f})$ and in general the $\ell$-th induction step is $\phi([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \phi'([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \dots, \phi^{(\ell)}([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f})$. If $T_{n}(\ell)$ is the time needed to compute the composition for a set power series in $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$ if we are at the $\ell$-th induction step with the obvious way from the previous formula, we then have $T_{n}(\ell)=T(\ell-1)+(n-\ell)O(\ell ^2 2^{n-\ell})$ so 
+$$
+\begin{align}
+T_{n}(n)= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) &amp;= O\left( \sum_{\ell=0}^{n} (n-\ell)\ell^2 2^\ell \right)  \\
+&amp;=O\left( n^2\sum_{\ell=0}^{n} (n-\ell)2^\ell \right)  \\
+&amp;=O\left( n^22^n\sum_{\ell=0}^{n}\ell2^{-\ell} \right)  \\
+&amp;=O(n^2 2^n).
+\end{align}
+$$
+I remember someone joked about how segment trees can basically do everything and could be perhaps used to solve world hunger in $O(n\log n)$. Here, however, the joke loses its hyperbole characteristic.</p>
+<p><strong>Conjecture:</strong> Is there a problem that can't be solved in $O(n^2 2^n)$ with set power series?</p>
+<p>Well Point-wise Newton Iteration showed that for the problems where set power series naturally emerge the answer is no. And I think that this is a very strong argument. And it might even be the case that operations in the set power series world have much more use than we realize.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Björklund, A., Husfeldt, T., Kaski, P., Koivisto, M.: Fourier meets möbius: fast subset convolution. In: Proceedings of the 39th Annual ACM Symposium on Theory of Computing, San Diego, California, USA, 11–13 June 2007, pp. 67–74 (2007)&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
