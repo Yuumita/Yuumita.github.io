@@ -1,4 +1,4 @@
-# algorithmas
+# algorithmas (algorithmas.org)
 
 My personal blog site made purely from html/css/js (i.e without using any frameworks). The website is mainly static (with very few dynamic elements). 
 

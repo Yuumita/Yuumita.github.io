@@ -170,13 +170,15 @@ $$ [x^{|S|}] (f_x\cup g_x)(S) = \sum_{T\subseteq S}f(T) g(S\setminus T) = (f * g
 <p><strong>Theorem 3</strong> $[x^{|S|}] (f_x\cup g_x)(S) = (f * g)(S)$.</p>
 <h4 id="Fast Subset Convolution - Summarized">Fast Subset Convolution - Summarized</h4>
 <p>Let $f,g:2^N\to R$ be some functions ($R$ can be any ring, e.g $\mathbb{Z}$). 
-Our algorithms goes as follows
-- We compute $f_x$ and $g_x$, this step takes $O(n2^n)$ if every polynomial takes up and array of $O(n)$ elements.
-- We compute $f_x\zeta$ and $g_x\zeta$, this takes $O(n2^n)$ additions in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total.
-- We compute $f_x\zeta\cdot g_x\zeta$, this takes $O(2^n)$ multiplications in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total or $O(n2^n\log n)$ with FFT.
-- We compute $(f_x\zeta\cdot g_x\zeta)\mu = (f_x\cup g_x)$ in $O(n2^n)$ additions in $R[x]$, which is $O(n^2 2^n)$ in total.
-- We compute $(f*g)(S)$ for every $S\subseteq N$ by taking the $|S|$-th coefficient of $(f_x\cup g_x)$, which is $O(2^n)$ in total.
-The total time complexity is $O(n^2 2^n)$ and the space complexity is $O(n 2^n)$.</p>
+Our algorithms goes as follows</p>
+<ul>
+<li>We compute $f_x$ and $g_x$, this step takes $O(n2^n)$ if every polynomial takes up and array of $O(n)$ elements.</li>
+<li>We compute $f_x\zeta$ and $g_x\zeta$, this takes $O(n2^n)$ additions in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total.</li>
+<li>We compute $f_x\zeta\cdot g_x\zeta$, this takes $O(2^n)$ multiplications in the $R[x]$ ring, which is $O(n^2 2^n)$ operations in total or $O(n2^n\log n)$ with FFT.</li>
+<li>We compute $(f_x\zeta\cdot g_x\zeta)\mu = (f_x\cup g_x)$ in $O(n2^n)$ additions in $R[x]$, which is $O(n^2 2^n)$ in total.</li>
+<li>We compute $(f*g)(S)$ for every $S\subseteq N$ by taking the $|S|$-th coefficient of $(f_x\cup g_x)$, which is $O(2^n)$ in total.</li>
+</ul>
+<p>The total time complexity is $O(n^2 2^n)$ and the space complexity is $O(n 2^n)$.</p>
 <h3 id="Set Power Series">Set Power Series</h3>
 <p>What if, instead of compressing $f:2^N\to R$ into $f_{x}$ as we did before we avoid the compression by allowing the exponent of $x$ to be a set. That is, we define $\hat{f}\in R[x_{1},\dots,x_{n}]$ as
 $$
