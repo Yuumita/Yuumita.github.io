@@ -93,7 +93,7 @@ def convert_markdown_to_html(input_file):
     
     # Convert obsidian admonitions to python admonitions
     def admonitions_convert(content):
-        pattern = r'>\s*\[(.*?)\](.)\s*(.*?)\n((?:\s?>.*\n)*)'
+        pattern = r'>\s*\[(.*?)\](.)\s*(.*?)\n((?:[\ \t]?>.*\n)*)'
         content = re.sub(pattern, obsidian_to_python_admonition, content)
         return content
 
