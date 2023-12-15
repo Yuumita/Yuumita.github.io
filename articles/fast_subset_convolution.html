@@ -292,7 +292,7 @@ $$
 &amp;= \phi \left( \hat{f}_{0} \right) +x_{n}\hat{f}_{1 }\phi' \left( \hat{f}_{0} \right).
 \end{align}
 $$
-Therefore we now just need to compute $\phi(\hat{f}_{0}),\phi'(\hat{f}_{0})$ which can be more easily seen as $\phi([x_{n}^0]\hat{f}), \phi'([x_{n}^0]\hat{f})$. The next induction step will be $\phi([x_{n-1}^0x_{n}^0]\hat{f}), \phi'([x_{n-1}^0x_{n}^0]\hat{f}),\phi''([x_{n-1}^0x_{n}^0]\hat{f})$ and in general the $\ell$-th induction step is $\phi([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \phi'([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \dots, \phi^{(\ell)}([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f})$. If $T_{n}(\ell)$ is the time needed to compute the composition for a set power series in $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$ if we are at the $\ell$-th induction step with the obvious way from the previous formula, we then have $T_{n}(\ell)=T(\ell-1)+(n-\ell)O(\ell ^2 2^{n-\ell})$ so 
+Therefore we now just need to compute $\phi(\hat{f}_{0}),\phi'(\hat{f}_{0})$ which can be more easily seen as $\phi([x_{n}^0]\hat{f}), \phi'([x_{n}^0]\hat{f})$. Then we can compute $\phi(\hat{f})$ with just a subset convolution. The next induction step will be $\phi([x_{n-1}^0x_{n}^0]\hat{f}), \phi'([x_{n-1}^0x_{n}^0]\hat{f}),\phi''([x_{n-1}^0x_{n}^0]\hat{f})$ where we will need $2$ subset convolutions to get everything in the previous induction step and in general the $\ell$-th induction step is $\phi([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \phi'([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f}), \dots, \phi^{(\ell)}([x_{n-\ell+1}^0\dots x_{n}^0]\hat{f})$ where we need $\ell$ convolutions. If $T_{n}(\ell)$ is the time needed to compute the composition for a set power series in $R[x_{1},\dots,x_{n}]/\left&lt; x_{1}^2,\dots,x_{n}^2 \right&gt;$ if we are at the $\ell$-th induction step with the obvious way from the previous formula, we then have $T_{n}(\ell)=T(\ell-1)+\ell \cdot O((n-\ell) ^2 2^{n-\ell})$ so 
 $$
 \begin{align}
 T_{n}(n)&amp;= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) = O\left( \sum_{\ell=0}^{n} (n-\ell)\ell^2 2^\ell \right)  \\
@@ -301,9 +301,7 @@ T_{n}(n)&amp;= \sum_{\ell=0}^{n} (n-\ell)O\left( \ell^2 2^\ell \right) = O\left(
 =O(n^2 2^n).
 \end{align}
 $$
-I remember someone joked about how segment trees can basically do everything and could be perhaps used to solve world hunger in $O(n\log n)$. Here, however, the joke loses its hyperbole characteristic.</p>
-<p><strong>Question:</strong> Is there a problem that can't be solved in $O(n^2 2^n)$ with set power series?</p>
-<p>Well Point-wise Newton Iteration showed that for the problems where set power series naturally emerge the answer is most likely no.</p>
+I remember someone joked about how segment trees can basically do everything and could perhaps be used to solve world hunger in $O(n\log n)$. Could world hunger be solved in $O(n^22^n)$ with set power series though? I think the joke here loses its hyperbole characteristic. That's magic right there.</p>
 <div class="footnote">
 <hr />
 <ol>
