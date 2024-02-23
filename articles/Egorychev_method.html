@@ -1,0 +1,503 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="Egorychev method">Egorychev method</h1>
+<h2 id="Combinatorial Identities made easy.">Combinatorial Identities made easy.</h2>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Formal Power Series</li>
+<li>Generating Functions</li>
+<li>Formal Laurent Series</li>
+<li>Combinatorics </li>
+<li>Complex Analysis</li>
+</ul>
+<h3 id="Notation">Notation</h3>
+<ul>
+<li>If $R$ is a ring we define $R[[X]]$ as the <strong>ring of formal Power series</strong> over $R$ with indeterminate $X$ and $R((X))$ as the <strong>ring of formal Laurent series</strong> over $R$. Notice that $R[[X]]\subseteq R((X))$. </li>
+<li>If $f\in R((X))$ then $\text{ord}(f) = \min\left\{ n\in\mathbb{Z}\ |\ a_{n}\neq 0 \right\}$.</li>
+<li>If $f\in R((X))$ with $f = \sum_{n}^{}a_{n}X^n$ then $[X^k]f=a_{k}$ (coefficient extractor).</li>
+<li>If $A(x), B(x), C(x),\dots$ are power series, the coefficients are assumed to be $\left( a_{n} \right), \left( b_{n} \right), \left( c_{n} \right),\dots$.</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>Let $\mathbb{F}$ be a field. Then $\mathbb{F}$ is also a ring, so we have the rings $\mathbb{F}[[x]]$ and $\mathbb{F}((x))$. In fact, $\mathbb{F}((x))$ is then also field. A lot of the following results work also for rings (and so the formulation with Rings is stronger) but we are going to leave it to the reader to differentiate these cases while we won't be worrying about it. $\mathbb{F}((x))$ being a field is really useful since every non-zero series $f(x)\in\mathbb{F}((x))$ will have a multiplicative inverse $f(x)^{-1}$ (i.e an element such that $f(x)f(x)^{-1} = 1$).</p>
+<p>The Egorychev method is based around the fact that generating functions are <strong>really</strong> useful. For example a simple multiplication of two power series $A(x),B(x)\in\mathbb{F}[[x]]$ holds a great computation value, it computes convolution. Namely if $C(x)=A(x)B(x)$ then
+$$
+c_{k} = [x^k]C(x) = [x^k]\sum_{n=0}^{\infty} \left(\sum_{\ell=0}^{n} a_{\ell}b_{n-\ell}\right)x^n = \sum_{\ell=0}^{k} a_{\ell}b_{k-\ell}\ .
+$$
+What if we use this computation power for more complicated operations (combinatorial ones)?</p>
+<h3 id="Binomial Theorem and binomial coefficient extraction">Binomial Theorem and binomial coefficient extraction</h3>
+<p>The following identity should be really familiar:
+$$
+(x+y)^n = \sum_{i=0}^{n} \binom{n}{i} x^i y^{n-i}\ .
+$$
+Therefore the binomial coefficient can be computed through power series by
+$$
+\binom{n}{k} =[x^k](1+x)^n = [x^{n-k}](1+x)^n=[x^n]x^k(1+x)^n\ .
+$$</p>
+<h4 id="Simple binomial coefficient identities">Simple binomial coefficient identities</h4>
+<p>Why is this useful? Well consider one my favorite identities
+$$
+\sum_{k=0}^{n} \binom{n}{k} ^2 = \binom{2n}{n} \ .
+$$
+This can be proved combinatorically </p>
+<details class="- note">
+<summary>Combinatorial proof</summary>
+<p>Notice that 
+ $$
+ \sum_{k=0}^{n} \binom{n}{k} ^{2}= \sum_{k=0}^{n} \binom{n}{k} \binom{n}{n-k} 
+ $$
+ therefore the left hand side computes the number of ways of choosing $k$ balls from a set with $n$ red balls and $n - k$ balls form a set with $n$ blue balls, where $k\in[0,n]$. Therefore we always choose $k + (n-k) = n$ balls each from any of the two sets of red/blue balls, and every such choice is computed in the left hand side.
+ A simpler way of computing this is obviously the right hand side.</p>
+</details>
+<p>but we are more interesting in a proof based on generating functions.</p>
+<details class="- note">
+<summary>Proof with generating functions</summary>
+<p>$$
+ \begin{align}
+ \sum_{k=0}^{n} \binom{n}{k} ^2&amp;=\sum_{k=0}^{n} [x^n]x^k(1+x)^n \binom{n}{k}  \\
+ &amp;=[x^n] (1+x)^n \sum_{k=0}^{n} \binom{n}{k}x^k  \\
+ &amp;=[x^n] (1+x)^n (1+x)^n  \\
+ &amp;=[x^n] (1+x)^{2n}  \\
+ &amp;=\binom{2n}{n}   \\
+ \end{align}
+ $$</p>
+</details>
+<p>The proof became more... <em>systematic</em>. But that was a simple example, does it actually help? What if we do that for a more complicated one? Let's look at <strong>Zeilberger's identity</strong>
+$$
+\sum_{k}^{} \binom{n}{k} ^{2} \binom{3n+k}{2n} = \binom{3n}{n} ^{2}
+$$
+Note that this is quite more challenging than the previous one.</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>$$
+ \begin{align}
+ \sum_{k}^{} \binom{n}{k} ^{2} \binom{3n+k}{2n}
+ &amp;=  \sum_{k}^{} [x^n]x^{n-k}(1+x)^n \binom{n}{k} [y^{2n}](1+y)^{3n+k} \\
+ &amp;=  [x^ny^{2n}](1+x)^n(1+y)^{3n}\sum_{k}^{}x^{n-k}\binom{n}{k}(1+y)^{k} \\
+ &amp;=  [x^ny^{2n}](1+x)^n(1+y)^{3n}(x + (1+y))^n \\
+ &amp;=  [x^ny^{2n}](1+x)^n(1+y)^{3n}(y + (1+x))^n\\
+ &amp;=  [x^ny^{2n}](1+x)^n(1+y)^{3n}\sum_{k}^{}\binom{n}{k} y^{n-k}(1+x)^k \\
+ &amp;=  [x^n](1+x)^n\sum_{k}^{}\binom{n}{k} [y^{2n}]y^{n-k}(1+y)^{3n}(1+x)^k \\
+ &amp;=  [x^n](1+x)^n\sum_{k}^{}\binom{n}{k} [y^{n+k}](1+y)^{3n}(1+x)^k \\
+ &amp;=  [x^n](1+x)^n\sum_{k}^{}\binom{n}{k} \binom{3n}{n+k} (1+x)^k \\
+ &amp;=  \sum_{k}^{}\binom{n}{k} \binom{3n}{n+k} [x^n](1+x)^{n+k} \\
+ &amp;=  \sum_{k}^{}\binom{n}{k} \binom{3n}{n+k} \binom{n+k}{n}  \\
+ &amp;=  \sum_{k}^{}\binom{n}{k} \binom{3n}{k, n, 2n-k} \\
+ &amp;=  \sum_{k}^{}\binom{n}{k} \binom{3n}{n}\binom{2n}{k}  \\
+ &amp;=  \binom{3n}{n}\sum_{k}^{}\binom{n}{k}\binom{2n}{2n-k}  \\
+ &amp;=  \binom{3n}{n}\binom{3n}{n}   \\
+ &amp;=  \binom{3n}{n}^{2}
+ \end{align}
+ $$</p>
+</details>
+<h3 id="Glimpse in the complex world">Glimpse in the complex world</h3>
+<p>Let
+$$
+f(z)=\frac{1 - \sqrt{ 1-4z }}{2}\ .
+$$
+We are tasked with computing $[z^k]f(z))^r$ fast? </p>
+<p>Well, the term $\sqrt{ 1-4z }$ is really complicated, but sometimes such complicated terms can be simplified. </p>
+<p>Indeed, let 
+$$
+w=\frac{1-\sqrt{ 1-4z }}{2} \iff \sqrt{ 1-4z }=1-2w \iff 1-4z=1-4w+4w^2 \iff z = w(1-w)
+$$
+then
+$$
+f(w(1-w))= w\ .
+$$
+Now
+$$
+\begin{align}
+[z^k]f(z)^r
+&amp;=[w^k(1-w)^k]f(w(1-w))^r \\
+&amp;=[w^k(1-w)^k]w^r \\
+&amp;=[w^{k-r}(1-w)^r] 1 \\
+\end{align}
+$$
+wait... what are we even doing? Is this even allowed? What does $[A(x)]f(x)$ even mean? We haven't defined any operator of the form $[A(x)]f(x)$ for an arbitrary power series $A(x)$. </p>
+<h4 id="A step back into residues">A step back into residues</h4>
+<p>Someone familiar with complex analysis might recognize the following.</p>
+<p><strong>Definition (Residue)</strong> <em>Let $a\in \mathbb{C}$ be a singularity of an analytic function $f$,
+$$
+f(z) = \sum_{n=-\infty}^{\infty} a_{n}(z-a)^n
+$$
+its Laurent expansion in punctured neighborhood of $a$. The coefficient $a_{-1}$ in this expansion is called</em> <strong><em>residue</em></strong> <em>of $f$ at $a$ and is denoted by $\mathop{\mathrm{res}}_{z=a}f(z)$.</em></p>
+<p><strong>Theorem 1</strong> <em>If $f$ is analytic in the annulus $r\leq \left\lvert z-z_{0} \right\rvert \leq R$ and</em>
+$$
+f(z)=\sum_{n=-\infty}^{\infty} a_{n}(z-z_{0})^n,\quad r&lt; |z - z_{0}| &lt; R
+$$
+<em>its Laurent expansion, then the coefficients are given by</em>
+$$
+a_{n} = \frac{1}{2\pi i}\int _{\gamma} \frac{f(\xi)}{(\xi-z_{0})^{n+1}} \, d\xi
+$$
+<em>for any closed, piecewise smooth and positive oriented (counterclockwise) curve $\gamma$ inside the annulus (e.g $\gamma$ could be $|\xi-a|=\epsilon$, for $r &lt; \epsilon &lt; R)$</em></p>
+<details class="- note">
+<summary>Proof of Theorem 1</summary>
+<p>I really want to skip this section since it is a bit irrelevant to this article but I hate throwing theorems without some sort of proof. Before rigorously proving the theorem we will need the following Lemmas: </p>
+<p><strong>Lemma 2</strong> <em>Let $\sum_{n=0}^{\infty}a_{n}(z-z_{0})^n$ be a power series with radius of convergence $R &gt; 0$ and let $r\in(0, R)$. The series is uniformly convergent in the closed disk $\bar{N}(z_{0}, r)=\{ \zeta\in\mathbb{C}\ |\ |\zeta- z_{0}| \leq r \}$.</em></p>
+<p><strong>Lemma 3</strong>  <em>Let $\gamma$ be a piecewise smooth path, and suppose that $(f_{n})$ is a sequence of continuous functions, with common domain containing all of $\gamma$ such that $\sum_{n=1}^{\infty}f_{n}$ sums uniformly to a function $F$. Then</em>
+ $$
+ \oint_{\gamma} \left[\sum_{n=1}^{\infty} f_{n}(z)\right] \, dz = \sum_{n=1}^{\infty} \left[\oint_{\gamma} f_{n}(z) \, dz\right]\ .
+ $$
+ <em>Namely, considering</em> <strong><em>Lemma 2</em></strong> we have
+ $$
+ \sum_{n=0}^{\infty}\oint_{\gamma} a_{n}(z-z_{0})^n \, dz  = \oint_{\gamma} \sum_{n=0}^{\infty} a_{n}(z-z_{0})^n \, dz\ .
+ $$</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>Let $F_{n}= \sum_{k=1}^{n}f_{k}$ so that $\lim_{ n \to \infty }F_{n}=F$. We have
+$$
+\begin{align}
+\left\lvert \oint_{\gamma} \left[ \sum_{k=1}^{\infty} f_{k}(z) \right]  \, dz  - \sum_{k=1}^{n} \oint_{\gamma} f_{k}(z) \, dz \right\rvert 
+&amp;= \left\lvert \oint_{\gamma} F \, dz - \oint_{\gamma} \left[ \sum_{k=1}^{n} f_{k}(z) \right]  \, dz   \right\rvert  \\
+&amp;= \left\lvert \oint_{\gamma} \left[  F -F_{n}\right] \, dz   \right\rvert  \\
+&amp;\leq \oint_{\gamma} \left\lvert  F -F_{n}\right\rvert \, dz \\
+&amp;\leq \oint_{\gamma} \left\lvert  F(z) -F_{n}(z)\right\rvert \, dz \\
+&amp;= \int_{0}^{1} \left\lvert F(\gamma(t))-F_{n}(\gamma(t)) \right\rvert \cdot |\gamma'(t)| \, dt \\ 
+&amp;\leq \int_{0}^{1} \left\lVert F-F_{n} \right\rVert \cdot |\gamma'(t)| \, dt \\ 
+&amp;\leq \left\lVert F-F_{n} \right\rVert \int_{0}^{1} |\gamma'(t)| \, dt \\
+&amp;= \left\lVert F-F_{n} \right\rVert L(\gamma)\ ,
+\end{align}
+$$
+where $L(\gamma)$ is the length of $\gamma$ and $\left\lVert F-F_{n} \right\rVert=\max\{\left\lvert F(z)-F_{n}(z) \right\rvert : z\in\gamma \}$. By the assumption that $\lim_{ n \to \infty }F_{n}=F$ taking $n\to \infty$ we get the result. $\blacksquare$</p>
+</details>
+<p>and finally</p>
+<details class="- hint">
+<summary>Cauchy Theorem reminder</summary>
+<p>Due to Cauchy we know that if $\gamma$ is a piecewise smooth closed path and $f$ is a holomorphic function in a simply connected domain containing all of $\gamma$ then
+ $$
+ \oint_{\gamma} f(z) \, dz =0\ .
+ $$</p>
+</details>
+<p>We are now ready to prove <strong>Theorem 1</strong>.</p>
+<p>Since $\gamma$ is inside the annulus, we can use the Laurent expansion of $f$ so using the Cauchy Theorem and the fact that here $\sum_{}^{}\oint_{} =\oint_{} \sum_{}^{}$ (since the series converges to $f$ and therefore <strong>Proposition 1</strong> and <strong>Propotition 2</strong> can be applied) we have
+ $$
+ \begin{align}
+ \oint_{\gamma} \frac{f(\xi)}{(\xi-z_{0})^{n+1}} \, d\xi
+ &amp;= \oint_{\gamma} \frac{1}{(\xi-z_{0})^{n+1}} \sum_{k}^{} a_{k}(\xi-z_{0})^k\, d\xi \\
+ &amp;= \oint_{\gamma} \sum_{k}^{} a_{k} (\xi-z_{0})^{k-n-1}\, d\xi \\
+ &amp;= \sum_{k}^{} a_{k} \oint_{\gamma} (\xi-z_{0})^{k-n-1}\, d\xi \\
+ &amp;= a_{n}\oint_{\gamma} (\xi-z_{0})^{n-n-1} \, d\xi + \sum_{k\neq n}^{} a_{k} \cancelto{ 0}{ \oint_{\gamma} (\xi-z_{0})^{k-n-1}\, d\xi } \\
+ &amp;= a_{n}\oint_{\gamma} \frac{1}{\xi-z_{0}} \, d\xi \\
+ &amp;= a_{n}\oint_{\gamma'} \frac{1}{\xi'} \, d\xi' \\
+ &amp;= a_{n}\oint_{|\xi|=1} \frac{1}{\xi} \, d\xi \\
+ &amp;= a_{n}\int_{0}^{2\pi} \frac{1}{e^{ it }}ie^{ it } \, dt  \\
+ &amp;= a_{n}2\pi i\ .\quad\blacksquare 
+ \end{align}
+ $$</p>
+</details>
+<p>As a special case for $n=-1$ we have</p>
+<p>$$
+\mathop{\mathrm{res\ }}_{z=a} f(z)=a_{-1}=\frac{1}{2\pi i}\oint_{\gamma} f(\xi) \, d\xi = \frac{1}{2\pi i}\oint_{|\xi|=\epsilon}f(\xi)  \, d\xi,\quad \text{for appropriate }\epsilon&gt;0 \ .
+$$
+therefore we will just write
+$$
+\mathop{\mathrm{res\ }}_{z} f(z)=\frac{1}{2\pi i}\oint_{|\xi|=\epsilon}f(\xi)  \, d\xi\ .
+$$</p>
+<h4 id="Coefficient extraction revisited">Coefficient extraction revisited</h4>
+<p>Let's see how we can express binomial coefficient using residues. Well it it not that hard:
+$$
+\binom{n}{k} = [x^k](1+x)^n = [x ^{-1}]x^{-k-1} (1+x)^n = \mathop{\mathrm{res\ }}_{x} \frac{(1+x)^n}{x^{k+1}}
+$$
+and in general
+$$
+[x^k]A(x)=\mathop{\mathrm{res\ }}_{x} \frac{A(x)}{x^{k+1}} = \frac{1}{2\pi i}\oint_{|z|=\epsilon} \frac{A(z)}{z^{k+1}} \, dz \ .
+$$
+Looking at coefficient extraction like this is more useful than not. This is because we can use all the integral techniques we know. We demonstrate that in the following section.</p>
+<h4 id="Back to our problem">Back to our problem</h4>
+<p>Let's jump to the previous problem where
+$$
+f(z)=\frac{1 - \sqrt{ 1-4z }}{2}\ .
+$$
+We seek
+$$
+[z^k]f(z)^r = [z^k]\left( \frac{1-\sqrt{ 1-4z }}{2} \right) ^r 
+= \mathop{\mathrm{res}}_{z} \frac{1}{z^{k+1}}\left( \frac{1-\sqrt{ 1-4z }}{2} \right) ^r
+$$
+Now we substitute $w = \frac{1-\sqrt{ 1-4z }}{2} \iff z=w(1-w)$ and so $dz = (1-2w)dw$ and we have
+$$
+\begin{align}
+\mathop{\mathrm{res}}_{z} \frac{1}{z^{k+1}}\left( \frac{1-\sqrt{ 1-4z }}{2} \right)^r
+&amp;=\mathop{\mathrm{res}}_{w} \frac{1}{w^{k+1}(1-w)^{k+1}}w^r(1-2w) \\
+&amp;=\mathop{\mathrm{res}}_{w} \frac{1}{w^{k-r+1}(1-w)^{k+1}}(1-2w) \\
+&amp;=\mathop{\mathrm{res}}_{w} \frac{1}{w^{k-r+1}(1-w)^{k+1}} - 2\cdot\mathop{\mathrm{res}}_{w} \frac{1}{w^{k-r}(1-w)^{k+1}}\\
+&amp;=\binom{2k-r}{k-r} - 2\cdot \binom{2k-r-1}{k-r-1} \\
+&amp;=\frac{r}{2k-r}\binom{2k-r}{k}\ .\\
+\end{align}
+$$
+Where we use the following fact to determine the residues
+$$
+\binom{m+n-1}{n} =\mathop{\mathrm{res\ }}_{x} \frac{1}{x^{n+1} (1-x)^m}\ .
+$$</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>First of all
+$$
+\begin{align}
+\binom{-m}{n} =\frac{(-m)_{n}}{n!} 
+&amp;= \frac{(-m)(-m-1)(-m-2)\cdots (-m-n+1)}{n!} \\
+&amp;= (-1)^n \frac{m(m+1)(m+2)\cdots (m+n-1)}{n!} = (-1)^n\binom{m+n-1}{n} \\
+\end{align}
+$$
+so now
+$$
+\sum_{n=0}^{\infty}\binom{m+n-1}{n} x^n=\sum_{n=0}^{\infty} \binom{-m}{n}  (-1)^n x^n=(1-x)^{-m}
+$$
+and hence
+$$
+\binom{m+n-1}{n} =\mathop{\mathrm{res\ }}_{x} \frac{1}{x^{n+1} (1-x)^m}\ .\quad \blacksquare 
+$$
+But we could also have found the result backwards since<br />
+$$
+\mathop{\mathrm{res\ }}_{w} \frac{1}{w^{k-r+1}w^{k+1}} = \mathop{\mathrm{res\ }}_{w} \frac{w^{-(k-r+1)}}{w^{k+1}}=\binom{-(k-r+1)}{k} = \binom{2k-r}{k}\ .<br />
+$$ </p>
+</details>
+<p>Using substitution the result followed seamlessly. In general we have the following property
+$$
+\mathop{\mathrm{res\,}}_{z} (f\circ g) g' = \oint_{z=|\epsilon|}f(g(z))g'(z)\, dz
+= \oint_{w=|\rho|} f(w) \, dw = \mathop{\mathrm{res\ }}_{z} f \ .
+$$
+That's the <strong>magic</strong> of the Egorychev method. We get all the power of integration (all the techniques) to help in our  wild coefficient extractions.</p>
+<h3 id="Lagrange Inversion">Lagrange Inversion</h3>
+<p><strong>Theorem</strong> Let $\phi \in\mathbb{F}[[z]]$ with $\text{ord}(\phi) = 1$. There exist a unique $\phi ^{-1}\in\mathbb{F}[[z]]$ such that $\phi ^{-1}(\phi(z)) = \phi(\phi ^{-1}(z)) = z$, we will call this the compositional inverse of $\phi$.</p>
+<details class="- note">
+<summary>Proof</summary>
+<p>Let
+$$
+\phi(z) = \sum_{n=1}^{\infty} a_{n}z^n, \quad a_{1}\neq 0
+$$
+we seek a function
+$$
+\phi ^{-1} = \psi (z)=\sum_{n=0}^{\infty} b_{n}z^n\ .
+$$
+such that
+$$
+\begin{align}
+z =\psi(\phi(z))
+&amp;=\sum_{n=0}^{\infty} b_{n}\left( \sum_{j=1}^{\infty} a_{j}z^j \right)^n  \\
+&amp;=\sum_{n=0}^{\infty} b_{n}\sum_{m=0}^{\infty} z^m \sum_{k_{1}+\cdots+k_{n}=m}^{} \prod_{j=1}^{n} a_{k_{j}} \\
+&amp;=\sum_{m=0}^{\infty} \left(\sum_{n=0}^{\infty} b_{n}\sum_{k_{1}+\cdots+k_{n}=m}^{} \prod_{j=1}^{n} a_{k_{j}} \right)z^m
+\end{align}
+$$
+Taking the coefficient $[x^0]$ and $[x^1]$ from both sides we get 
+$$
+0 = b_{0}
+$$
+and 
+$$
+1 = b_{1}a_{1} \iff b_{1}=\frac{1}{a_{1}}\ .
+$$
+Now taking the coefficient $[x^m]$ for $m\geq 2$ we have
+$$
+0 = \sum_{n=0}^{\infty} b_{n}\sum_{k_{1}+\cdots+k_{n} = m}^{} \prod_{j=1}^{n} a_{k_{j}}\ ,
+$$
+but for $n&gt;m$ there will be at least one $k_{j} = 0 \implies a_{k_{j}}=0$ and so the products will be $0$ while for $m = n$ the only possible sum $k_{1}+\dots +k_{n} = m$ is with $k_{j}=1 \implies a_{k_{j}} = a_{1}$ therefore equivalently we have
+$$
+0 = \sum_{n=0}^{m} b_{n}\sum_{k_{1}+\cdots+k_{n} = m}^{} \prod_{j=1}^{n} a_{k_{j}} 
+\iff b_{n} = -\frac{1}{a_{1}^m}\sum_{n=0}^{m-1} b_{n}\sum_{k_{1}+\cdots+k_{n} = m}^{} \prod_{j=1}^{n} a_{k_{j}} 
+$$
+so $b_{m}$ can be computed using the previous $b_{j}$ and the coefficients $a_{j}$ so we can determine $\psi$ uniquely. Now given that $\psi(\phi(z)) = z$ we obviously also have $\phi(\psi(w))=\phi(\psi(\phi(z)))=\phi(z)=w$. $\blacksquare$</p>
+</details>
+<p>From here on, when we write $f^{-1}$ (or $f^{-1}(z)$) for some $f\in\mathbb{F}((z))$ we will mean the compositional inverse while while $(f)^{-1}$ (or $f(z)^{-1}$) will mean the multiplicative inverse.</p>
+<h4 id="Computing the compositional inverse fast">Computing the compositional inverse fast</h4>
+<p>Suppose that 
+$$
+\phi(z)=\sum_{n=1}^{\infty} a_{n}z^n,\quad a_{1}\neq 0
+$$
+and that for the compositional inverse we have
+$$
+\phi ^{-1}(z) =\sum_{n=1}^{\infty}b_{n}z^n,\quad b_{1}\neq 0\ .
+$$
+We seek $b_{n} = [z^n]\phi ^{-1}(z)$. Now with the power of calculus (keep in mind that $\mathop{\mathrm{res}}_{}$ gives us that power) we have
+$$
+[z^n]\phi ^{-1}(z) = \mathop{\mathrm{res\ }}_{z} \frac{\phi ^{-1}(z)}{z^{n+1}} \ , 
+$$
+let's make the substitution $\phi ^{-1}(z)=w \iff z=\phi(w)$  and $dz = \phi'(w)\,dw$.
+$$
+=\mathop{\mathrm{res\ }}_{w} \frac{w\phi'(w)}{\phi (w)^{n+1}} = \mathop{\mathrm{res\ }}_{w} w \frac{\phi'}{\phi^{n+1}}\ .
+$$
+Here comes the next integral technique. And that is... integration by parts, unsurprisingly. However there is a twist here</p>
+<details class="- note">
+<summary>Integration by parts, with a twist</summary>
+<p>Well, following the well known techinque
+$$
+\mathop{\mathrm{res\ }}_{z} fg' = \oint_{} f(z)g'(z) \, dz =
+\oint_{\ } (f(z)g(z))' \, dz - \oint_{} f'(z)g(z) \, dz 
+$$
+but wait... what does
+$$
+\oint_{\ } (fg)' \, dz
+$$
+mean? Well it doesn't really mean anything special, since $z=|\epsilon|$ is a closed path we have (suppose it ends at $b=z_{0}$ and starts in $a = z_{0}$)
+$$
+\oint_{\ } (fg)' \, dz = \oint_{z=|\epsilon|}(f(z)g(z))'  \, dz = f(b) - f(a) = f(z_{0})-f(z_{0}) =0\ ,
+$$
+And perhaps looking at formal Laurent series is a bit easier, for example if 
+$$ H(x)=\sum_{n=-N}^{\infty} a_{n}x^n $$
+then obviously 
+$$
+\mathop{\mathrm{res\ }}_{x} H'(x)= [x^{-1}]H'(x)=0\ .
+$$
+The whole point of this is to show that in the integration by parts we have
+$$
+\mathop{\mathrm{res\ }}_{z} fg' = \mathop{\mathrm{res\ }}_{z} (fg)' - \mathop{\mathrm{res\ }}_{z} f'g =- \mathop{\mathrm{res\ }}_{z}f'g \ .
+$$</p>
+</details>
+<p>So now, returning to our computations
+$$
+=\mathop{\mathrm{res\ }}_{w} w\frac{\phi'(w)}{\phi(w)^{n+1}} = \mathop{\mathrm{res\ }}_{w} \left[w \left( \frac{-1}{n\phi(w)^n} \right)'\right] = \frac{1}{n}\mathop{\mathrm{res\ }}_{w}  \frac{1}{\phi(w)^n}\ .
+$$</p>
+<p>Summing up,
+$$
+[z^n]\phi ^{-1}(z)=\frac{1}{n}\mathop{\mathrm{res\ }}_{z} \frac{1}{\phi(z)^n} = \frac{1}{n}[z^{-1}] \phi(z)^{-n}\ .
+$$
+This can enable us to compute $\phi ^{-1}$ with easier formulas. For example we have
+$$
+\frac{1}{n}\mathop{\mathrm{res\ }}_{z} \frac{1}{\phi(z)^n} =\left. \frac{1}{n!}\frac{ d^{n-1} }{ dz^{n-1}} \frac{z^n}{\phi(z)^n}\ \right|_{z=0}
+$$
+using the formula 
+$$
+\mathop{\mathrm{res\ }}_{z} f(z) = \left. \frac{1}{(n-1)!} \frac{d^{n-1}}{dz^{n-1}} (z^n f)\ \right|_{z=0}\ .
+$$</p>
+<p>If, instead of trying to find $[z^n]\phi(z)$ we considered $[z^n]h(\phi(z))$ for an analytic function $h$ then doing the same steps we get the more general formula
+$$
+[z^n]h(\phi ^{-1}(z)) = \frac{1}{n} \mathop{\mathrm{res\ }}_{w} \frac{h'(w)}{\phi(w)^n}\ .
+$$</p>
+<p>This is known as the <a href="https://en.wikipedia.org/wiki/Lagrange_inversion_theorem">Lagrange Inversion</a>, and it has... quite a few applications. </p>
+<h4 id="A more specific case">A more specific case</h4>
+<p>In combinatorics it is not rare to run to expressions of the form
+$$
+\psi(z) = z \phi(\psi(z)) \quad (1)
+$$
+where we want to find $\psi \in \mathbb{F}[[z]]$ given $\phi$, i.e find $[z^n]\psi(z)$ for $n\in\mathbb{N}$. Using Lagrange Inversion we can get a simple formula for $\psi$ </p>
+<p><strong>Theorem</strong> If $\psi,\phi \in\mathbb{F}[[z]]$ such that $(1)$ holds then 
+$$
+[z^n]\psi(z) = \frac{1}{n} [z^{n-1}] \phi(z)^n\ .
+$$</p>
+<details class="- hint">
+<summary>Hint</summary>
+<p>Notice that we can get rid of the compositions with $z \to \psi ^{-1}(z)$like so 
+$$
+\psi(z) = z\phi(\psi(z)) \implies z = \psi ^{-1}(z) \phi(z) \iff \psi ^{-1}(z) = \frac{z}{\phi(z)}\ .
+$$
+ and now we can compute the right hand side (we know $\phi$).</p>
+</details>
+<details class="- note">
+<summary>Proof</summary>
+<p>Looking at 
+$$
+\psi ^{-1}(z) = \frac{z}{\phi(z)}
+$$
+we see that we have $\psi ^{-1}$ (since all of the right hand side is known) and so using Lagrange inversion we can compute $\psi$ from $\psi ^{-1}$ so  now
+$$
+\begin{align}
+[z^n]\psi(z) &amp;= \frac{1}{n}[z^{-1}]\left[ \psi ^{-1}(z) \right]^{-n}  \\
+&amp;= \frac{1}{n}[z^{-1}] \left( \frac{z}{\phi(z)} \right) ^{-n} \\
+&amp;= \frac{1}{n}[z^{-1}] z^{-n}\phi(z)^n \\
+&amp;= \frac{1}{n}[z^{n-1}]\phi(z)^n\ .\quad \blacksquare 
+\end{align}
+$$</p>
+</details>
+<p>Therefore we can compute $\psi$ without any inversion (multiplicative on compositional) needed (given than we have $\phi$).</p>
+<p>Like the Lagrange Inversion, the previous theorem can be generalized for an analytic function $h$ as 
+$$
+[z^n]h(\psi(z)) = \frac{1}{n}[z^{n-1}]h'(z)\phi(z)^n\ .
+$$
+This last formula by the name <a href="https://en.wikipedia.org/wiki/Lagrange_inversion_theorem#Lagrange–Bürmann_formula">Lagrange–Bürmann formula</a>.</p>
+<details class="example" open="open">
+<summary>The standard example</summary>
+<p>Let $T(x)$ be the exponential generating function of the number unordered rooted labeled trees (therefore $n![x^n]T(x)$ is the number of such objects with $n$ vertices). We want to find a formula for their coefficients. After doing some word we can conclude that the following equation holds
+$$
+T(x) = xe^{ T(x) }\ .
+$$
+Therefore we can apply the <strong>Lagrange–Bürmann formula</strong> and get
+$$
+\begin{align}
+[x^n] T(x) &amp;= \frac{1}{n}[x^{n-1}] e^{ nx } \\
+&amp;= \frac{1}{n}[x^{n-1}]\sum_{k=0}^{\infty} \frac{(nx)^{k}}{k!} \\
+&amp;= \frac{1}{n} \frac{n^{n-1}}{(n-1)!} \\
+&amp;= \frac{n^{n-1}}{n!}
+\end{align}
+$$
+so that we get the famous formula for the number unordered rooted labeled trees of $n$ vertices as
+$$
+n![x^n]T(x) = n^{n-1}\ .
+$$</p>
+</details>
+<h4 id="Summary of Lagrange Inversion">Summary of Lagrange Inversion</h4>
+<p>There are a lot of non-trivial formulas here. So let's write them down.</p>
+<p>Let $\phi \in\mathbb{F}[[z]]$ and let $\phi ^{-1}$ be its compositional inverse (i.e $\phi ^{-1}(\phi(z)) = \phi(\phi ^{-1}(z)) = z$), and suppose $h$ is any analytic function ($h(z) = z \implies h'(z) =1$ is a common case so we will also write the formulas for that case). We have</p>
+<p>$$
+[z^n]\phi ^{-1}(z) = \frac{1}{n}[z^{-1}]\phi(z)^{-n}\ ,
+$$
+$$
+[z^n]h(\phi ^{-1}(z)) = \frac{1}{n}[z^{-1}]h'(z)\phi(z)^{-n}\ ,
+$$
+and if $\psi \in \mathbb{F}[[z]]$ such that
+$$
+\psi = z \phi(\psi)
+$$
+then we get the simplier expressions
+$$
+[z^n]\psi(z) = \frac{1}{n}[z^{n-1}] \phi(z)^n\ ,
+$$
+$$
+[z^n]h(\psi(z)) = \frac{1}{n}[z^{n-1}]h'(z) \phi(z)^n\ .
+$$
+Obviously there are many more such formulas, but at one point we have to stop and I guess this is the most optimal point. </p>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
