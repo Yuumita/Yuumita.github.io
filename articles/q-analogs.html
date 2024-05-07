@@ -78,7 +78,7 @@ $$
 $$</p>
 <h4 id="Number of $k$-dimensional vector spaces">Number of $k$-dimensional vector spaces</h4>
 <p>So we know that the number of elements of a vector space is very simple to compute. What about the number of such vector spaces? Since any vector space, even the whole space, can be regarded as a projection (or restriction) from an even bigger vector space —like how at any given time we view our world as a projection of spacetime— it makes sense to start looking at vector spaces of dimension $1,2,\dots$ and so on.</p>
-<p>Let $\binom{n}{k}_{q}$ denote the number of subspaces $V\subseteq \mathbb{F}_{q}^n$ with $\dim(V)=k$. Well in general vector spaces <em>seem</em> complicated at first, but then you realize that they can be broken down into independent components—i.e. the basis— and so everything starts making sense, so let's count the . The problem here is that different bases can span the same vector space. Playing around a bit we might realize that the straightforward thing to count is the number of (ordered) bases of $k$ vectors in $\mathbb{F}^n_{q}$ — let that number be $P_{q}(n,k)$. </p>
+<p>Let $\binom{n}{k}_{q}$ denote the number of subspaces $V\subseteq \mathbb{F}_{q}^n$ with $\dim(V)=k$. Well in general vector spaces <em>seem</em> complicated at first, but then you realize that they can be broken down into independent components —i.e. the basis— and so everything starts making sense, so let's count the . The problem here is that different bases can span the same vector space. Playing around a bit we might realize that the straightforward thing to count is the number of (ordered) bases of $k$ vectors in $\mathbb{F}^n_{q}$ — let that number be $P_{q}(n,k)$. </p>
 <p>Let's formally count $P_{q}(n,k)$. We will see how each basis that's counted in $P_{q}(n,k)$ is built. First of all let the list of vectors we already have be $\mathcal{B}$. Initially we have $\mathcal{B}=[\ ]$ and so $\mathrm{span}\ \mathcal{B} = \{ \mathbf{0} \}$. For $\mathbf{b}_{1}$ we can pick any of the $q^n-1$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ — i.e. one of the vectors not spanned by $\mathcal{B}$. After we chosen $\mathbf{b}_{1}$ we have $\mathcal{B}=[ \mathbf{b}_{1} ]$ and so $\mathrm{span}\ \mathcal{B}=\{ \gamma_{1}\mathbf{b}_{1}:\gamma_{1} \in \mathbb{F}_{q} \}$. For $\mathbf{b}_{2}$ we can pick any of the $q^n-q$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ and in general for $\mathbf{b}_{j}$ we can pick any of the $q^n-q^{j-1}$ vectors in $\mathbb{F}_{q}^n\setminus\left\{ \sum_{i=1}^{j-1}\gamma_{i}\mathbf{b}_{i}: \gamma_{i}\in\mathbb{F}_{q}   \right\}$. So we get
 $$
 P_{q}(n, k) = (q^n-1)(q^n-q)\cdots(q^n-q^{k-1}) = \prod_{i=0}^{k-1} (q^n-q^i).
@@ -87,7 +87,7 @@ $$</p>
 $$
 \binom{n}{k}_{q}P_{q}(k,k) = P_{q}(n,k) \iff \binom{n}{k} _{q}= \frac{P_{q}(n,k)}{P_{q}(k,k)}
 $$
-the intuition being that for each vector space $V\subseteq \mathbb{F}^n_{q}$ with $\dim V=k$ there are $P_{q}(k,k)$ ways of making a basis for $V$—think of the process described in the previous paragraph but now for $V\cong \mathbb{F}^k_{q}$— and so there are $P_{q}(k,k)$ times more bases spanning $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$ than actual $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$. Therefore
+the intuition being that for each vector space $V\subseteq \mathbb{F}^n_{q}$ with $\dim V=k$ there are $P_{q}(k,k)$ ways of making a basis for $V$ —think of the process described in the previous paragraph but now for $V\cong \mathbb{F}^k_{q}$— and so there are $P_{q}(k,k)$ times more bases spanning $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$ than actual $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$. Therefore
 $$
 \binom{n}{k} _{q} = \frac{P_{q}(n,n)}{P_{q}(n,k)}= \frac{\prod_{i=0}^{n-1}(q^n-q^i) }{\prod_{i=0}^{k-1} (q^n-q^i)}.
 $$</p>
@@ -124,7 +124,7 @@ $$</p>
 <h3 id="More on q-analogs">More on q-analogs</h3>
 <h4 id="Binomial Theorem for <em>almost</em> communicative terms">Binomial Theorem for <em>almost</em> communicative terms</h4>
 <p>We might have seen that analogs were defined with taking the limit $q\to 1$ in mind but that really wasn't the case with the subspaces of $\mathbb{F}^n_{q}$. Besides, most applications of linear algebra in finite fields are more or less only about the $q=2$ case. In reality the freedom between the choices for $q$ is exactly why the q-analogs are so strong. If we keep that in mind we might see a lot more of q-analogs than what we would if we were just looking at the definition.</p>
-<p>Say, for example, that we have an <em>almost</em> communicative ring $R$. The ring is <em>almost</em> communicative in the sense that there is a $q \in R$ for some $x,y \in R$ such that $yx=qxy$, while $q$ commutes normally with $x,y$. The condition might seem weird but if we consider $q$ to be the additive inverse of the multiplicative identity of $R$ —a fancy way of saying $-1$— we get $yx=-xy$ which seems the next logical thing to hold after $yx=xy$. Let's test the <em>communicativeness</em> of $R$ in the straightforward way, the binomial theorem. Let's look at the simplest case:
+<p>Say, for example, that we have an <em>almost</em> communicative ring $R$. The ring is <em>almost</em> communicative in the sense that there is a $q \in R$ for some $x,y \in R$ such that $yx=qxy$, while $q$ commutes normally with $x,y$. The condition might seem weird but if we consider $q$ to be the additive inverse of the multiplicative identity of $R$ (a fancy way of saying $-1$) we get $yx=-xy$ which seems the next logical thing to hold after $yx=xy$. Let's test the <em>communicativeness</em> of $R$ in the straightforward way, the binomial theorem. Let's look at the simplest case:
 $$
 (x+y)^2=(x+y)x+(x+y)y=x^{2}+yx+xy+y^{2}=x^{2}+(1+q)xy+y^{2}.
 $$
@@ -152,7 +152,7 @@ $$
 &amp;= \sum_{k=0}^{n} (A_{n,k}q^{n-k})x^{k+1} y ^{n-k} +\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k+1} \\
 \end{align*}
 $$
-and if we take $A_{\cdot,-1}=0$ and $A_{n,n+1}=0$ —which are the obvious assumptions— we have
+and if we take $A_{\cdot,-1}=0$ and $A_{n,n+1}=0$ (which are the obvious assumptions) we have
 $$
 \begin{align}
 (x+y)^{n+1}&amp;= \sum_{k=0}^{n+1} (A_{n,k-1}q^{n-k+1}) x^ky ^{n-k+1} + \sum_{k=0}^{n+1} A_{n,k}x^{k}y^{n-k+1}  \\
@@ -167,7 +167,7 @@ That's almost... the binomial recurrence. Well obviously! But wait we saw this e
 $$
 \binom{n+1}{k} _{q}= q^{n+1-r}\binom{n}{k-1}_{q} +\binom{n}{k}_{q} .
 $$
-Therefore, after some base-case checking we can confirm the following which can be thought—albeit without much reason—a generalization of the binomial theorem.
+Therefore, after some base-case checking we can confirm the following which can be thought of (albeit without much reason) as a generalization of the binomial theorem.
 $$
 (x+y)^{n} = \sum_{k=0}^{n} \binom{n}{k} _{q}x ^k y^{n-k}.
 $$</p>
