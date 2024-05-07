@@ -55,7 +55,7 @@
 <h3 id="Introduction">Introduction</h3>
 <p>So everybody likes vector spaces but I would guess the majority of people automatically assume we are referring to them with respect to the fields $\mathbb{R},\mathbb{C}$—or in some cases $\mathbb{Q}$. Personally, my favorite field is the Galois field $\mathbb{F}_{q}$ for $q=p^k$ for some $k \in \mathbb{N}\setminus\{ 0 \}$ and $p$ prime. Since it <em>is</em> actually a field, (almost) everything we know from linear algebra perfectly translates in that field and so we can talking about vector spaces over $\mathbb{F}_{q}$. That's great but... is this fact at all useful? To be honest I don't care, I don't do mathematics for their applications. However I get that theory alone is sometimes dull so I leave the following example for the curious readers so as to make them think twice before closing the article.</p>
 <details class="example" open="open">
-<summary>$GF(2)$</summary>
+<summary>$\mathrm{GF}(2)$</summary>
 <p>Looking at $\mathbb{F}_{2}$ and denoting the elements as $\mathbb{F}_{2}=\{ 0,1 \}$ we see that if we  $0$ is the additive identity and $1$ as the multiplicative identity of the field then for $a,b \in \mathbb{F}_{2}$ we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ where $\text{AND},\text{XOR}$ denote the corresponding bitwise operations. 
 What about bit strings? Where we can look at $n$-bit numbers/strings as elements of $\mathbb{F}_{2}^n$ and then again we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ for $a,b \in \mathbb{F}_{2}^n$. </p>
 <p>The first thing to note here is that this allows for simple compressions of lists of bit strings. For example let $S$ be a set of $n$-bit  non-negative numbers and say that we want to maintain the set $X$ of all numbers that can be made from $\text{XOR}$ing some of the numbers in $S$. 
@@ -76,7 +76,7 @@ Since $\{ \mathbf{b}_{i} \}_{i=1}^n$ is a basis of $V$ we can easily see that ea
 $$
 |V|= q^{\dim V} .
 $$</p>
-<h4 id="Number of $k$-dimensional subspaces of $V$">Number of $k$-dimensional subspaces of $V$</h4>
+<h4 id="Number of $k$-dimensional vector spaces">Number of $k$-dimensional vector spaces</h4>
 <p>So we know that the number of elements of a vector space is very simple to compute. What about the number of such vector spaces? Since any vector space, even the whole space, can be regarded as a projection (or restriction) from an even bigger vector space —like how at any given time we view our world as a projection of spacetime— it makes sense to start looking at vector spaces of dimension $1,2,\dots$ and so on.</p>
 <p>Let $\binom{n}{k}_{q}$ denote the number of subspaces $V\subseteq \mathbb{F}_{q}^n$ with $\dim(V)=k$. Well in general vector spaces <em>seem</em> complicated at first, but then you realize that they can be broken down into independent components—i.e. the basis— and so everything starts making sense, so let's count the . The problem here is that different bases can span the same vector space. Playing around a bit we might realize that the straightforward thing to count is the number of (ordered) bases of $k$ vectors in $\mathbb{F}^n_{q}$ — let that number be $P_{q}(n,k)$. </p>
 <p>Let's formally count $P_{q}(n,k)$. We will see how each basis that's counted in $P_{q}(n,k)$ is built. First of all let the list of vectors we already have be $\mathcal{B}$. Initially we have $\mathcal{B}=[\ ]$ and so $\mathrm{span}\ \mathcal{B} = \{ \mathbf{0} \}$. For $\mathbf{b}_{1}$ we can pick any of the $q^n-1$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ — i.e. one of the vectors not spanned by $\mathcal{B}$. After we chosen $\mathbf{b}_{1}$ we have $\mathcal{B}=[ \mathbf{b}_{1} ]$ and so $\mathrm{span}\ \mathcal{B}=\{ \gamma_{1}\mathbf{b}_{1}:\gamma_{1} \in \mathbb{F}_{q} \}$. For $\mathbf{b}_{2}$ we can pick any of the $q^n-q$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ and in general for $\mathbf{b}_{j}$ we can pick any of the $q^n-q^{j-1}$ vectors in $\mathbb{F}_{q}^n\setminus\left\{ \sum_{i=1}^{j-1}\gamma_{i}\mathbf{b}_{i}: \gamma_{i}\in\mathbb{F}_{q}   \right\}$. So we get
@@ -144,13 +144,12 @@ $$
 Then 
 $$
 \begin{align*}
-(x+y)^{n+1}=&amp;(x+y)^n(x+y) \\
+(x+y)^{n+1}=(x+y)^n(x+y) 
 &amp;= \left(\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k}\right) (x+y) \\
 &amp;= \sum_{k=0}^{n} A_{n,k}x^k y ^{n-k} (x+y) \\
 &amp;= \sum_{k=0}^{n} A_{n,k}(x^k y ^{n-k} x+x^k y ^{n-k}y) \\
 &amp;= \sum_{k=0}^{n} A_{n,k}(q^{n-k}x^{k+1} y ^{n-k} +x^k y ^{n-k+1}) \\
 &amp;= \sum_{k=0}^{n} (A_{n,k}q^{n-k})x^{k+1} y ^{n-k} +\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k+1} \\
-&amp;= \sum_{k=1}^{n+1} (A_{n,k-1}q^{n-k+1})x^{k} y ^{n-k+1} +\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k+1}
 \end{align*}
 $$
 and if we take $A_{\cdot,-1}=0$ and $A_{n,n+1}=0$ —which are the obvious assumptions— we have
@@ -174,7 +173,7 @@ $$
 $$</p>
 <h4 id="Set power series">Set power series</h4>
 <p>Looking at <a href="https://www.algorithmas.org/articles/fast_subset_convolution.html">one of my previous articles</a> we can even spot q-analogs in subset convolutions. More specifically, I remember <a href="https://codeforces.com/profile/adamant">adamant</a> had pointed out the following.
-If $R$ is a ring, for the functions $f,g:2^N\to R$ with <a href="https://www.algorithmas.org/articles/fast_subset_convolution.html">set power series</a> $F(x)=\sum_{S}f(S)x^S$ and $G(x)=\sum_{S}^{}g(S)x^S$ respectively then multiplication of those power series in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-q^{2},\dots,x_{n}^{2}-q^{2} \right&gt;$ gives the XOR-convolution of $f,g$ as $q\to1$ and multiplication in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-x_{1} q, \dots,x_{n}^{2}-x_{n}q \right&gt;$ gives OR-convolution as $q\to{1}$ while as $q\to{0}$ we get the <em>standard</em> convolution.</p>
+If $R$ is a ring and $f,g:2^N\to R$ are some functions on subsets with <a href="https://www.algorithmas.org/articles/fast_subset_convolution.html">set power series</a> $F(x)=\sum_{S}f(S)x^S$ and $G(x)=\sum_{S}^{}g(S)x^S$ respectively then multiplication of those power series in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-q^{2},\dots,x_{n}^{2}-q^{2} \right&gt;$ gives the XOR-convolution of $f,g$ as $q\to1$ and multiplication in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-x_{1} q, \dots,x_{n}^{2}-x_{n}q \right&gt;$ gives OR-convolution as $q\to{1}$ while as $q\to{0}$ we get the <em>standard</em> convolution.</p>
     <script>
     setTimeout(() => {
         var script = document.createElement('script');
