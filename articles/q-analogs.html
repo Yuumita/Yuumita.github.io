@@ -1,0 +1,189 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="A quick look at combinatorial q-analogs">A quick look at combinatorial q-analogs</h1>
+<h2 id="Linear Algebra over Galois Fields and q-combinatorics">Linear Algebra over Galois Fields and q-combinatorics</h2>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Basic Combinatorics</li>
+<li>Basic Linear Algebra</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>So everybody likes vector spaces but I would guess the majority of people automatically assume we are referring to them with respect to the fields $\mathbb{R},\mathbb{C}$—or in some cases $\mathbb{Q}$. Personally, my favorite field is the Galois field $\mathbb{F}_{q}$ for $q=p^k$ for some $k \in \mathbb{N}\setminus\{ 0 \}$ and $p$ prime. Since it <em>is</em> actually a field, (almost) everything we know from linear algebra perfectly translates in that field and so we can talking about vector spaces over $\mathbb{F}_{q}$. That's great but... is this fact at all useful? To be honest I don't care, I don't do mathematics for their applications. However I get that theory alone is sometimes dull so I leave the following example for the curious readers so as to make them think twice before closing the article.</p>
+<details class="example" open="open">
+<summary>$GF(2)$</summary>
+<p>Looking at $\mathbb{F}_{2}$ and denoting the elements as $\mathbb{F}_{2}=\{ 0,1 \}$ we see that if we  $0$ is the additive identity and $1$ as the multiplicative identity of the field then for $a,b \in \mathbb{F}_{2}$ we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ where $\text{AND},\text{XOR}$ denote the corresponding bitwise operations. 
+What about bit strings? Where we can look at $n$-bit numbers/strings as elements of $\mathbb{F}_{2}^n$ and then again we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ for $a,b \in \mathbb{F}_{2}^n$. </p>
+<p>The first thing to note here is that this allows for simple compressions of lists of bit strings. For example let $S$ be a set of $n$-bit  non-negative numbers and say that we want to maintain the set $X$ of all numbers that can be made from $\text{XOR}$ing some of the numbers in $S$. 
+The set $X$ can have a lot more numbers than $S$. For example if $S$ only has the $n$ numbers where the $i$-th of them has only the $i$-th bit set then we can write all $n$-bit numbers, i.e. $|X|=2^n$. Wait, doesn't this remind us of a great idea from linear algebra? We will represent each number of $S$ as an element in $\mathbb{F}_{2}^n$ and let them be $\{ v_{i} \}_{i=1}^k$. Then we have
+$$
+X= \left\{ \sum_{i =1}^{k}c_{i}v_{i}: c_{i}\in \mathbb{F}_{2}   \right\}  = \mathrm{span}\{ v_{i} \}_{i=1}^k.
+$$
+So $X$ is a vector space in the field $\mathbb{F}_{2}$ of at most $n$ dimensions and is spanned by $\{ v_{i} \}_{i=1}^k$ so we can easily find a basis of $X$ from $\{ v_{i} \}_{i=1}^k$ of which has at most $n$ elements (since the dimension of $X$ is at most $n$). 
+Maintaining the basis is equivalent to maintaining all of $X$.</p>
+</details>
+<h3 id="Counting vector spaces">Counting vector spaces</h3>
+<p>One of my favorite things to do is count things. This is something that can't be done vector spaces like $\mathbb{R}^n$ (and no, I don't like measuring as much) so $\mathbb{F}^n_{q}$ allows us to merge linear algebra with combinatorics.</p>
+<p>First of all it should be noted that $\mathbb{F}_{q}^n$ is not only countable but is is also finite, this alone means that we have perfect knowledge for what is going on in the vector spaces of $\mathbb{F}_{q}$. Let $V$ be a $n$-dimensional vector space with respect to the field $\mathbb{F}_{q}$. Then there is a basis $\{ \mathbf{b}_{i} \}_{i=1}^n$ of $V$ such that 
+$$
+V =\left\{  \sum_{i=1}^{n} \gamma_{i}\mathbf{b}_{i}: \gamma_{i} \in \mathbb{F}_{q}  \right\} = \mathrm{span} \{ \mathbf{b}_{i} \}_{i=1}^n.
+$$
+Since $\{ \mathbf{b}_{i} \}_{i=1}^n$ is a basis of $V$ we can easily see that each sequence of coefficients $(\gamma_{1},\gamma_{2},\dots,\gamma_{n}) \in \mathbb{F}_{q}^n$ gives a different vector of $V$. For the readers that are more used to matrices it can be easier to think of $\{ \mathbf{b}_{i} \}_{i=1}^n$ just as the set of vectors where $(\mathbf{b}_{i})_{j}=1$ if $j=i$ else $(\mathbf{b}_{i})_{j}=0$, i.e. $\mathbf{b}_{1}=(1,0,\dots)^T, \mathbf{b}_{2}=(0,1,\dots)^T, \dots$. Now we can see that $|V|=\prod_{i=1}^{n}(\#\text{ choices for } \gamma_{i}) = \prod_{i=1}^{n}q=q^n$ which can be written in an even nicer way:
+$$
+|V|= q^{\dim V} .
+$$</p>
+<h4 id="Number of $k$-dimensional subspaces of $V$">Number of $k$-dimensional subspaces of $V$</h4>
+<p>So we know that the number of elements of a vector space is very simple to compute. What about the number of such vector spaces? Since any vector space, even the whole space, can be regarded as a projection (or restriction) from an even bigger vector space —like how at any given time we view our world as a projection of spacetime— it makes sense to start looking at vector spaces of dimension $1,2,\dots$ and so on.</p>
+<p>Let $\binom{n}{k}_{q}$ denote the number of subspaces $V\subseteq \mathbb{F}_{q}^n$ with $\dim(V)=k$. Well in general vector spaces <em>seem</em> complicated at first, but then you realize that they can be broken down into independent components—i.e. the basis— and so everything starts making sense, so let's count the . The problem here is that different bases can span the same vector space. Playing around a bit we might realize that the straightforward thing to count is the number of (ordered) bases of $k$ vectors in $\mathbb{F}^n_{q}$ — let that number be $P_{q}(n,k)$. </p>
+<p>Let's formally count $P_{q}(n,k)$. We will see how each basis that's counted in $P_{q}(n,k)$ is built. First of all let the list of vectors we already have be $\mathcal{B}$. Initially we have $\mathcal{B}=[\ ]$ and so $\mathrm{span}\ \mathcal{B} = \{ \mathbf{0} \}$. For $\mathbf{b}_{1}$ we can pick any of the $q^n-1$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ — i.e. one of the vectors not spanned by $\mathcal{B}$. After we chosen $\mathbf{b}_{1}$ we have $\mathcal{B}=[ \mathbf{b}_{1} ]$ and so $\mathrm{span}\ \mathcal{B}=\{ \gamma_{1}\mathbf{b}_{1}:\gamma_{1} \in \mathbb{F}_{q} \}$. For $\mathbf{b}_{2}$ we can pick any of the $q^n-q$ vectors in $\mathbb{F}_{q}^n\setminus\mathrm{span}\ \mathcal{B}$ and in general for $\mathbf{b}_{j}$ we can pick any of the $q^n-q^{j-1}$ vectors in $\mathbb{F}_{q}^n\setminus\left\{ \sum_{i=1}^{j-1}\gamma_{i}\mathbf{b}_{i}: \gamma_{i}\in\mathbb{F}_{q}   \right\}$. So we get
+$$
+P_{q}(n, k) = (q^n-1)(q^n-q)\cdots(q^n-q^{k-1}) = \prod_{i=0}^{k-1} (q^n-q^i).
+$$</p>
+<p>With a bit of pondering we can now see that 
+$$
+\binom{n}{k}_{q}P_{q}(k,k) = P_{q}(n,k) \iff \binom{n}{k} _{q}= \frac{P_{q}(n,k)}{P_{q}(k,k)}
+$$
+the intuition being that for each vector space $V\subseteq \mathbb{F}^n_{q}$ with $\dim V=k$ there are $P_{q}(k,k)$ ways of making a basis for $V$—think of the process described in the previous paragraph but now for $V\cong \mathbb{F}^k_{q}$— and so there are $P_{q}(k,k)$ times more bases spanning $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$ than actual $k$-dimensional vector spaces of $\mathbb{F}^n_{q}$. Therefore
+$$
+\binom{n}{k} _{q} = \frac{P_{q}(n,n)}{P_{q}(n,k)}= \frac{\prod_{i=0}^{n-1}(q^n-q^i) }{\prod_{i=0}^{k-1} (q^n-q^i)}.
+$$</p>
+<p>Wow this is a mess, let's try and clean it up. We will need a short introduction to q-analogs. Finally... what even is this damn $q$? </p>
+<details class="info" open="open">
+<summary>Short note on <strong>q-analogs</strong></summary>
+<p>The <strong>q-analog</strong> of a mathematical object $\mathcal{O}$ is the object $\mathcal{O}_{q}$ along side a newly introduced number $q$ such that $\mathcal{O}_{q}\to \mathcal{O}$ when $q\to1$. For the sake of usefulness we usually want $\mathcal{O}_{q}$ to be the superior algebraic object — a power series.</p>
+<p>In that manner we define the q-analog of an integer as
+$$
+[n]_{q}= \sum_{i=0}^{n-1} q^i=\frac{1-q^n}{1-q}
+$$
+so that $\lim_{ q \to 1 } [n]_{q}=n$. Similarly we get the q-analog factorial
+$$
+[n]_{q}! = \prod_{i=1}^{n} [n]_{q}
+$$
+and q-analog binomial coefficient
+$$
+\binom{n}{k} _{q}= \frac{[n]_{q}!}{[k]_{q}![n-k]_{q}!},
+$$
+and don't worry, the notation in this $q$-analog binomial isn't different from the number of $k$-dimensional subspaces of $\mathbb{F}_{q}^n$ we previously defined.</p>
+<p>The important definition out of those is the integer analog $[n]_{q}$ since the others naturally emerged. For the readers that want to know more about its motivations of its usages I suggest looking into <a href="https://en.wikipedia.org/wiki/Quantum_calculus">Quantum Calculus</a>—so in sort <em>ask a physicist</em> is again the answer here . Its almost calculus but instead of dealing with limits we introduce $q$ which we <em>always have to carry around</em> our calculations. Then, if we with to return to our normal calculus we let $q\to 1$ so that the derivative is
+$$
+\frac{df}{dx} = \lim_{ q \to 1 } \frac{f(qx)-f(x)}{qx-x}.
+$$</p>
+</details>
+<p>With a bit of algebraic manipulation we realize that the number we were searching is just 
+$$
+\binom{n}{k} _{q}= \frac{[n]_{q}!}{[k]_{q}![n-k]_{q}!}.
+$$
+This $q$-analog of the binomial maintains a lot similarities with the standard one. For example it can be computed recursively by formula
+$$
+\binom{n}{k} _{q}= q^{n-r}\binom{n-1}{k-1}_{q} +\binom{n-1}{k}_{q} .
+$$</p>
+<h3 id="More on q-analogs">More on q-analogs</h3>
+<h4 id="Binomial Theorem for <em>almost</em> communicative terms">Binomial Theorem for <em>almost</em> communicative terms</h4>
+<p>We might have seen that analogs were defined with taking the limit $q\to 1$ in mind but that really wasn't the case with the subspaces of $\mathbb{F}^n_{q}$. Besides, most applications of linear algebra in finite fields are more or less only about the $q=2$ case. In reality the freedom between the choices for $q$ is exactly why the q-analogs are so strong. If we keep that in mind we might see a lot more of q-analogs than what we would if we were just looking at the definition.</p>
+<p>Say, for example, that we have an <em>almost</em> communicative ring $R$. The ring is <em>almost</em> communicative in the sense that there is a $q \in R$ for some $x,y \in R$ such that $yx=qxy$, while $q$ commutes normally with $x,y$. The condition might seem weird but if we consider $q$ to be the additive inverse of the multiplicative identity of $R$ —a fancy way of saying $-1$— we get $yx=-xy$ which seems the next logical thing to hold after $yx=xy$. Let's test the <em>communicativeness</em> of $R$ in the straightforward way, the binomial theorem. Let's look at the simplest case:
+$$
+(x+y)^2=(x+y)x+(x+y)y=x^{2}+yx+xy+y^{2}=x^{2}+(1+q)xy+y^{2}.
+$$
+Wait, this feels... right, let's continue.
+$$
+\begin{align*}
+(x+y)^3 &amp;= [x^{2}+(1+q)xy+y^{2}](x+y)  \\
+&amp;= x^{3} +(1+q)xyx + y^{2}x + x^{2}y + (1+q)xy^{2} + y^3 \\
+&amp;= x^{3} +(1+q)qx^{2} y + q^2xy^{2} + x^{2}y + (1+q)xy^{2} + y^3 \\
+&amp;= x^{3}  +(1+q+q^{2})x^{2} y +  (1+q+q^{2})xy^{2} + y^3.
+\end{align*}
+$$</p>
+<p>Now we can keep going on but perhaps we are motivated enough to see how to transform something like $x^{\alpha}y^{\beta}x$ to $x^{a+1}y^\beta$. Well obviously we have $x^\alpha y^\beta x=q^{\beta}x^\alpha y^b$. Now how does this help us? Well suppose that we have noticed that for $n$ we have
+$$
+(x+y)^n = \sum_{k=0}^{n} A_{n,k} x^ky^{n-k},\quad A_{n,k} \in R.
+$$
+Then 
+$$
+\begin{align*}
+(x+y)^{n+1}=&amp;(x+y)^n(x+y) \\
+&amp;= \left(\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k}\right) (x+y) \\
+&amp;= \sum_{k=0}^{n} A_{n,k}x^k y ^{n-k} (x+y) \\
+&amp;= \sum_{k=0}^{n} A_{n,k}(x^k y ^{n-k} x+x^k y ^{n-k}y) \\
+&amp;= \sum_{k=0}^{n} A_{n,k}(q^{n-k}x^{k+1} y ^{n-k} +x^k y ^{n-k+1}) \\
+&amp;= \sum_{k=0}^{n} (A_{n,k}q^{n-k})x^{k+1} y ^{n-k} +\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k+1} \\
+&amp;= \sum_{k=1}^{n+1} (A_{n,k-1}q^{n-k+1})x^{k} y ^{n-k+1} +\sum_{k=0}^{n} A_{n,k}x^k y ^{n-k+1}
+\end{align*}
+$$
+and if we take $A_{\cdot,-1}=0$ and $A_{n,n+1}=0$ —which are the obvious assumptions— we have
+$$
+\begin{align}
+(x+y)^{n+1}&amp;= \sum_{k=0}^{n+1} (A_{n,k-1}q^{n-k+1}) x^ky ^{n-k+1} + \sum_{k=0}^{n+1} A_{n,k}x^{k}y^{n-k+1}  \\
+&amp;=\sum_{k=0}^{n+1} (A_{n,k-1}q^{n+1-k}+A_{n,k}) x^k y^{n+1-k}
+\end{align}
+$$
+and so we get a recurrence on $A_{\cdot,\cdot}$, namely
+$$
+A_{n+1,k} = A_{n,k-1} q^{n+1-k} + A_{n,k}.
+$$
+That's almost... the binomial recurrence. Well obviously! But wait we saw this exact recurrence previously;
+$$
+\binom{n+1}{k} _{q}= q^{n+1-r}\binom{n}{k-1}_{q} +\binom{n}{k}_{q} .
+$$
+Therefore, after some base-case checking we can confirm the following which can be thought—albeit without much reason—a generalization of the binomial theorem.
+$$
+(x+y)^{n} = \sum_{k=0}^{n} \binom{n}{k} _{q}x ^k y^{n-k}.
+$$</p>
+<h4 id="Set power series">Set power series</h4>
+<p>Looking at <a href="https://www.algorithmas.org/articles/fast_subset_convolution.html">one of my previous articles</a> we can even spot q-analogs in subset convolutions. More specifically, I remember <a href="https://codeforces.com/profile/adamant">adamant</a> had pointed out the following.
+If $R$ is a ring, for the functions $f,g:2^N\to R$ with <a href="https://www.algorithmas.org/articles/fast_subset_convolution.html">set power series</a> $F(x)=\sum_{S}f(S)x^S$ and $G(x)=\sum_{S}^{}g(S)x^S$ respectively then multiplication of those power series in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-q^{2},\dots,x_{n}^{2}-q^{2} \right&gt;$ gives the XOR-convolution of $f,g$ as $q\to1$ and multiplication in $R[q][x_{1},\dots,x_{n}]\left&lt; x_{1}^{2}-x_{1} q, \dots,x_{n}^{2}-x_{n}q \right&gt;$ gives OR-convolution as $q\to{1}$ while as $q\to{0}$ we get the <em>standard</em> convolution.</p>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
