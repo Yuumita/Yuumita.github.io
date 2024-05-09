@@ -320,7 +320,8 @@ $$
 z =\psi(\phi(z))
 &amp;=\sum_{n=0}^{\infty} b_{n}\left( \sum_{j=1}^{\infty} a_{j}z^j \right)^n  \\
 &amp;=\sum_{n=0}^{\infty} b_{n}\sum_{m=0}^{\infty} z^m \sum_{k_{1}+\cdots+k_{n}=m}^{} \prod_{j=1}^{n} a_{k_{j}} \\
-&amp;=\sum_{m=0}^{\infty} \left(\sum_{n=0}^{\infty} b_{n}\sum_{k_{1}+\cdots+k_{n}=m}^{} \prod_{j=1}^{n} a_{k_{j}} \right)z^m
+&amp;=\sum_{m=0}^{\infty} \left(\sum_{n=0}^{\infty} b_{n}\sum_{k_{1}+\cdots+k_{n}=m}^{} \prod_{j=1}^{n} a_{k_{j}} \right)z^m \\
+&amp;= z
 \end{align}
 $$
 Taking the coefficient $[x^0]$ and $[x^1]$ from both sides we get 
@@ -360,7 +361,7 @@ let's make the substitution $\phi ^{-1}(z)=w \iff z=\phi(w)$  and $dz = \phi'(w)
 $$
 =\mathop{\mathrm{res\ }}_{w} \frac{w\phi'(w)}{\phi (w)^{n+1}} = \mathop{\mathrm{res\ }}_{w} w \frac{\phi'}{\phi^{n+1}}\ .
 $$
-Here comes the next integral technique. And that is... integration by parts, unsurprisingly. However there is a twist here</p>
+Here comes the next integral technique; integration by parts, unsurprisingly. However with a little twist.</p>
 <details class="- note">
 <summary>Integration by parts, with a twist</summary>
 <p>Well, following the well known techinque
@@ -374,9 +375,9 @@ $$
 $$
 mean? Well it doesn't really mean anything special, since $z=|\epsilon|$ is a closed path we have (suppose it ends at $b=z_{0}$ and starts in $a = z_{0}$)
 $$
-\oint_{\ } (fg)' \, dz = \oint_{z=|\epsilon|}(f(z)g(z))'  \, dz = f(b) - f(a) = f(z_{0})-f(z_{0}) =0\ ,
+\oint_{\ } (fg)' \, dz = \oint_{z=|\epsilon|}(f(z)g(z))'  \, dz = (f\cdot g)(b) - (f\cdot g)(a) = (f\cdot g)(z_{0})-(f\cdot g)(z_{0}) =0\ ,
 $$
-And perhaps looking at formal Laurent series is a bit easier, for example if 
+and perhaps looking at formal Laurent series is a bit easier, for example if 
 $$ H(x)=\sum_{n=-N}^{\infty} a_{n}x^n $$
 then obviously 
 $$
