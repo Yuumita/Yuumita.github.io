@@ -56,15 +56,15 @@
 <p>So everybody likes vector spaces but I would guess the majority of people automatically assume we are referring to them with respect to the fields $\mathbb{R},\mathbb{C}$—or in some cases $\mathbb{Q}$. Personally, my favorite field is the Galois field $\mathbb{F}_{q}$ for $q=p^k$ for some $k \in \mathbb{N}\setminus\{ 0 \}$ and $p$ prime. Since it <em>is</em> actually a field, (almost) everything we know from linear algebra perfectly translates in that field and so we can talking about vector spaces over $\mathbb{F}_{q}$. That's great but... is this fact at all useful? To be honest I don't care, I don't do mathematics for their applications. However I get that theory alone is sometimes dull so I leave the following example for the curious readers so as to make them think twice before closing the article.</p>
 <details class="example" open="open">
 <summary>$\mathrm{GF}(2)$</summary>
-<p>Looking at $\mathbb{F}_{2}$ and denoting the elements as $\mathbb{F}_{2}=\{ 0,1 \}$ we see that if we  $0$ is the additive identity and $1$ as the multiplicative identity of the field then for $a,b \in \mathbb{F}_{2}$ we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ where $\text{AND},\text{XOR}$ denote the corresponding bitwise operations. 
-What about bit strings? Where we can look at $n$-bit numbers/strings as elements of $\mathbb{F}_{2}^n$ and then again we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ for $a,b \in \mathbb{F}_{2}^n$. </p>
-<p>The first thing to note here is that this allows for simple compressions of lists of bit strings. For example let $S$ be a set of $n$-bit  non-negative numbers and say that we want to maintain the set $X$ of all numbers that can be made from $\text{XOR}$ing some of the numbers in $S$. 
-The set $X$ can have a lot more numbers than $S$. For example if $S$ only has the $n$ numbers where the $i$-th of them has only the $i$-th bit set then we can write all $n$-bit numbers, i.e. $|X|=2^n$. Wait, doesn't this remind us of a great idea from linear algebra? We will represent each number of $S$ as an element in $\mathbb{F}_{2}^n$ and let them be $\{ v_{i} \}_{i=1}^k$. Then we have
+<p>Looking at $\mathbb{F}_{2}$ and denoting the elements as $\mathbb{F}_{2}=\{ 0,1 \}$ we see that if $0$ is the additive identity and $1$ the multiplicative identity of the field then for $a,b \in \mathbb{F}_{2}$ we have $a\cdot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ where $\text{AND},\text{XOR}$ denote the corresponding bitwise operations. 
+What about bit strings? If we look at $n$-bit numbers/strings as elements of $\mathbb{F}_{2}^n$ and then again we have $a\odot b = a\text{ AND }b$ and $a + b =a\text{ XOR }b$ for $a,b \in \mathbb{F}_{2}^n$. </p>
+<p>The first thing to note here is that this allows for simple compressions of lists of bit strings, let's see an example. Let $S$ be a set of $n$-bit  non-negative integers and say that we want to maintain the set $X$ of all numbers that can be made from $\text{XOR}$ing some of the integers in $S$. 
+Notice how the set $X$ can contain a lot more numbers than $S$. For example, if $S$ only has the $n$ numbers where the $i$-th of them has only the $i$-th bit set then we can write all $n$-bit numbers from $\mathrm{XOR}$ing some numbers in $S$ — i.e. $|X|=2^n$. Wait, doesn't this remind us of a great idea from linear algebra? We will represent each number of $S$ as an element in $\mathbb{F}_{2}^n$, let them be $\{ v_{i} \}_{i=1}^k$. Then we have
 $$
 X= \left\{ \sum_{i =1}^{k}c_{i}v_{i}: c_{i}\in \mathbb{F}_{2}   \right\}  = \mathrm{span}\{ v_{i} \}_{i=1}^k.
 $$
-So $X$ is a vector space in the field $\mathbb{F}_{2}$ of at most $n$ dimensions and is spanned by $\{ v_{i} \}_{i=1}^k$ so we can easily find a basis of $X$ from $\{ v_{i} \}_{i=1}^k$ of which has at most $n$ elements (since the dimension of $X$ is at most $n$). 
-Maintaining the basis is equivalent to maintaining all of $X$.</p>
+So $X$ is a vector space in the field $\mathbb{F}_{2}$ of at most $n$ dimensions and is spanned by $\{ v_{i} \}_{i=1}^k$ so we can easily find a basis of $X$ from $\{ v_{i} \}_{i=1}^k$ which has at most $n$ elements (since the dimension of $X$ is at most $n$). 
+Maintaining the basis is equivalent to maintaining all of $X$. We can find such a base using the standard algorithm by Gauss (just keep in mind that addition is actually $\mathrm{XOR}$ here).</p>
 </details>
 <h3 id="Counting vector spaces">Counting vector spaces</h3>
 <p>One of my favorite things to do is count things. This is something that can't be done vector spaces like $\mathbb{R}^n$ (and no, I don't like measuring as much) so $\mathbb{F}^n_{q}$ allows us to merge linear algebra with combinatorics.</p>
@@ -128,7 +128,7 @@ $$</p>
 $$
 (x+y)^2=(x+y)x+(x+y)y=x^{2}+yx+xy+y^{2}=x^{2}+(1+q)xy+y^{2}.
 $$
-Wait, this feels... right, let's continue.
+Wait, this feels... right. Let's continue.
 $$
 \begin{align*}
 (x+y)^3 &amp;= [x^{2}+(1+q)xy+y^{2}](x+y)  \\
