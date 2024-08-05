@@ -201,7 +201,6 @@ $$
 F_{n}(x)=q(x)^nF_{0}(x) + r(x) \frac{q(x)^n-1}{q(x)-1}.
 $$</p>
 </details>
-<p>Keeping this trick in mind we can even utilize this method for different type recurrences. If the values $f(n,\cdot)$ depend only on value $f(n-1,\cdot)$ then we can generally express the recurrence using generating functions, but we can never guarantee the efficiency of its computation.</p>
 <details class="example" open="open">
 <summary>Example 3</summary>
 <p>Suppose we have the recurrence
@@ -214,6 +213,7 @@ F_{n}(x)=(1+x)F_{n-1}(x)=(1+x)^nF_{0}(x).
 $$
 If we were to consider the <em>ordinary</em> generating function we would have a differential involved in the previous equations, which wouldn't help us in our calculations.</p>
 </details>
+<p>Keeping this trick in mind we can even utilize this method for different type recurrences. If the values $f(n,\cdot)$ depend only on value $f(n-1,\cdot)$ then we can generally express the recurrence using generating functions, but we can never guarantee the efficiency of its computation.</p>
 <div class="footnote">
 <hr />
 <ol>
