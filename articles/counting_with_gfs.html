@@ -61,7 +61,7 @@
 <p>We are going to take quick look at some simple but really useful techniques which allow for very efficient computations of combinatorial numbers using generating functions. Our goal is to introduce the different methods used, which are not usually taught in introductory courses in combinatorics.</p>
 <p>This blog was heavily inspired by the <em>Enumerative Combinatorics Section</em> in <a href="https://judge.yosupo.jp">Library Checker</a>. </p>
 <h3 id="The factorial $n!$">The factorial $n!$</h3>
-<p>The factorial is a big number. It's so big in fact that we cannot hope of computing $n!$ in $o(n)$. Usually when calculating  time complexity we don't really pay attention to the bits needed for storing numbers but considering, we suppose that all operations can be carried through in $\Theta(1)$. Considering, however, that $\log n! = \Theta(n\log n)$, the bits needed tell us that we cannot hope for a fast algorithm for computing the factorial <em>precisely</em>. However there are many ways of computing it fast in a non-precise way.</p>
+<p>The factorial is a big number. It's so big in fact that we cannot hope of computing $n!$ in $o(n)$. Usually when calculating  time complexity we don't really pay attention to the bits needed for storing numbers, we suppose that all operations can be carried through in $\Theta(1)$. Considering, however, that $\log n! = \Theta(n\log n)$, the bits needed tell us that we cannot hope for a fast algorithm for computing the factorial <em>precisely</em>. However there are many ways of computing it fast in a non-precise way.</p>
 <p>For example we can factor $n!$ pretty fast. If we wish to factor $n!$ it suffices to find the $p$-adic order, $\nu_{p}(n)$<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, for each prime $p \leq n$. This is really simple considering $n!$ is the product of all numbers $\{ 1,\dots, n \}$. Namely we have the formula
 $$
 \nu_{p}(n!)=\sum_{k=1}^{\infty}  \left\lfloor \frac{n}{p^k} \right\rfloor  = \sum_{k=1}^{\left\lfloor \log_{p}(n) \right\rfloor } \left\lfloor \frac{n}{p^k} \right\rfloor.
@@ -82,11 +82,11 @@ Then $d!=F_{d}(0)$, $(2d)! = F_{d}(0)\cdot F_{d}(d)$ etc. We want to find a way 
 $$
 (iB)!= \prod_{j=0}^{i} F_{B}(jB )
 $$
-but since $iB \leq n \iff i \leq n/B$ to compute $(iB)!$ we would need $O\left( \frac{n}{B} B \right)=O(n)$ given $F_{B}(x)$ —not even counting the time needed to calculate $F_{B}(x)$. But notice that we don't really need to maintain all of $F_{B}(x)$ if we just want the values $\{F_{B}(jB)\}_{j=0}^\left\lfloor n / B \right\rfloor$.
-It helps here to remember sample point shifting, it will help our intuition towards the following steps.</p>
+but since $iB \leq n \iff i \leq n/B$ to compute $(iB)!$ we would need $O\left( \frac{n}{B} B \right)=O(n)$ time given $F_{B}(x)$. However, we don't really need to maintain all of $F_{B}(x)$ but just the values $\{F_{B}(jB)\}_{j=0}^\left\lfloor n / B \right\rfloor$.
+It helps here to remind ourselves of sample point shifting, it will help our intuition towards the following steps.</p>
 <details class="note" open="open">
 <summary>Sample Point Shifting</summary>
-<p>Suppose that $G(x)$ is a polynomial of degree at most $n$ and that we are given the $n+1$ points $\{ (a_{i},G(a_{i})) \}_{i=0}^n$ where $(a_{i})_{i=0}^n$ forms an arithmetic progression, i.e. $a_{i}=\alpha \cdot i+a_{0}$. We will show how to compute the points $\{ (a_{i}+c,G(a_{i}+c)) \}_{i=0}^n$ for some $c$.</p>
+<p>Suppose that $G(x)$ is a polynomial of degree at most $n$ and that we are given the $n+1$ points $\{ (a_{i},G(a_{i})) \}_{i=0}^n$ where $(a_{i})_{i=0}^n$ forms an arithmetic progression, i.e. $a_{i}=\alpha \cdot i+a_{0}$. We will show how to compute the points $\{ (a_{i}+c,G(a_{i}+c)) \}_{i=0}^n$ for some $c$ in $O(n\log n)$.</p>
 <p>First of let $F(x)=G(\alpha x+a_{0})$, then we are given $\{ (a_{i},G(a_{i})) \}_{i=0}^n=\{ (i,F(i)) \}_{i=0}^n$. From Lagrange interpolation we can uniquely determine $F(x)$ from the points by
 $$
 \begin{align}
@@ -115,7 +115,8 @@ $$
 &amp;= \bigcup_{j=0}^{d} \{ F_{d}(jB)F_{d}(d+jB) \}\cup \bigcup_{j=1}^{d}\{ F_{d}(jB+dB)F_{d}(d+jB+dB) \}
 \end{align}
 $$
-Therefore we can compute $\mathcal{X}_{2d}$ from $\mathcal{X}_{d}$ by sample point shifting $\{ F_{d}(jB) \}_{j=0}^d$ by $d$, $dB$, and $dB+d$ in $O(d\log d)$. We eventually compute $\mathcal{X}_{d}$ in $O\left( \sum_{i=0}^{\log B} 2^i i \right)=O(B\log B)$. Picking $B$ as the first power of two not less than $\sqrt{ p }$ we can perform the precomputations in $O(\sqrt{ p }\log p)$ and compute each factorial in $O(\sqrt{ p })$ afterwards.</p>
+Therefore we can compute $\mathcal{X}_{2d}$ from $\mathcal{X}_{d}$ by sample point shifting $\{ F_{d}(jB) \}_{j=0}^d$ by $d$, $dB$, and $dB+d$ in $O(d\log d)$. We eventually compute $\mathcal{X}_{B}$ in $O\left( \sum_{i=0}^{\log B} 2^i i \right)=O(B\log B)$. 
+Picking $B$ as the first power of two not less than $\sqrt{ p }$ enables us to perform the precomputations in $O(\sqrt{ p }\log p)$ and compute each factorial in $O(\sqrt{ p })$ afterwards.</p>
 <h3 id="Integer partition">Integer partition</h3>
 <p>The partition function $p(n)$ counts the partitions of a non-negative integer $n$. Its generating function
 $$
@@ -127,9 +128,7 @@ $$
 \sum_{n=0}^{\infty} p(n)x^n &amp;= \prod_{n=1}^{\infty}(1-x^n)^{-1}    \\
 &amp;= \exp\left( \log \prod_{n=1}^{\infty} (1-x^n)^{-1} \right)   \\
 &amp;= \exp \left(- \sum_{n=1}^{\infty} \log(1 - x^n) \right) \\
-&amp;= \exp \left(- \sum_{n=1}^{\infty}\sum_{k=0}^{\infty} \frac{(-1)^k(-x^n)^k}{k} \right) \\
 &amp;= \exp \left(- \sum_{n=1}^{\infty}\sum_{k=0}^{\infty} \frac{(-1)^{k(n+1)}x^{nk}}{k} \right) \\
-&amp;= \exp \left(-\sum_{m=1}^{\infty} \left(\sum_{d \mid m}^{} \frac{(-1)^{m+d}}{d}\right)x^m \right) \\
 &amp;\equiv \exp \left(\sum_{n=0}^{N} \sum_{k=0}^{\left\lfloor N /n \right\rfloor} \frac{(-1)^{k(n+1)}}{k}x^{nk} \right) \pmod{ x^{N+1}} 
 \end{align}
 $$
@@ -144,7 +143,7 @@ time considering that we can exponentiate, modulo $x^{N+1}$, a power series in $
 $$
 (x)_{n}=x(x-1)\dots(x-n+1) = \sum_{k=0}^{n} s(n,k)x^k.
 $$
-Since the left hand side of the equation is very simple, it makes sense to prefer to maintain the formal power series of $s(n,\cdot)$ rather than the values $\{ s(n,k) \}_{k =0}^n$ themselves. Through this lens we notice that a fixed $n$, the numbers $s(n,\cdot)$ can easily be computed through the formal power series by noticing that
+Since the left hand side of the equation is very simple, it makes sense to prefer to maintain the formal power series of $s(n,\cdot)$ rather than the values $\{ s(n,k) \}_{k =0}^n$ themselves. Through this lens we notice that, for a fixed $n$, the numbers $s(n,\cdot)$ can easily be computed through the formal power series by noticing that
 $$
 (x)_{n}=\left\{\begin{array}{ll}
 1,&amp;n =0 \\
@@ -152,7 +151,7 @@ $$
 (x)_{\left\lfloor n / 2 \right\rfloor}\cdot (x - \left\lfloor  n /2 \right\rfloor)_{\left\lfloor  n /2 \right\rfloor }\cdot (x-n+1), &amp;n \equiv 1 \pmod{2} 
 \end{array}\right.
 $$</p>
-<p>Given a power series $P(x)\pmod{ x^N}$ we can compute $P(x+c)\pmod{ x^N}$ in $O(N\log N)$ therefore we can compute $(x)_{n}$ in $O(n \log^{2} n)$. </p>
+<p>Given a power series $P(x)\pmod{ x^N}$ we can compute $P(x+c)\pmod{ x^N}$ in $O(N\log N)$ therefore we can compute $(x-n / 2 )_{n/2}$ from $(x)_{n / 2}$ fast enough so that we compute all of $(x)_{n}$ in $O(n \log n)$.</p>
 <details class="- note">
 <summary>Computing $F(x+c)\pmod{x^N}$ from $F(x)\pmod{x^N}$ in $O(N\log N)$</summary>
 <p>Consider $F(x)=\sum_{i}^{}f_{i}x^i$ with $f_{i}=0$ for $i\geq N$. Then 
@@ -173,11 +172,11 @@ S(n,k) = \frac{1}{k!} \sum_{j=0}^{k} (-1)^{k-j}\binom{k}{j} j^n = \sum_{j=0}^{k}
 $$
 which enables us to compute $\{ S(n,k) \}_{k=0}^n$ by convolution of the sequences $\alpha_{i}=\frac{(-1)^i}{i!}$ and $\beta_{i}=\frac{i^n}{i!}$, i.e. $S(n,\cdot) = \alpha *\beta$. Therefore we can compute the values $\{ S(n,k) \}_{k=0}^n$ in $O(n\log n)$.</p>
 <h3 id="Simple 2-indexed recurrences">Simple 2-indexed recurrences</h3>
-<p>Suppose we are given a value $a_{n,k}$ that can be computed recursively from $a_{n-1,\cdot}$ as a sum of terms $c(n)a_{n-1,i_{n}(k)}$ where $c(n)$ depends only on $n$ and $i_{n}(k)=k\pm d_{n}$. Then if we suppose the power series $F_{n}(x)=\sum_{k}^{}a_{n,k}x^k$ then 
+<p>Suppose we are given a value $a_{n,k}$ that can be computed recursively from $a_{n-1,\cdot}$ as a sum of terms $c(n)a_{n-1,i_{n}(k)}$ where $c(n)$ depends only on $n$ and $i_{n}(k)=k\pm d_{n}$. Then if we suppose the power series $F_{n}(x)=\sum_{k}^{}a_{n,k}x^k$ we get 
 $$
 F_{n}(x)=q_{n}(x)F_{n-1}(x)=\dots= F_{0}(x) \prod_{i=1}^{n} q_{i}(x)
 $$
-and since we can compute $\prod_{i}^{}q_{i}(x)\pmod{x^N}$ in $O(N\log^{2}N)$ and so we can compute $F_{n}\pmod{x^N}$ in $O(N\log^{2} N)$.</p>
+for some $\{ q_{i}(x) \}_{i=1}^n$ and since we can compute $\prod_{i}^{}q_{i}(x)\pmod{x^N}$ in $O(N\log^{2}N)$ we can compute $F_{n}\pmod{x^N}$ in $O(N\log^{2} N)$.</p>
 <details class="example" open="open">
 <summary>Example 1</summary>
 <p>We consider the function $f:\mathbb{N}^{2}\to \mathbb{Z}$ defined by 
