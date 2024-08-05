@@ -1,5 +1,11 @@
 [
     {
+      "title": "Efficient counting with generating functions",
+      "date": "2024 Aug 05",
+      "url": "/articles/couting_with_gfs.html",
+      "tags": ["algorithms", "mathematics"]
+    }, 
+    {
       "title": "A quick look at combinatorial q-analogs",
       "date": "2024 May 07",
       "url": "/articles/q-analogs.html",

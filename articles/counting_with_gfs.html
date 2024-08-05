@@ -69,7 +69,7 @@ $$
 Hence we can factor $n!$ into $n!=\prod_{i}^{}p_{i}^{\nu_{p_{i}}(n)}$, where $\{ p_{i} \}$ is the set of primes $\leq n$ (which can be given beforehand or calculated by Eratosthenes sieve), in $O\left( \frac{n}{\log n} \log n \right)=O(n)$ since there are $\Theta\left( \frac{n}{\log n} \right)$ primes up to $n$.</p>
 <hr />
 <p>Another way of computing $n!$ in a non-precise way is to compute it modulo some (small) number $p$, which can be, without too much loss of generality, assumed to be prime. Doing computations in $\mathbb{Z}_{p}$ rather than $\mathbb{Z}$ allows us to do all arithmetic operations in $O(\mathrm{poly}(\log p))$ time.</p>
-<p>In order to compute $n!\pmod{p}$ we will split the interval $[1,p]$ to blocks $\{ [(i-1)B+1,iB] \}_{i=1}^ \left\lceil p/B \right\rceil$ of size $B$ and precalculate $(iB)!$ for $i=1,2,\dots, \left\lceil p / B \right\rceil$^[2]. For the sake of simplicity we will assume $B$ is a power of two, i.e. $B=2^\ell$ for some $\ell \in \mathbb{N}$.
+<p>In order to compute $n!\pmod{p}$ we will split the interval $[1,p]$ to blocks $\{ [(i-1)B+1,iB] \}_{i=1}^ \left\lceil p/B \right\rceil$ of size $B$ and precalculate $(iB)!$ for $i=1,2,\dots, \left\lceil p / B \right\rceil$<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. For the sake of simplicity we will assume $B$ is a power of two, i.e. $B=2^\ell$ for some $\ell \in \mathbb{N}$.
 We can perform the computation of $n!\pmod{p}$, where without loss of generality we can assume $n &lt;p$, as
 $$
 n!\equiv \left( \left\lfloor \frac{n}{B} \right\rfloor B  \right)!\prod_{\left\lfloor \frac{n}{B} \right\rfloor B&lt;i\leq n } i\pmod{p} .
@@ -223,7 +223,7 @@ $$</p>
 <p>The highest exponent $\nu_p(n)$ such that $p^{\nu_p(n)}$ divides $n$.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
-<p>https://nyaannyaan.github.io/library/modulo/factorial.hpp.html&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+<p><a href="https://nyaannyaan.github.io/library/modulo/factorial.hpp.html">https://nyaannyaan.github.io/library/modulo/factorial.hpp.html</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
