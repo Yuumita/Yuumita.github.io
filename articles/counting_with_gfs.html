@@ -1,0 +1,241 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="Efficient counting with generating Functions">Efficient counting with generating Functions</h1>
+<h2 id="Basic methods and techniques for efficient enumerating with generating functions">Basic methods and techniques for efficient enumerating with generating functions</h2>
+<h3 id="Prerequisites">Prerequisites</h3>
+<ul>
+<li>Basic combinatorics;</li>
+<li>Generating functions.</li>
+</ul>
+<h3 id="Notation">Notation</h3>
+<ul>
+<li>$[n]=\{ 1,2,\dots,n \}$.</li>
+<li>Falling factorial: $(x)_{n}=x(x-1)(x-2)\dots(x-n+1)$.</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>We are going to take quick look at some simple but really useful techniques which allow for very efficient computations of combinatorial numbers using generating functions. Our goal is to introduce the different methods used, which are not usually taught in introductory courses in combinatorics.</p>
+<p>This blog was heavily inspired by the <em>Enumerative Combinatorics Section</em> in <a href="https://judge.yosupo.jp">Library Checker</a>. </p>
+<h3 id="The factorial $n!$">The factorial $n!$</h3>
+<p>The factorial is a big number. It's so big in fact that we cannot hope of computing $n!$ in $o(n)$. Usually when calculating  time complexity we don't really pay attention to the bits needed for storing numbers but considering, we suppose that all operations can be carried through in $\Theta(1)$. Considering, however, that $\log n! = \Theta(n\log n)$, the bits needed tell us that we cannot hope for a fast algorithm for computing the factorial <em>precisely</em>. However there are many ways of computing it fast in a non-precise way.</p>
+<p>For example we can factor $n!$ pretty fast. If we wish to factor $n!$ it suffices to find the $p$-adic order, $\nu_{p}(n)$<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, for each prime $p \leq n$. This is really simple considering $n!$ is the product of all numbers $\{ 1,\dots, n \}$. Namely we have the formula
+$$
+\nu_{p}(n!)=\sum_{k=1}^{\infty}  \left\lfloor \frac{n}{p^k} \right\rfloor  = \sum_{k=1}^{\left\lfloor \log_{p}(n) \right\rfloor } \left\lfloor \frac{n}{p^k} \right\rfloor.
+$$
+Hence we can factor $n!$ into $n!=\prod_{i}^{}p_{i}^{\nu_{p_{i}}(n)}$, where $\{ p_{i} \}$ is the set of primes $\leq n$ (which can be given beforehand or calculated by Eratosthenes sieve), in $O\left( \frac{n}{\log n} \log n \right)=O(n)$ since there are $\Theta\left( \frac{n}{\log n} \right)$ primes up to $n$.</p>
+<hr />
+<p>Another way of computing $n!$ in a non-precise way is to compute it modulo some (small) number $p$, which can be, without too much loss of generality, assumed to be prime. Doing computations in $\mathbb{Z}_{p}$ rather than $\mathbb{Z}$ allows us to do all arithmetic operations in $O(\mathrm{poly}(\log p))$ time.</p>
+<p>In order to compute $n!\pmod{p}$ we will split the interval $[1,p]$ to blocks $\{ [(i-1)B+1,iB] \}_{i=1}^ \left\lceil p/B \right\rceil$ of size $B$ and precalculate $(iB)!$ for $i=1,2,\dots, \left\lceil p / B \right\rceil$^[2]. For the sake of simplicity we will assume $B$ is a power of two, i.e. $B=2^\ell$ for some $\ell \in \mathbb{N}$.
+We can perform the computation of $n!\pmod{p}$, where without loss of generality we can assume $n &lt;p$, as
+$$
+n!\equiv \left( \left\lfloor \frac{n}{B} \right\rfloor B  \right)!\prod_{\left\lfloor \frac{n}{B} \right\rfloor B&lt;i\leq n } i\pmod{p} .
+$$
+To do the precalculation we will consider a generating function $F_{d}$ defined by
+$$
+F_{d}(x)\equiv(x+1)\cdots(x+d)\pmod{p}.
+$$
+Then $d!=F_{d}(0)$, $(2d)! = F_{d}(0)\cdot F_{d}(d)$ etc. We want to find a way to compute $(iB)!$ without needing to store too many information, for example we shouldn't want to compute anything more than $F_{B}(x)$. Given $F_{B}(x)$, though, we can compute $(iB)!$ as
+$$
+(iB)!= \prod_{j=0}^{i} F_{B}(jB )
+$$
+but since $iB \leq n \iff i \leq n/B$ to compute $(iB)!$ we would need $O\left( \frac{n}{B} B \right)=O(n)$ given $F_{B}(x)$ —not even counting the time needed to calculate $F_{B}(x)$. But notice that we don't really need to maintain all of $F_{B}(x)$ if we just want the values $\{F_{B}(jB)\}_{j=0}^\left\lfloor n / B \right\rfloor$.
+It helps here to remember sample point shifting, it will help our intuition towards the following steps.</p>
+<details class="note" open="open">
+<summary>Sample Point Shifting</summary>
+<p>Suppose that $G(x)$ is a polynomial of degree at most $n$ and that we are given the $n+1$ points $\{ (a_{i},G(a_{i})) \}_{i=0}^n$ where $(a_{i})_{i=0}^n$ forms an arithmetic progression, i.e. $a_{i}=\alpha \cdot i+a_{0}$. We will show how to compute the points $\{ (a_{i}+c,G(a_{i}+c)) \}_{i=0}^n$ for some $c$.</p>
+<p>First of let $F(x)=G(\alpha x+a_{0})$, then we are given $\{ (a_{i},G(a_{i})) \}_{i=0}^n=\{ (i,F(i)) \}_{i=0}^n$. From Lagrange interpolation we can uniquely determine $F(x)$ from the points by
+$$
+\begin{align}
+F(x)= \sum_{i=0}^{n} F(i) \prod_{0\leq j\leq n\atop j\neq i}^{}  \frac{x-j}{i-j}
+&amp;= \sum_{i=0}^{n} F(i) \frac{\frac{(x)_{n+1}}{x-i}}{(-1)^{n-i}i!(n-i)!}  \\
+&amp;= (x)_{n+1}\sum_{i=0}^{n} \frac{F(i)(-1)^{n-i}}{i!(n-i)!}\cdot \frac{1}{x-i}
+\end{align}
+$$
+and therefore for $k=0,1,\dots,n$ and some $s$ we have
+$$
+F(k+s)= (k+s)_{n+1} \sum_{i=0}^{n}  \frac{F(i)(-1)^{n-i}}{i!(n-i)!} \cdot \frac{1}{k+s-i}
+$$
+which can be computed from the convolution of $A(z)=\frac{F(z)(-1)^{n-z}}{z!(n-z)!}$ and $B(z)=\frac{1}{s+z}$ in $O(n\log n)$. Picking $s=\frac{c}{\alpha}$ we get
+$$
+F(k+s)=G(\alpha k+a_{0}+c) = G(a_{k}+c),\quad k=0,1,\dots,n
+$$
+which was exactly what we were looking for.</p>
+</details>
+<p>Let's consider set of values $\mathcal{X}_{d}=\{ F_{d}(jB) \}_{j=0}^d$ —since $\mathrm{deg}(F_{d})=d$, $\mathcal{X}_{d}$ uniquely determines $F_{d}$. It should be apparent now that we wish to have $B\geq \sqrt{ p }$, so we will suppose $B$ is the first power of $2$ which is not smaller than $\sqrt{ p }$. This is because we want $\left\lfloor  n /B \right\rfloor\leq B$ (compare $\{ F_{B}(jB) \}_{j=0}^{\left\lfloor  n /B \right\rfloor}$ with $\mathcal{X}_{B}$).
+We are basically finished since we can compute $\mathcal{X}_{2d}$ as 
+$$
+\begin{align}
+\mathcal{X}_{2d}=  \bigcup_{j=0}^{2d}\{ F_{2d}(jB) \}
+&amp;= \bigcup_{j=0}^{d} \{ F_{2d}(jB) \}\cup \bigcup_{j=d+1}^{2d}\{ F_{2d}(jB) \}   \\
+&amp;= \bigcup_{j=0}^{d} \{ F_{d}(jB)F_{d}(d+jB) \}\cup \bigcup_{j=1}^{d}\{ F_{2d}(jB+dB) \}   \\
+&amp;= \bigcup_{j=0}^{d} \{ F_{d}(jB)F_{d}(d+jB) \}\cup \bigcup_{j=1}^{d}\{ F_{d}(jB+dB)F_{d}(d+jB+dB) \}
+\end{align}
+$$
+Therefore we can compute $\mathcal{X}_{2d}$ from $\mathcal{X}_{d}$ by sample point shifting $\{ F_{d}(jB) \}_{j=0}^d$ by $d$, $dB$, and $dB+d$ in $O(d\log d)$. We eventually compute $\mathcal{X}_{d}$ in $O\left( \sum_{i=0}^{\log B} 2^i i \right)=O(B\log B)$. Picking $B$ as the first power of two not less than $\sqrt{ p }$ we can perform the precomputations in $O(\sqrt{ p }\log p)$ and compute each factorial in $O(\sqrt{ p })$ afterwards.</p>
+<h3 id="Integer partition">Integer partition</h3>
+<p>The partition function $p(n)$ counts the partitions of a non-negative integer $n$. Its generating function
+$$
+\sum_{n=0}^{\infty} p(n)x^n = \prod_{j=1}^{\infty} \sum_{i=0}^{\infty} x^{ij} = \prod_{j=1}^{\infty} \frac{1}{1-x^j}
+$$</p>
+<p>allows us to compute $\{ p(n) \}_{n=0}^N$ by computing, modulo $x^{N+1}$, the power series
+$$
+\begin{align}
+\sum_{n=0}^{\infty} p(n)x^n &amp;= \prod_{n=1}^{\infty}(1-x^n)^{-1}    \\
+&amp;= \exp\left( \log \prod_{n=1}^{\infty} (1-x^n)^{-1} \right)   \\
+&amp;= \exp \left(- \sum_{n=1}^{\infty} \log(1 - x^n) \right) \\
+&amp;= \exp \left(- \sum_{n=1}^{\infty}\sum_{k=0}^{\infty} \frac{(-1)^k(-x^n)^k}{k} \right) \\
+&amp;= \exp \left(- \sum_{n=1}^{\infty}\sum_{k=0}^{\infty} \frac{(-1)^{k(n+1)}x^{nk}}{k} \right) \\
+&amp;= \exp \left(-\sum_{m=1}^{\infty} \left(\sum_{d \mid m}^{} \frac{(-1)^{m+d}}{d}\right)x^m \right) \\
+&amp;\equiv \exp \left(\sum_{n=0}^{N} \sum_{k=0}^{\left\lfloor N /n \right\rfloor} \frac{(-1)^{k(n+1)}}{k}x^{nk} \right) \pmod{ x^{N+1}} 
+\end{align}
+$$
+which can be computed in
+$$
+O\left( \sum_{n=0}^{N} \frac{N}{n}+N\log N \right) = O(N\log N)
+$$
+time considering that we can exponentiate, modulo $x^{N+1}$, a power series in $O(N\log N)$ time.</p>
+<h3 id="Stirling numbers">Stirling numbers</h3>
+<h4 id="Stirling numbers of the first kind">Stirling numbers of the first kind</h4>
+<p>The Stirling numbers of the first kind, $s(n,k)$, are defined by
+$$
+(x)_{n}=x(x-1)\dots(x-n+1) = \sum_{k=0}^{n} s(n,k)x^k.
+$$
+Since the left hand side of the equation is very simple, it makes sense to prefer to maintain the formal power series of $s(n,\cdot)$ rather than the values $\{ s(n,k) \}_{k =0}^n$ themselves. Through this lens we notice that a fixed $n$, the numbers $s(n,\cdot)$ can easily be computed through the formal power series by noticing that
+$$
+(x)_{n}=\left\{\begin{array}{ll}
+1,&amp;n =0 \\
+(x)_{n/2}\cdot (x - n /2)_{ n /2}, &amp;n \equiv 0 \pmod{2} \\
+(x)_{\left\lfloor n / 2 \right\rfloor}\cdot (x - \left\lfloor  n /2 \right\rfloor)_{\left\lfloor  n /2 \right\rfloor }\cdot (x-n+1), &amp;n \equiv 1 \pmod{2} 
+\end{array}\right.
+$$</p>
+<p>Given a power series $P(x)\pmod{ x^N}$ we can compute $P(x+c)\pmod{ x^N}$ in $O(N\log N)$ therefore we can compute $(x)_{n}$ in $O(n \log^{2} n)$. </p>
+<details class="- note">
+<summary>Computing $F(x+c)\pmod{x^N}$ from $F(x)\pmod{x^N}$ in $O(N\log N)$</summary>
+<p>Consider $F(x)=\sum_{i}^{}f_{i}x^i$ with $f_{i}=0$ for $i\geq N$. Then 
+$$
+\begin{align}
+F(x+c)=\sum_{i=0}^{\infty} f_{i}(x+c)^i
+&amp;=\sum_{i=0}^{\infty} f_{i}\sum_{j=0}^{i} \frac{i!}{j!(i-j)!}x^{i-j}c^{j} \\
+&amp;= \sum_{k=0}^{\infty}\left( \sum_{i=k}^{\infty} i!f_{i}\cdot \frac{c^{i-k}}{(i-k)!} \right) \frac{x^k}{k!} \\
+&amp;\equiv \sum_{k=0}^{N-1}\left( \sum_{i=k}^{N-1} i!f_{i}\cdot \frac{c^{i-k}}{(i-k)!} \right) \frac{x^k}{k!}\pmod{x^N},
+\end{align}
+$$
+which can be computed from just a convolution.</p>
+</details>
+<h4 id="Stirling numbers of the second kind">Stirling numbers of the second kind</h4>
+<p>The Stirling numbers of the second kind, $S(n,k)$, are defined as the number of ways to partition $[n]$ into $k$ non-empty subsets. For a given $n$, we can compute $S(n,\cdot)$ by counting counting the surjective functions $f:[n]\to[k]$ and sieving. Namely we get the formula
+$$
+S(n,k) = \frac{1}{k!} \sum_{j=0}^{k} (-1)^{k-j}\binom{k}{j} j^n = \sum_{j=0}^{k} \frac{(-1)^{k-i}}{(k-i)!} \frac{j^n}{j!},
+$$
+which enables us to compute $\{ S(n,k) \}_{k=0}^n$ by convolution of the sequences $\alpha_{i}=\frac{(-1)^i}{i!}$ and $\beta_{i}=\frac{i^n}{i!}$, i.e. $S(n,\cdot) = \alpha *\beta$. Therefore we can compute the values $\{ S(n,k) \}_{k=0}^n$ in $O(n\log n)$.</p>
+<h3 id="Simple 2-indexed recurrences">Simple 2-indexed recurrences</h3>
+<p>Suppose we are given a value $a_{n,k}$ that can be computed recursively from $a_{n-1,\cdot}$ as a sum of terms $c(n)a_{n-1,i_{n}(k)}$ where $c(n)$ depends only on $n$ and $i_{n}(k)=k\pm d_{n}$. Then if we suppose the power series $F_{n}(x)=\sum_{k}^{}a_{n,k}x^k$ then 
+$$
+F_{n}(x)=q_{n}(x)F_{n-1}(x)=\dots= F_{0}(x) \prod_{i=1}^{n} q_{i}(x)
+$$
+and since we can compute $\prod_{i}^{}q_{i}(x)\pmod{x^N}$ in $O(N\log^{2}N)$ and so we can compute $F_{n}\pmod{x^N}$ in $O(N\log^{2} N)$.</p>
+<details class="example" open="open">
+<summary>Example 1</summary>
+<p>We consider the function $f:\mathbb{N}^{2}\to \mathbb{Z}$ defined by 
+$$
+f(n,k)=f(n-1,k) -f(n-1,k-\alpha_{n})
+$$
+for some $(\alpha_{n})_{n=1}^\infty$ and $f(0,0)=1$ and $f(0,k)=0$ for $k\neq 0$. Let $F_{n}(x)=\sum_{k}^{}f(n,k)x^k$, then the previous recurrence implies
+$$
+F_{n}(x) = (1 - x^{\alpha_{n}})F_{n-1}(x)=\dots=F_{0}(x)\prod_{i=1}^{n} (1-x^{\alpha_{i}}) = \prod_{i=1}^{n} (1-x^{\alpha_{i}})
+$$
+so we can retrieve $f(N,k)$ for all $k\leq N$ as $f(N,k)=[x^k]\prod_{i=1}^{N}(1-x^{\alpha_{i}})$ in $O(N\log^{2} N)$.</p>
+</details>
+<details class="example" open="open">
+<summary>Example 2</summary>
+<p>For recurrences like 
+$$
+F_{n}(x)=q(x) F_{n-1}(x) + r(x)
+$$
+we get the solution 
+$$
+F_{n}(x)=q(x)^nF_{0}(x) + r(x) \frac{q(x)^n-1}{q(x)-1}.
+$$</p>
+</details>
+<p>Keeping this trick in mind we can even utilize this method for different type recurrences. If the values $f(n,\cdot)$ depend only on value $f(n-1,\cdot)$ then we can generally express the recurrence using generating functions, but we can never guarantee the efficiency of its computation.</p>
+<details class="example" open="open">
+<summary>Example 3</summary>
+<p>Suppose we have the recurrence
+$$
+f(n,k)=f(n-1,k) +kf(n-1,k-1).
+$$
+We will consider the <em>exponential</em> generating function $F_{n}(x)=\sum_{k}^{}f(n,k) \frac{x^k}{k!}$, then the previous recurrence implies
+$$
+F_{n}(x)=(1+x)F_{n-1}(x)=(1+x)^nF_{0}(x).
+$$</p>
+</details>
+<blockquote>
+<p>If we were to consider the <em>ordinary</em> generating function we would have a differential involved in the previous equations, which wouldn't help us in our calculations.</p>
+</blockquote>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>The highest exponent $\nu_p(n)$ such that $p^{\nu_p(n)}$ divides $n$.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>https://nyaannyaan.github.io/library/modulo/factorial.hpp.html&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>
