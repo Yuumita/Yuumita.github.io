@@ -86,14 +86,16 @@ since $u$ vanishes on $\partial \Omega$.</p>
 </details>
 <p>We will later see how the weak formulation becomes really important.</p>
 <hr />
-<p>We will <em>triangulate</em> $\Omega \subset  \mathbb{R}^d$ into a finite number, namely $n$, of elements $\{ K_{s} \}_{s=1}^n=\mathcal{M}_{h}$ such that:
-- $\bar{\Omega}=\bigcup_{s=1}^{n}K_{s}$.
-- $K_{s}$ is closed and its interior, $\mathrm{int}(K_{s})$, is nonempty.
-- $\mathrm{int}(K_{s})\cap \mathrm{int}(K_{r})=\emptyset$ for $s\neq r$.
-- $\partial K_{s}$ is Lipschitz-continuous.
-- Each $K_{s}$ is a $d$-simplex. 
-- Every face of $K_{s}$ is either a subset of $\partial \Omega$ or a face of another $K_{r}$, $s\neq r$.
-Here, $\mathcal{M}_{h}$ is called a <strong>mesh</strong> and represents $\Omega$. We will set
+<p>We will <em>triangulate</em> $\Omega \subset  \mathbb{R}^d$ into a finite number, namely $n$, of elements $\{ K_{s} \}_{s=1}^n=\mathcal{M}_{h}$ such that:</p>
+<ul>
+<li>$\bar{\Omega}=\bigcup_{s=1}^{n}K_{s}$.</li>
+<li>$K_{s}$ is closed and its interior, $\mathrm{int}(K_{s})$, is nonempty.</li>
+<li>$\mathrm{int}(K_{s})\cap \mathrm{int}(K_{r})=\emptyset$ for $s\neq r$.</li>
+<li>$\partial K_{s}$ is Lipschitz-continuous.</li>
+<li>Each $K_{s}$ is a $d$-simplex. </li>
+<li>Every face of $K_{s}$ is either a subset of $\partial \Omega$ or a face of another $K_{r}$, $s\neq r$.</li>
+</ul>
+<p>Here, $\mathcal{M}_{h}$ is called a <strong>mesh</strong> and represents $\Omega$. We will set
 $$
 V_{h}^{(1)}(\mathcal{M}_{h})=V_{h}:= \{ v \in C(\Omega):v|_{K_{s}} \in \mathcal{P}_{1}^d \text{ for }K_{s} \in \mathcal{M}_{h},v|_{\partial \Omega}=0 \}.
 $$
@@ -262,13 +264,15 @@ $$
 \end{align}
 $$</p>
 <h3 id="Summary">Summary</h3>
-<p>We can summarize the FEM method used for the problems considered as follows:
-- Consider a set $\Omega$, preferably easily triangulable in simplices, and define the bilinear and linear forms $B(f,g)=\int_{\Omega}^{} \mathbf{B}(x)\nabla f\cdot\nabla g \, dx$ and $\ell(f)=\int_{\Omega}^{} \mathbf{L}(x)f \, dx$.
-- Create the master element $\hat{K}$ and define the mesh $\mathcal{M}_{h}=\{ K_{s} \}_{s=1}^n$ by triangulating $\Omega$ and defining the affine maps $\mathcal{G}_{K_{s}}$ mapping $\hat{K}$ to $K_{s}$. Notice that for each map is uniquely defined by its values on the vertices of $\hat{K}$.
-- Consider the <em>local</em> master shape functions $\{ \hat{\phi}_{i} \}_{i=0}^d$ of $\hat{K}$ defined previously and compute the <em>local</em> shape functions $\{ \phi_{i}^s \}_{i=0}^d$ for each $K_{s}$ by $\phi_{i}^s=\mathcal{G}^{-1}_{K_{s}}\circ\hat{\phi}_{i}$. Also compute the gradients $\{ \nabla \phi_{i}^s \}_{i=0}^d$.
-- Approximate $B_{s}(\phi_{i}^s,\phi_{j}^s)\approx\int_{K_{s}}^{} \mathbf{B}(x)\nabla\phi_{i}^s\cdot\nabla\phi_{j}^s \, dx$ and $\ell_{s}(\phi_{i}^s)\approx\int_{K_{s}}^{} \mathbf{L}(x)\phi_{i}^s \, dx$ by a quadrature rule for the simplices $\{ K_{s} \}_{s=1}^n$. 
-- Compute the sparse stiffness matrix $\mathbf{S}_{ij}=B(\Phi_{i},\Phi_{j})=\sum_{s=1}^{n}B_{s}(\phi_{i}^s,\phi_{j}^s)$ and $\mathbf{b}_{i}=\ell(\Phi_{i})=\sum_{s=1}^{n}\ell_{s}(\phi_{i}^s)$.
-- Solve the linear system $\mathbf{S}\mathbf{u}=\mathbf{b}$ and set $u_{h}:=\sum_{i\in\mathcal{N}_{h}}^{}\mathbf{u}_{i}\Phi_{i}$. The function $u_{h} \in V_{h}$ approximates $u \in V$ for which $B(u,\psi)=\ell(\psi)$ for all for all $\psi \in V$ when $x \in\Omega$ and $u=0$ for $x \in\partial \Omega$ —which is exactly what we were looking for.</p>
+<p>We can summarize the FEM method used for the problems considered as follows:</p>
+<ul>
+<li>Consider a set $\Omega$, preferably easily triangulable in simplices, and define the bilinear and linear forms $B(f,g)=\int_{\Omega}^{} \mathbf{B}(x)\nabla f\cdot\nabla g \, dx$ and $\ell(f)=\int_{\Omega}^{} \mathbf{L}(x)f \, dx$.</li>
+<li>Create the master element $\hat{K}$ and define the mesh $\mathcal{M}_{h}=\{ K_{s} \}_{s=1}^n$ by triangulating $\Omega$ and defining the affine maps $\mathcal{G}_{K_{s}}$ mapping $\hat{K}$ to $K_{s}$. Notice that for each map is uniquely defined by its values on the vertices of $\hat{K}$.</li>
+<li>Consider the <em>local</em> master shape functions $\{ \hat{\phi}_{i} \}_{i=0}^d$ of $\hat{K}$ defined previously and compute the <em>local</em> shape functions $\{ \phi_{i}^s \}_{i=0}^d$ for each $K_{s}$ by $\phi_{i}^s=\mathcal{G}^{-1}_{K_{s}}\circ\hat{\phi}_{i}$. Also compute the gradients $\{ \nabla \phi_{i}^s \}_{i=0}^d$.</li>
+<li>Approximate $B_{s}(\phi_{i}^s,\phi_{j}^s)\approx\int_{K_{s}}^{} \mathbf{B}(x)\nabla\phi_{i}^s\cdot\nabla\phi_{j}^s \, dx$ and $\ell_{s}(\phi_{i}^s)\approx\int_{K_{s}}^{} \mathbf{L}(x)\phi_{i}^s \, dx$ by a quadrature rule for the simplices $\{ K_{s} \}_{s=1}^n$. </li>
+<li>Compute the sparse stiffness matrix $\mathbf{S}_{ij}=B(\Phi_{i},\Phi_{j})=\sum_{s=1}^{n}B_{s}(\phi_{i}^s,\phi_{j}^s)$ and $\mathbf{b}_{i}=\ell(\Phi_{i})=\sum_{s=1}^{n}\ell_{s}(\phi_{i}^s)$.</li>
+<li>Solve the linear system $\mathbf{S}\mathbf{u}=\mathbf{b}$ and set $u_{h}:=\sum_{i\in\mathcal{N}_{h}}^{}\mathbf{u}_{i}\Phi_{i}$. The function $u_{h} \in V_{h}$ approximates $u \in V$ for which $B(u,\psi)=\ell(\psi)$ for all for all $\psi \in V$ when $x \in\Omega$ and $u=0$ for $x \in\partial \Omega$ —which is exactly what we were looking for.</li>
+</ul>
 <p>The method can be generalized by considering $\phi_{i}^s \in\mathcal{P}^d_{k}$ for an arbitrary $k\geq1$, i.e. by allowing non-linear piecewise approximations around each vertex. In that case we would need more points in the simplex to uniquely define each $\phi_{i}^s$. Also by displacing the problem initially and considering carefully considering boundary vertices—i.e. vertices which sit of a face of a simplex that is at the boundary— we can solve it for an arbitrary boundary condition $u=g$ for $x \in\partial \Omega$.</p>
 <div class="footnote">
 <hr />
