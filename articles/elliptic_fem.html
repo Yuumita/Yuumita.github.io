@@ -1,0 +1,293 @@
+
+<html>
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0GZ7SX71"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-7V0GZ7SX71');</script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>algorithmas</title>
+    <link rel="icon" href="/assets/images/icons/tabicon.png">
+
+    <!-- Mathjax Rendering -->
+    <div id="mathrendering">
+        <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, }; </script>
+        <!-- (we will render mathjax after loading all dynamic elements) -->
+        <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script> -->
+    </div>
+
+    <!-- Google Code prettifier -->
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+
+
+<body>
+
+<div id="wrapper">
+
+    <div class="header">
+        <h1 id="title" ><a href="/">algorithmas</a></h1>
+        <div id="navbar">
+            <a href="/about.html">About</a>
+            <a href="/articles.html">Articles</a>
+        </div>
+    </div>
+
+<div class="article" id="article">
+
+<div class="contents" id="table-of-contents">
+    <!-- This will be the table of contents -->
+</div>
+<script src="/js/sections.js"></script>
+<div class="article-content" id="article-content">
+<h1 id="The Finite Element Method (FEM) in Elliptic Problems">The Finite Element Method (FEM) in Elliptic Problems</h1>
+<p>???  abstract "Abstract" 
+    In this article we will be discussing the Finite Element Method (FEM) for solving elliptic problems. Even though we will develop the theory from a really abstract viewpoint, we will try to give enough detail when possible so that it is obvious how one would implement such a method in a machine. The theory is based on existing literature[^3][^4] but we rather specialize it and explain simple cases of it.</p>
+<h3 id="Notation">Notation</h3>
+<ul>
+<li>$L^p(\Omega)$: The space of all Lebesgue $\mathcal{B}(\Omega)/\mathcal{B}(\mathbb{R})$-measurable functions equipped with the norm $\left\lVert f \right\rVert_{p}:=\left( \int_{\Omega}^{}  \, |f|^pd\lambda \right)^{1/p}$;</li>
+<li>$\mathcal{P}^d_{k}:=\{ f \in \mathbb{R}[x_{1},\dots,x_{d}]:\mathrm{deg}(f)\leq k \}$;</li>
+<li>$\partial\Omega:=\bar{\Omega}\setminus\Omega$;</li>
+<li>$\Delta$: The Laplacian operator $\Delta:=\sum_{i=1}^{d}\frac{ \partial^{2}}{ \partial x_{i}^{2} }$ with input a function $f$ on parameters $(x_{1},\dots,x_{d})$.</li>
+<li>$C(\Omega)$: The set of all continuous functions $f:\Omega\to \mathbb{R}$;</li>
+<li>$v_{}|_{Y}$: The restriction of a function $v:X\to \mathbb{A}$ to $Y\subseteq X$.</li>
+<li>$\delta_{ij}$: The Kronecker delta.</li>
+</ul>
+<h3 id="Introduction">Introduction</h3>
+<p>Suppose $\Omega \subset \mathbb{R}^d$ is open and bounded. The Dirichlet problem, which we will just call <em>elliptic problem</em>, asks us to find a function $u:\Omega\to \mathbb{R}$ such that
+$$
+\begin{align}
+-\Delta u(x)&amp;=f(x),\quad x \in \Omega \\
+u(x) &amp;= 0,\quad x \in \partial \Omega,
+\end{align}
+$$
+where $\Delta$ is the Laplacian operator $\Delta:=\sum_{i=1}^{d}\frac{ \partial^{2}  }{ \partial x_{i}^{2} }$ and $f \in L^2(\Omega)$. Let $V:=H_{0}^1(\Omega)=\{ v \in L^2(\Omega):\nabla v \in L^2(\Omega),v=0\text{ on }\partial \Omega\}$. There is a simpler, equivalent formulation of the problem called <em>weak formulation</em> and reads:
+$$
+\left&lt; \nabla u,\nabla \psi \right&gt; =\left&lt; f,\psi \right&gt;, \quad \forall \psi \in V,
+$$
+where $\left&lt; \cdot,\cdot \right&gt;:V\times V\to \mathbb{R}$ is the inner product
+$$
+\left&lt; u,v \right&gt; :=\int_{\Omega}^{}uv \, dx.
+$$</p>
+<details class="- note">
+<summary>Proof of equivalence</summary>
+<p>It suffices to notice that, by integration by parts,
+$$
+\left&lt; \nabla u,\nabla \psi \right&gt; = \int_{\Omega}^{} \nabla u\nabla\psi \, dx = \int_{\Omega}^{} fu \, dx 
+$$
+since $u$ vanishes on $\partial \Omega$.</p>
+</details>
+<p>We will later see how the weak formulation becomes really important.</p>
+<hr />
+<p>We will <em>triangulate</em> $\Omega \subset  \mathbb{R}^d$ into a finite number, namely $n$, of elements $\{ K_{s} \}_{s=1}^n=\mathcal{M}_{h}$ such that:
+- $\bar{\Omega}=\bigcup_{s=1}^{n}K_{s}$.
+- $K_{s}$ is closed and its interior, $\mathrm{int}(K_{s})$, is nonempty.
+- $\mathrm{int}(K_{s})\cap \mathrm{int}(K_{r})=\emptyset$ for $s\neq r$.
+- $\partial K_{s}$ is Lipschitz-continuous.
+- Each $K_{s}$ is a $d$-simplex. 
+- Every face of $K_{s}$ is either a subset of $\partial \Omega$ or a face of another $K_{r}$, $s\neq r$.
+Here, $\mathcal{M}_{h}$ is called a <strong>mesh</strong> and represents $\Omega$. We will set
+$$
+V_{h}^{(1)}(\mathcal{M}_{h})=V_{h}:= \{ v \in C(\Omega):v|_{K_{s}} \in \mathcal{P}_{1}^d \text{ for }K_{s} \in \mathcal{M}_{h},v|_{\partial \Omega}=0 \}.
+$$
+As we can see, $V_{h}$ is a subspace of $V=H_{0}^1(\Omega)$ and is of dimension $N=|\mathcal{M}|$. In the problem of finding a function $G \in V$ with specific properties, the problem of finding $G_{h}\in V_{h}$ with similar properties can be though of as a discrete simplification of finding $G \in V$. </p>
+<p>We will denote the $d+1$ vertices of each $d$-simplex $K_{s} \in \mathcal{M}_{h}$ by $\mathcal{N}_{K_{s}}$. We will also use $\mathcal{N_{h}}=\mathcal{N}=\bigcup_{s=1}^{n}\mathcal{N}_{K_{s}}$. Notice that any polynomial $p \in \mathcal{P}_{1}^d$ can be uniquely determined by its values on $\mathcal{N}_{K_{s}}$. This is important because we realize that we can approximate any function $v \in V$ using just the its values on the vertices on $\mathcal{N}_{h}$, i.e. using just the values $\{ \alpha_{q} \}_{q \in \mathcal{N}_{h}}$.</p>
+<p>We will suppose that there are a total of $N=|\mathcal{N}_{h}|$ vertices in the mesh, namely $\{ \mathbf{v} \}_{i=1}^N$. Let's denote by $\mathcal{B}:=\{ \Phi_{i} \}_{i=1}^N\subseteq V_{h}$ a set of basis functions of $V_{h}$ defined by
+$$
+\Phi_{i}(\mathbf{v}_{j})=\delta_{ij},\quad i,j \in [N].
+$$
+The basis functions of $\mathcal{B}$ are also called <strong>shape functions</strong>. Now, for each function $v_{h} \in V_{h}$ we have the unique representation
+$$
+v_{h}(x)=\sum_{j=1}^{N} v_{h,j}\Phi_{j}(x),\quad v_{h,j} \in \mathbb{R},\ j \in [N].
+$$</p>
+<p>Let's now consider the weak formulation of the elliptic problem on $V_{h}$. We have
+$$
+\begin{align}
+&amp;\left&lt; \nabla u_{h},\nabla \psi \right&gt; =\left&lt; f,\psi \right&gt;, \quad \forall \psi \in V_{h}</p>
+<p>\\ \iff &amp;\left&lt; \nabla u_{h},\nabla \sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt; =\left&lt; f,\sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N</p>
+<p>\\ \iff &amp; \sum_{j=1}^{N}\psi_{j} \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\sum_{j=1}^{N}\psi_{j}\left&lt; f, \Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N</p>
+<p>\\ \iff &amp; \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\left&lt; f, \Phi_{j} \right&gt;, \quad \forall j \in[N].
+\end{align}
+$$
+So since every $u_{h} \in V_{h}$ can be written as $v_{h}=\sum_{j=1}^{N}v_{j}\Phi_{j}$ for $\{ v_{j} \}_{j=1}^N\in\mathbb{R}^N$ it suffices to find such coefficients so that 
+$$
+\sum_{j=1}^{N} u_{j}\left&lt; \nabla \Phi _{j},\nabla\Phi_{i} \right&gt; =\left&lt; f,\Phi_{i} \right&gt;,\quad \forall i \in[N].
+$$
+We can see that this is just a system of linear equations. Let $\mathbf{S} \in \mathbb{R}^{N\times N}$ and $\mathbf{f} \in\mathbb{R}^N$ such that $\mathbf{S}_{ij}=\left&lt; \nabla \Phi_{j},\nabla\Phi_{i} \right&gt;$ and $\mathbf{f}_{i}=\left&lt; f,\Phi_{i} \right&gt;$. The weak formulation of the elliptic problem in $V_{h}$ can be then written as
+$$
+\mathbf{S}\mathbf{u} = \mathbf{f}.
+$$</p>
+<p>So we have reduced our original problem to finding some basis functions $\mathcal{B}$ of $V_{h}$.</p>
+<p>The same method can be used for the general problem:
+$$
+\text{find }u \in V: B(\psi,u) = \ell(u), \ \forall \psi \in {V}
+$$
+where ${V}=H_{0}^1(\Omega)$ and $B:{V}\times {V}\to \mathbb{R}$, $\ell:{V}\to \mathbb{R}$ are a bilinear form and linear functional respectively. The problem can then be reduced to solving the equation
+$$
+\hat{\mathbf{A}}\hat{\mathbf{u}} = \hat{\mathbf{b}}
+$$
+where
+$$
+\hat{\mathbf{A}}_{ij}= B(\Phi_{i},\Phi_{j}),\quad \hat{\mathbf{b}}_{i}=\ell(\Phi_{i}).
+$$</p>
+<h3 id="Implementation details">Implementation details</h3>
+<p><strong>Disclaimer</strong>: In the following text we abuse the notation really frequently. For example we sometimes treat vertices as indices and vice versa and sometimes index functions by $s$ and $K_{s}$ (where $K_{s}$ is an element) interchangeably. </p>
+<p>Let's consider an arbitrary mesh of simplices $\mathcal{M}_{h}=\{ K_{s} \}_{s=1}^n$ of $\Omega \subset \mathbb{R}^d$. We will try to basis functions of $V_{h}^{(1)}$ by considering each element separately. 
+Since we don't want to treat each simplex separately we will consider the <strong>Master Element</strong> $\hat{K}$ which will be the simplex defined by the points $\{ \mathbf{0},\mathbf{e}_{1},\dots,\mathbf{e}_{d} \}$ where $\mathbf{e}_{i} \in \mathbb{R}^d$ are the standard basis vectors $(\mathbf{e}_{i})_{j}=\delta _{ij}$. Each other element $K_{s}$ can be defined by an affine transformation $\mathcal{G}_{K_{s}}:\mathbb{R}^d\to \mathbb{R}^d$ that maps $\hat{K}$ to $K_{s}$, i.e. $K_{s}=\mathcal{G}_{K_{s}}(\hat{K})$ and if $\{ \mathbf{v}_{i}^s \}_{i=0}^d$ are the vertices of $K_{s}$ then $\mathcal{G}_{K_{s}}(\mathbf{e}_{i})=\mathbf{v}_{i}^s$  (here $\mathbf{e}_{0}:=\mathbf{0}$). </p>
+<p>Now we will assign each vertex $\mathbf{v}$ of $K_{s}$ a function $\phi_{\mathbf{v}}^{K_{s}}$ (we will sometimes write $\phi_{\mathbf{v}}^s$ instead of $\phi_{\mathbf{v}}^{K_{s}}$), separately for each element $K_{s}$. We will then extend them to a basis $\Phi_{\mathbf{v}}$ for a vertex $\mathbf{v}$ in $\mathcal{M}_{h}$ defined by $\Phi_{\mathbf{v}}(x)=\phi_{\mathbf{v}}^s(x)$ for the $s$ such that $\mathbf{v} \in K_{s}$ and $0$ elsewhere. Obviously it suffices to find such functions for $\hat{K}$.</p>
+<p>Let's consider the functions $\{\hat{\phi}_{\mathbf{e}_{i}}\}_{i=0}^d$ which are not zero only for $\sum_{i=0}^{d}x_{i}\leq 1$ —i.e. when $x$ is inside the simplex $\hat{K}$— and are defined then by $\hat{\phi }_{\mathbf{e}_{0}}(x)=1-\sum_{i=1}^{d}x_{i}$ and $\hat{\phi}_{\mathbf{e}_{i}}(x)=x_{i}$ for $i\neq0$. We will sometimes write $\hat{\phi}_{i}$ for $\hat{\phi}_{\mathbf{e}_{i}}$.</p>
+<details class="- info">
+<summary>The functions $\{ \hat{\phi}_{\mathbf{e}_{i}} \}_{i=0}^d$ form a base for $V_{h}|_{\hat{K}}$.</summary>
+<p>Obviously any function in $V_{h}|_{\hat{K}}$ can be written as a linear combination of them. Now let $\sum_{i=0}^{d} \alpha_{i}\hat{\phi}_{{i}}=0$. For $x=\mathbf{e}_{j}$ we get $0=\sum_{i=0}^{d} \alpha_{i}\hat{\phi}_{i}(\mathbf{e}_{j}) = \alpha_{j}$ so $\alpha=0$.</p>
+</details>
+<p>So for an arbitrary element $K_{s} \in \mathcal{M}_{h}$ we will consider the functions $\{ \phi^s_{i} \}_{i=0}^d$ defined by
+$$
+\phi_{i}^s(x)=\hat{\phi}_{i}(\mathcal{G}_{K_{s}}^{-1}(x)).
+$$</p>
+<details class="- info">
+<summary>Inverting an affine transformation $\mathcal{G}$.</summary>
+<p>An affine transformation $\mathcal{G}$ can be described as $\mathcal{G}(\mathbf{x})=\mathbf{A}\mathbf{x}+\mathbf{b}$ where $\mathbf{A}$ is invertible and therefore it's inverse can be found by $\mathcal{G^{-1}}(\mathbf{y})=\mathbf{A}^{-1}(\mathbf{y}-\mathbf{b})$.</p>
+</details>
+<p>We define the functions $\mathcal{B}=\{ \Phi_{\mathbf{v}} \}_{\mathbf{v} \in \mathcal{N}_{h}}$ as
+$$
+\Phi_{\mathbf{v}}(x)=\phi_{\mathbf{v}}^s(x)
+$$
+where $K_{s}$ is an element for which $x \in K_{s}$.</p>
+<details class="- info">
+<summary>The functions in $\mathcal{B}$ form a basis of $V_{h}$.</summary>
+<p>First of all $\Phi_{\mathbf{v}}(\mathbf{u})=\delta_{\mathbf{v}\mathbf{u}}$. Now obviously $\mathrm{span} \{ \Phi_{\mathbf{v}} \}_{\mathbf{v} \in \mathcal{N}_{h}}\subseteq V_{h}$ so let $u_{h} \in V_{h}$, notice that in each element $K_{s}$ the values of $u_{h}$ in $\mathcal{N}_{K_{s}}$ determine $v|_{K_{s}}$ uniquely and therefore can easily figure out that $V_{h}\subseteq \mathrm{span}\{ \Phi_{\mathbf{v}} \}_{\mathbf{v} \in \mathcal{N}_{h}}$. Now let $\sum_{\mathbf{v} \in \mathcal{N}_{h}}^{}\alpha_{i}\Phi_{i}=0$, by taking $x=\mathbf{v}$ for each $\mathbf{v}\in\mathcal{N}_{h}$ we eventually get $\alpha_{i}=0$.</p>
+</details>
+<p>Now let us be given a bilinear form $B:V\times V\to \mathbb{R}$ defined by a matrix $\mathbf{B} \in \mathbb{R}^{d\times d}$ as
+$$
+B(u,v)=\int_{\Omega}^{} \mathbf{B}(x)\nabla u\cdot \nabla v \, dx ,
+$$
+and a linear form $\ell:V\to \mathbb{R}$ defined by the function $\mathbf{L}:\Omega\to \mathbb{R}$ as
+$$
+\ell(v)= \int_{\Omega}^{} \mathbf{L}(x)v \, dx .
+$$
+Then, as discussed previously, we have the stiffness matrix $\mathbf{S}_{ij}=B(\Phi_{i},\Phi_{j})$ and vector $\mathbf{b}_{i}=\ell(\Phi_{i})$ and we just need to solve
+$$
+\mathbf{S} \mathbf{u}= \mathbf{b}.
+$$</p>
+<details class="- note">
+<summary>Proof that $\mathbf{S}$ is symmetric and positive-definite given that $B(v,v)&gt; 0$.</summary>
+<p>$\mathbf{S}_{ij}=\mathbf{S}_{ji}$ is obvious. Now consider a vector $\mathbf{u}$ which represents $u_{h}=\sum_{i}^{}u_{i}\Phi_{i}$. We have
+$$
+\begin{align}
+\mathbf{u}^T\mathbf{S}\mathbf{u}
+&amp;= \sum_{i,j}^{} u_{i}u_{j}B(\Phi_{i},\Phi_{j})  \\
+&amp;= \sum_{i,j}^{} B(u_{i}\Phi_{i},u_{j}\Phi_{j})  \\
+&amp;= B\left( \sum_{i}^{} u_{i}\Phi_{i},\sum_{j}^{} u_{j}\Phi_{j} \right)  \\
+&amp;= B(u_{h},u_{h}) &gt;0.
+\end{align}
+$$</p>
+</details>
+<h4 id="Computation of the bilinear and linear forms">Computation of the bilinear and linear forms</h4>
+<details class="- info">
+<summary>Integral over mapped element</summary>
+<p>To compute integrals over $K_{s}$ we can map the variable, say $x$, to $\mathcal{G}_{K_{s}}^{-1}(x)$ so that we map $K_{s}$ to the master element $\mathcal{G}_{K_{s}}^{-1}(K_{s})=\hat{K}$. Namely, with the change of variables $\xi=\mathcal{G}_{K_{s}}^{-1}(x) \iff x=\mathcal{G}_{K_{s}}(\xi)$ we have
+$$
+\int_{K_{s}}^{} f \, dx =\int_{\hat{K}}^{}  f(\mathcal{G}_{K_{s}}(\xi))\left| \det J_{\mathcal{G}_{K_{s}}}\right| \, d\xi 
+$$
+where $J_{\mathcal{G}_{K_{s}}}$ is the mapping Jacobian. This might help in order to make more sophisticated integral approximation rules since $\hat{K}$ has a known structure.</p>
+</details>
+<p>Notice how $B(\cdot,\cdot)$ and $\ell(\cdot)$ are not explicitly restricted only one element; let's fix that. Consider $B_{s}(\cdot,\cdot)$ and $\ell_{s}(\cdot)$ which will be the restrictions of $B(\cdot,\cdot)$ and $\ell(\cdot)$ respectively to the element $K_{s}$. Then we can decompose $B(\cdot,\cdot)$ and $\ell(\cdot)$ as
+$$
+B(v,u)=\sum_{s=1}^{n} B_{s}(v,u),\quad \ell(u)=\sum_{s=1}^{n} \ell_{s}(u). 
+$$</p>
+<p>Now
+$$
+B_{s}(\Phi_{i},\Phi_{j})= B_{s}(\Phi_{i}|_{K_{s}},\Phi_{j}|_{K_{s}}) = B_{s}(\phi_{i}^s,\phi_{j}^s),
+$$
+so that
+$$
+B(\Phi_{i},\Phi_{j})=\sum_{s=1}^{n} B_{s}(\phi_{i}^s,\phi_{j}^s).
+$$
+Similarly we can deduce
+$$
+\ell(\Phi_{i})=\sum_{s=1}^{n} \ell_{s}(\phi_{i}^s).
+$$</p>
+<p>One should also mention here, in case it wasn't obvious., that the stiffness matrix $\mathbf{S}_{ij}=B(\Phi_{i},\Phi_{j})$ is sparse. This is because $B(\Phi_{i},\Phi_{j})=0$ for vertices $i,j \in\mathcal{N}_{h}$ that don't share a simplex.</p>
+<h4 id="Quadrature rules for an arbitrary simplex">Quadrature rules for an arbitrary simplex</h4>
+<p>For a function $f: K_{s}\to \mathbb{R}$ we denote $Q(f)$ as the approximation of the integral $\int_{K_{s}}^{}f  \, dx$. We have the following ways of doing the approximation:
+- The quadrature rule $Q(f)=f(c)\mathrm{Vol}\ K_{s}$ where $c=\sum_{\mathbf{v} \in \mathcal{N}_{K_{s}}}^{}\mathbf{v}/(d+1)$ is the centroid of $K_{s}$.
+- The quadrature rule $$ Q(f)=\frac{\mathrm{Vol}\ K_{s}}{d+1}\sum_{\mathbf{v}}^{} f(\mathbf{v})$$ where $\mathbf{v}$ iterates $d+1$ points inside $K_{s}$.<br />
+Here, the volume $\mathrm{Vol}\ K_{s}$ of a simplex with vertices $\{ \mathbf{v}_{i} \}_{i=0}^d$ can be computed as
+$$
+\mathrm{Vol}\ K_{s}=\frac{1}{n!}\left| \det \begin{pmatrix}
+\mathbf{v}_{1}-\mathbf{v}_{0}  &amp; \cdots &amp; \mathbf{v}_{n}-\mathbf{v}_{0}
+\end{pmatrix}\right|.
+$$
+Generally, we can define a quadrature rule on a set/object $S$ and a function $f:S\to \mathbb{R}$ as
+$$
+Q_{S}(f):=\sum_{(x_{q},w_{q})\in\mathcal{Q}_{S}}^{} w_{q}f(x_{q})\approx \int_{S}^{} f \, dx,
+$$
+where $\mathcal{Q}_{S}$ is a set of pairs (points, weights) that approximate the integral of $f$ over $S$.</p>
+<h4 id="Triangulation of $\Omega$">Triangulation of $\Omega$</h4>
+<p>Depending on the structure of $\Omega \subset \mathbb{R}^d$ there are many ways we can triangulate it and, since the rest of the method works for any triangulation, we can triangulate $\Omega$ in any way we want. However, triangulating properly is really important to avoid big approximation errors. We usually triangulate accordingly for different problems depending on their structure and properties.</p>
+<details class="example" open="open">
+<summary>Simple triangulation for a simplex $\Omega$.</summary>
+<p>If $\Omega$ is a simplex then we can triangulate it using barycentric subdivision. Namely, we will suppose that the vertices of $\Omega$ are $\{ v_{i} \}_{i=0}^d$. Then we will compute the centroid of $\Omega$ as $c=\sum_{i=0}^{d}v_{i}/(d+1)$, we will recursively consider and triangulate the simplices $\{ c \}\cup \{ v_{i} \}_{i=0}^d\setminus\{ v_{j} \}$ for $j\in\{ 0,\dots,d \}$. We can continue the triangulation to a fixed depth or up to simplices of volume not greater than some fixed number.</p>
+</details>
+<details class="example" open="open">
+<summary>Permutation triangulation for $\Omega=(0,1)^d$.</summary>
+<p>For each $d$-permutation $\sigma \in \mathfrak{G}_{d}$ we will define the simplex $S_{\sigma}=\{ x \in\mathbb{R}^d: 0\leq x_{\sigma(1)}\leq\dots \leq x_{\sigma(d)}\leq 1\}$. 
+ Then every point $x \in[0,1]^d$ will belong to to at least one simplex (and exactly one if $x$ does not have a common pair of coordinates, in which case it will be sitting in a common face of some simplices). 
+ Namely consider a permutation $\sigma$ that sorts $x$, then obviously $x \in S_{\sigma}$. Therefore $\{ S_{\sigma} \}_{\sigma \in\mathfrak{G}_{d}}$ is a valid triangulation.</p>
+</details>
+<details class="example" open="open">
+<summary>Centroid triangulation for $\Omega=(0,1)^d$.</summary>
+<p>Consider the center of $\Omega$, $c^T = (1/2, \dots, 1 / 2)$. Let $\mathcal{I}$ be the set of all choices $I \in\binom{[2^d]}{d}$ of $d$ out of the $2^d$ vertices of $\Omega$ such that the area of the simplex formed by $I\cup \{ c \}$ is non-zero (i.e. the simplex $I\cup \{ c \}$ is not degenerate). For each $I \in\mathcal{I}$ we can consider the corresponding simplex $S_{I}$, then $\{ S_{I} \}_{I \in\mathcal{I}}$ is a triangulation of $\Omega$.</p>
+</details>
+<details class="example" open="open">
+<summary>$h$-triangulation when $\Omega=(0,1)^d$.</summary>
+<p>We can split the cube $[0,1)^d$ into $(1/h)^d$ cubes by splitting each interval $[0,1)$ into $\bigcup_{i=0}^{n/h-1}[ih,(i+1)h)$ and then triangulate each of the $(1/h)^d$ cubes in the $\Omega=(0,1)^d$ case. For $d=2$ this gives the common triangulation of a grid into triangles in the obvious way.</p>
+</details>
+<h4 id="Measuring the accuracy of the solution">Measuring the accuracy of the solution</h4>
+<p>Say that we have an approximate solution $u_{h}=\sum_{i \in\mathcal{N}_{h}}^{}\mathbf{u}_{i}\Phi_{i}$ and an exact solution $u \in V$. We can approximate the $L^2$-error $\left\lVert u_{h}-u \right\rVert_{2}$ by 
+$$
+\begin{align}
+\left\lVert u_{h}-u \right\rVert_{2}^2
+&amp;= \int_{\Omega}^{} (u_{h}-u)^{2} \, dx   \\
+&amp;= \sum_{s=1}^{n} \int_{K_{s}}^{} (u_{h}-u)^{2} \, dx  \\
+&amp;= \sum_{s=1}^{n} Q_{K_{s}}((u_{h}-u)^{2}) \\
+&amp;= \sum_{s=1}^{n} \sum_{(x_{q},w_{q}) \in \mathcal{Q}({K_{s})}}^{} w_{q}\left( \sum_{i \in \mathcal{N}_{h}}^{} \mathbf{u}_{i}\Phi_{i}(x_{q}) - u(x_{q})\right) ^{2}.
+\end{align}
+$$</p>
+<h3 id="Summary">Summary</h3>
+<p>We can summarize the FEM method used for the problems considered as follows:
+- Consider a set $\Omega$, preferably easily triangulable in simplices, and define the bilinear and linear forms $B(f,g)=\int_{\Omega}^{} \mathbf{B}(x)\nabla f\cdot\nabla g \, dx$ and $\ell(f)=\int_{\Omega}^{} \mathbf{L}(x)f \, dx$.
+- Create the master element $\hat{K}$ and define the mesh $\mathcal{M}_{h}=\{ K_{s} \}_{s=1}^n$ by triangulating $\Omega$ and defining the affine maps $\mathcal{G}_{K_{s}}$ mapping $\hat{K}$ to $K_{s}$. Notice that for each map is uniquely defined by its values on the vertices of $\hat{K}$.
+- Consider the <em>local</em> master shape functions $\{ \hat{\phi}_{i} \}_{i=0}^d$ of $\hat{K}$ defined previously and compute the <em>local</em> shape functions $\{ \phi_{i}^s \}_{i=0}^d$ for each $K_{s}$ by $\phi_{i}^s=\mathcal{G}^{-1}_{K_{s}}\circ\hat{\phi}_{i}$. Also compute the gradients $\{ \nabla \phi_{i}^s \}_{i=0}^d$.
+- Approximate $B_{s}(\phi_{i}^s,\phi_{j}^s)\approx\int_{K_{s}}^{} \mathbf{B}(x)\nabla\phi_{i}^s\cdot\nabla\phi_{j}^s \, dx$ and $\ell_{s}(\phi_{i}^s)\approx\int_{K_{s}}^{} \mathbf{L}(x)\phi_{i}^s \, dx$ by a quadrature rule for the simplices $\{ K_{s} \}_{s=1}^n$. 
+- Compute the sparse stiffness matrix $\mathbf{S}_{ij}=B(\Phi_{i},\Phi_{j})=\sum_{s=1}^{n}B_{s}(\phi_{i}^s,\phi_{j}^s)$ and $\mathbf{b}_{i}=\ell(\Phi_{i})=\sum_{s=1}^{n}\ell_{s}(\phi_{i}^s)$.
+- Solve the linear system $\mathbf{S}\mathbf{u}=\mathbf{b}$ and set $u_{h}:=\sum_{i\in\mathcal{N}_{h}}^{}\mathbf{u}_{i}\Phi_{i}$. The function $u_{h} \in V_{h}$ approximates $u \in V$ for which $B(u,\psi)=\ell(\psi)$ for all for all $\psi \in V$ when $x \in\Omega$ and $u=0$ for $x \in\partial \Omega$ —which is exactly what we were looking for.</p>
+<p>The method can be generalized by considering $\phi_{i}^s \in\mathcal{P}^d_{k}$ for an arbitrary $k\geq1$, i.e. by allowing non-linear piecewise approximations around each vertex. In that case we would need more points in the simplex to uniquely define each $\phi_{i}^s$. Also by displacing the problem initially and considering carefully considering boundary vertices—i.e. vertices which sit of a face of a simplex that is at the boundary— we can solve it for an arbitrary boundary condition $u=g$ for $x \in\partial \Omega$.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Numerical Methods for Partial Differential Equations Thomas Wick, <a href="https://doi.org/10.15488/9248">https://doi.org/10.15488/9248</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>The Finite Element Method for Elliptic Problem, Philippe G. Ciarlet.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+    <script>
+    setTimeout(() => {
+        var script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+            script.id = "MathJax-script";
+            script.async = true;
+            document.getElementById('mathrendering').appendChild(script);
+    }, 1)
+    </script>
+</div>
+</div>
+</body>

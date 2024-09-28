@@ -1,5 +1,11 @@
 [
     {
+      "title": "The Finite Element Method (FEM) in elliptic problems",
+      "date": "2024 Sep 29",
+      "url": "/articles/elliptic_fem.html",
+      "tags": ["mathematics", "projects"]
+    }, 
+    {
       "title": "Efficient counting with generating functions",
       "date": "2024 Aug 05",
       "url": "/articles/counting_with_gfs.html",
