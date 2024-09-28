@@ -108,10 +108,10 @@ $$</p>
 <p>Let's now consider the weak formulation of the elliptic problem on $V_{h}$. We have
 $$
 \begin{align}
-&amp;\left&lt; \nabla u_{h},\nabla \psi \right&gt; =\left&lt; f,\psi \right&gt;, \quad \forall \psi \in V_{h}</p>
-<p>\\ \iff &amp;\left&lt; \nabla u_{h},\nabla \sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt; =\left&lt; f,\sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N</p>
-<p>\\ \iff &amp; \sum_{j=1}^{N}\psi_{j} \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\sum_{j=1}^{N}\psi_{j}\left&lt; f, \Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N</p>
-<p>\\ \iff &amp; \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\left&lt; f, \Phi_{j} \right&gt;, \quad \forall j \in[N].
+&amp;\left&lt; \nabla u_{h},\nabla \psi \right&gt; =\left&lt; f,\psi \right&gt;, \quad \forall \psi \in V_{h}
+\\ \iff &amp;\left&lt; \nabla u_{h},\nabla \sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt; =\left&lt; f,\sum_{j=1}^{N} \psi_{j}\Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N
+\\ \iff &amp; \sum_{j=1}^{N}\psi_{j} \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\sum_{j=1}^{N}\psi_{j}\left&lt; f, \Phi_{j} \right&gt;, \quad \forall (\psi_{j})_{j=1}^N \in \mathbb{R}^N
+\\ \iff &amp; \left&lt; \nabla u_{h},\nabla  \Phi_{j} \right&gt; =\left&lt; f, \Phi_{j} \right&gt;, \quad \forall j \in[N].
 \end{align}
 $$
 So since every $u_{h} \in V_{h}$ can be written as $v_{h}=\sum_{j=1}^{N}v_{j}\Phi_{j}$ for $\{ v_{j} \}_{j=1}^N\in\mathbb{R}^N$ it suffices to find such coefficients so that 
