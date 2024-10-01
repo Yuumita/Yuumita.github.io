@@ -101,6 +101,10 @@ V_{h}^{(1)}(\mathcal{M}_{h})=V_{h}:= \{ v \in C(\Omega):v|_{K_{s}} \in \mathcal{
 $$
 As we can see, $V_{h}$ is a subspace of $V=H_{0}^1(\Omega)$ and is of dimension $N=|\mathcal{M}|$. In the problem of finding a function $G \in V$ with specific properties, the problem of finding $G_{h}\in V_{h}$ with similar properties can be though of as a discrete simplification of finding $G \in V$. </p>
 <p>We will denote the $d+1$ vertices of each $d$-simplex $K_{s} \in \mathcal{M}_{h}$ by $\mathcal{N}_{K_{s}}$. We will also use $\mathcal{N_{h}}=\mathcal{N}=\bigcup_{s=1}^{n}\mathcal{N}_{K_{s}}$. Notice that any polynomial $p \in \mathcal{P}_{1}^d$ can be uniquely determined by its values on $\mathcal{N}_{K_{s}}$. This is important because we realize that we can approximate any function $v \in V$ using just the its values on the vertices on $\mathcal{N}_{h}$, i.e. using just the values $\{ \alpha_{q} \}_{q \in \mathcal{N}_{h}}$.</p>
+<details class="info" open="open">
+<summary>A wrong assumption we will make for simplicity.</summary>
+<p>To make our analysis simpler we will avoid making a distinction between vertices in the boundary $\partial \Omega$ and on $\Omega$. We will, incorrectly, assume that all vertices sit on the interior. I believe the reader can correct all the oversights caused by this assumption after first roughly understanding this simplified case—keep in mind that boundary vertices would have been treated differently, namely we wouldn't consider them vertices in the sense that we do now but they would define and be vertices of the geometric shapes $\{ K_{s} \}$.</p>
+</details>
 <p>We will suppose that there are a total of $N=|\mathcal{N}_{h}|$ vertices in the mesh, namely $\{ \mathbf{v} \}_{i=1}^N$. Let's denote by $\mathcal{B}:=\{ \Phi_{i} \}_{i=1}^N\subseteq V_{h}$ a set of basis functions of $V_{h}$ defined by
 $$
 \Phi_{i}(\mathbf{v}_{j})=\delta_{ij},\quad i,j \in [N].
