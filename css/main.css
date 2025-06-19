@@ -29,7 +29,7 @@ body {
     background-color: var(--background-color);
     color: var(--primary-color);
     display: flex; 
-    align-items: center;
+    /* align-items: center; */
     justify-content: center;
     margin: 0 auto; /* To center the content horizontally */
     /* width: 100vw; */
